@@ -1,0 +1,29 @@
+WJAY STORE — SITE COM PAINEL DE PRODUTOS
+
+ARQUIVOS
+- index.html: vitrine da loja
+- admin.html: painel para cadastrar, editar e excluir produtos
+- config.js: configuração do Supabase e WhatsApp
+
+CONFIGURAÇÃO JÁ PREENCHIDA
+- Project URL do Supabase
+- Chave publicável do Supabase
+- WhatsApp da loja: 5521965424073
+
+IMPORTANTE
+1. A chave no config.js é uma chave publicável (sb_publishable_), não uma chave secreta.
+2. A tabela public.products precisa ter id, name, description, price, image_url, category, sizes, active e created_at.
+3. A tabela public.admin_users precisa conter o UID do administrador.
+4. O bucket Storage product-images deve existir e permitir leitura pública, mas envio/alteração/exclusão apenas a administradores autorizados.
+5. Antes de publicar, teste o login, cadastro e envio de foto. Não compartilhe a senha do usuário administrador.
+6. Faça backup dos arquivos atuais do site antes de substituir a versão publicada. Envie os quatro arquivos juntos para o mesmo diretório do site no Netlify.
+
+COMO USAR
+- Vitrine: index.html.
+- Painel: depois de publicar, abra /admin.html no endereço do site.
+- Entre com o e-mail e a senha do usuário criado em Supabase Authentication > Users.
+- Para cadastrar produtos, preencha os campos e escolha uma foto JPG, PNG ou WebP de até 5 MB.
+- Os pedidos são direcionados ao WhatsApp configurado.
+
+ATENÇÃO
+Este pacote não publica o site automaticamente e ainda precisa ser testado com o projeto Supabase real. Faça primeiro um teste de login, cadastro e envio de foto antes de anunciar o endereço.
