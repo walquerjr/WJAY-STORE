@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu carrinho | WJAY STORE</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+      padding-bottom: 30px;
+    }
+    header {
+      background: #111;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 8px; }
+    header a { color: white; }
+    main {
+      max-width: 900px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px #0000000d;
+    }
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid #eee;
+      padding: 14px 0;
+    }
+    .item img {
+      width: 85px;
+      height: 85px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee;
+    }
+    .details { flex: 1; min-width: 0; }
+    .details h3 { margin: 0 0 8px; }
+    .details p { margin: 5px 0; }
+    .quantity {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    button, .button {
+      display: inline-block;
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+      text-align: center;
+    }
+    .quantity button { background: #eee; padding: 8px 12px; }
+    .remove { background: #ffe8e8; color: #a00; }
+    .primary { background: #111; color: white; width: 100%; margin-top: 12px; }
+    .whatsapp { background: #168b45; color: white; }
+    .muted { color: #666; font-size: 14px; }
+    .total { font-size: 22px; font-weight: bold; }
+    .progress-track {
+      height: 10px;
+      background: #eee;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: #168b45;
+      transition: width .25s;
+    }
+    #empty { text-align: center; padding: 30px 10px; }
+    @media (max-width: 520px) {
+      .item { align-items: flex-start; flex-wrap: wrap; }
+      .details { width: calc(100% - 105px); }
+      .remove { margin-left: 99px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>WJAY STORE</h1>
+    <p>Meu carrinho</p>
+    <a href="index.html">← Continuar comprando</a>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Seu pedido</h2>
+      <p id="progressText">Faltam 5 peças para liberar o atacado.</p>
+      <div class="progress-track">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+      <p class="muted">O preço de atacado é aplicado aos produtos que possuem esse preço cadastrado, a partir de 5 peças no carrinho.</p>
+      <div id="items"></div>
+      <div id="empty" hidden>
+        <p>Seu carrinho está vazio.</p>
+        <a class="button" href="index.html">Ver produtos</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <p id="pieceCount">0 peças</p>
+      <p class="total" id="total">Total: R$ 0,00</p>
+      <button class="primary whatsapp" id="checkout">Finalizar pedido pelo WhatsApp</button>
+    </section>
+  </main>
+
+  <script>
+    const CART_KEY = 'wjay_cart';
+    const WHATSAPP = '5521965424073';
+    const itemsElement = document.getElementById('items');
+    const emptyElement = document.getElementById('empty');
+    const totalElement = document.getElementById('total');
+    const pieceCountElement = document.getElementById('pieceCount');
+    const progressText = document.getElementById('progressText');
+    const progressBar = document.getElementById('progressBar');
+    const checkoutButton = document.getElementById('checkout');
+
+    function money(value) {
+      return Number(value || 0).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      });
+    }
+
+    function readCart() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+        if (!Array.isArray(saved)) return new Map();
+        return new Map(saved);
+      } catch (error) {
+        return new Map();
+      }
+    }
+
+    const cart = readCart();
+
+    function saveCart() {
+      localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries())));
+    }
+
+    function renderCart() {
+      const entries = Array.from(cart.entries());
+      const count = entries.reduce((sum, entry) => sum + entry[1].quantity, 0);
+      const wholesale = count >= 5;
+      let total = 0;
+
+      itemsElement.innerHTML = '';
+      emptyElement.hidden = count !== 0;
+      checkoutButton.disabled = count === 0;
+      checkoutButton.style.opacity = count === 0 ? '.5' : '1';
+
+      for (const [id, item] of entries) {
+        const product = item.product || {};
+        const quantity = Number(item.quantity) || 0;
+        const wholesalePrice = product.wholesale_price;
+        const unitPrice = wholesale && wholesalePrice !== null &&
+          wholesalePrice !== undefined && wholesalePrice !== ''
+          ? Number(wholesalePrice)
+          : Number(product.price) || 0;
+
+        total += unitPrice * quantity;
+
+        const article = document.createElement('article');
+        article.className = 'item';
+
+        const img = document.createElement('img');
+        img.src = product.image || '';
+        img.alt = product.name || 'Produto';
+        img.onerror = () => { img.style.display = 'none'; };
+
+        const details = document.createElement('div');
+        details.className = 'details';
+
+        const title = document.createElement('h3');
+        title.textContent = product.name || 'Produto';
+
+        const price = document.createElement('p');
+        price.textContent = money(unitPrice) + ' cada';
+
+        const subtotal = document.createElement('p');
+        subtotal.className = 'muted';
+        subtotal.textContent = 'Subtotal: ' + money(unitPrice * quantity);
+
+        const quantityControls = document.createElement('div');
+        quantityControls.className = 'quantity';
+
+        const decrease = document.createElement('button');
+        decrease.textContent = '−';
+        decrease.setAttribute('aria-label', 'Diminuir quantidade');
+        decrease.dataset.action = 'dec';
+        decrease.dataset.id = id;
+
+        const qty = document.createElement('strong');
+        qty.textContent = String(quantity);
+
+        const increase = document.createElement('button');
+        increase.textContent = '+';
+        increase.setAttribute('aria-label', 'Aumentar quantidade');
+        increase.dataset.action = 'inc';
+        increase.dataset.id = id;
+
+        quantityControls.append(decrease, qty, increase);
+        details.append(title, price, subtotal, quantityControls);
+
+        const remove = document.createElement('button');
+        remove.className = 'remove';
+        remove.textContent = 'Remover';
+        remove.dataset.action = 'remove';
+        remove.dataset.id = id;
+
+        article.append(img, details, remove);
+        itemsElement.appendChild(article);
+      }
+
+      pieceCountElement.textContent = count + (count === 1 ? ' peça' : ' peças');
+      totalElement.textContent = 'Total: ' + money(total);
+      progressBar.style.width = Math.min(count / 5 * 100, 100) + '%';
+
+      if (count >= 5) {
+        progressText.textContent = 'Atacado liberado! Preços aplicados aos produtos elegíveis.';
+      } else {
+        const missing = 5 - count;
+        progressText.textContent = 'Faltam ' + missing + (missing === 1 ? ' peça' : ' peças') + ' para liberar o atacado.';
+      }
+    }
+
+    itemsElement.addEventListener('click', event => {
+      const button = event.target.closest('button[data-action]');
+      if (!button) return;
+
+      const id = button.dataset.id;
+      const item = cart.get(id);
+      if (!item) return;
+
+      if (button.dataset.action === 'inc') {
+        item.quantity++;
+      } else if (button.dataset.action === 'dec') {
+        item.quantity--;
+        if (item.quantity <= 0) cart.delete(id);
+      } else if (button.dataset.action === 'remove') {
+        cart.delete(id);
+      }
+
+      saveCart();
+      renderCart();
+    });
+
+    checkoutButton.addEventListener('click', () => {
+      const entries = Array.from(cart.values());
+      if (!entries.length) return;
+
+      const count = entries.reduce((sum, item) => sum + item.quantity, 0);
+      const wholesale = count >= 5;
+      let total = 0;
+      const lines = ['Olá! Quero fazer um pedido na WJAY STORE:', ''];
+
+      for (const item of entries) {
+        const p = item.product || {};
+        const wholesalePrice = p.wholesale_price;
+        const price = wholesale && wholesalePrice !== null &&
+          wholesalePrice !== undefined && wholesalePrice !== ''
+          ? Number(wholesalePrice)
+          : Number(p.price) || 0;
+        const subtotal = price * item.quantity;
+        total += subtotal;
+        lines.push((p.name || 'Produto') + ' — ' + item.quantity +
+          ' un. × ' + money(price) + ' = ' + money(subtotal));
+        if (p.sizes) lines.push('Tamanhos: ' + p.sizes);
+      }
+
+      lines.push('');
+      lines.push('Quantidade total: ' + count + ' peças');
+      lines.push('Total estimado: ' + money(total));
+      lines.push('');
+      lines.push('Por favor, confirme a disponibilidade e as opções de entrega.');
+
+      const url = 'https://wa.me/' + WHATSAPP + '?text=' +
+        encodeURIComponent(lines.join('\n'));
+      window.open(url, '_blank');
+    });
+
+    renderCart();
+  </script>
+</body>
+</html>
