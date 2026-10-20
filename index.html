@@ -305,9 +305,11 @@ document.getElementById('cartItems').addEventListener('click', event => {
     if (item.quantity <= 0) {
       cart.delete(id);
     }
-  } else if (button.dataset.cartAction === 'remove') {
+   } else if (button.dataset.cartAction === 'remove') {
     cart.delete(id);
   }
+
+  localStorage.setItem('wjay_cart', JSON.stringify(Array.from(cart.entries())));
 
   renderCart();
 });
