@@ -207,7 +207,7 @@ async function loadProducts(){
   } catch(e) { console.error('Não foi possível carregar os produtos:',e); products=demoProducts; render(); }
 }
 
-const cart = new Map();
+const cart = new Map(   JSON.parse(localStorage.getItem('wjay_cart') || '[]') );
 
 function renderCart() {
   const items = Array.from(cart.values());
