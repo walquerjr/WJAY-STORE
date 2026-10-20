@@ -47,8 +47,29 @@ const demoProducts = [
 ];
 const money = n => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function whatsappUrl(message){const number=WHATSAPP_NUMBER.replace(/\D/g,'');return 'https://wa.me/'+number+'?text='+encodeURIComponent(message)}
-function productCard(p){const message=`Olá, WJAY STORE! Tenho interesse em: ${p.name} — ${money(p.price)}. Quais cores e tamanhos estão disponíveis?`;return `<article class="product" data-category="${p.category}"><div class="product-photo"><img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none'"><span class="tag">${p.label}</span></div><div class="product-info"><div class="category">${p.category}</div><h3>${p.name}</h3><div class="desc">${p.desc}</div><div class="price">${money(p.price)}${p.wholesale_price!=null&&p.wholesale_price!==''?`<p class="wholesale-price">Atacado: ${money(p.wholesale_price)} cada (mínimo 5 peças)</p>`:''}</div><div class="sizes">Tamanhos: ${p.sizes}</div><a class="buy" target="_blank" rel="noopener" href="${whatsappUrl(message)}">Pedir pelo WhatsApp ↗</a></div></article>`}
-function render(filter='todos'){const shown=products.filter(p=>filter==='todos'||p.category===filter);document.getElementById('products').innerHTML=shown.map(productCard).join('');document.getElementById('empty').style.display=shown.length?'none':'block'}
+
+function productCard(p){
+  return `<article class="product" data-category="${p.category}">
+    <div class="product-photo">
+      <img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
+      <span class="tag">${p.label}</span>
+    </div>
+    <div class="product-info">
+      <div class="category">${p.category}</div>
+      <h3>${p.name}</h3>
+      <div class="desc">${p.desc}</div>
+      <div class="price">
+        ${money(p.price)}
+        ${p.wholesale_price != null && p.wholesale_price !== ''
+          ? `<p class="wholesale-price">Atacado: ${money(p.wholesale_price)} cada (mínimo 5 peças)</p>`
+          : ''}
+      </div>
+      <div class="sizes">Tamanhos: ${p.sizes}</div>
+      <button type="button" class="buy add-to-cart" data-product-id="${p.id}">Adicionar ao carrinho</button>
+    </div>
+  </article>`;
+}
+
 document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render(btn.dataset.filter)}));
 const generalMessage='Olá, WJAY STORE! Gostaria de conhecer os produtos e as ofertas.';['footerWhats','floatWhats'].forEach(id=>{const el=document.getElementById(id);el.href=whatsappUrl(generalMessage);el.target='_blank';el.rel='noopener';});
 document.getElementById('year').textContent=new Date().getFullYear();
