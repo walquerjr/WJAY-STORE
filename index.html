@@ -55,6 +55,114 @@ async function loadProducts(){
     render();
   } catch(e) { console.error('Não foi possível carregar os produtos:',e); products=demoProducts; render(); }
 }
-loadProducts();
+
+const cart = new Map();
+
+function renderCart() {
+  const items = Array.from(cart.values());
+  const count = items.reduce((sum, item) => sum + item.quantity, 0);
+  const wholesaleActive = count >= 5;
+
+  const cartItems = document.getElementById('cartItems');
+  const cartCount = document.getElementById('cartCount');
+  const cartTotal = document.getElementById('cartTotal');
+  const cartNotice = document.getElementById('cartNotice');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+
+  let total = 0;
+
+  cartItems.innerHTML = items.map(item => {
+    const unitPrice = wholesaleActive && item.product.wholesale_price != null
+      ? item.product.wholesale_price
+      : item.product.price;
+
+    total += unitPrice * item.quantity;
+
+    return `<div class="cart-item">
+      <strong>${item.product.name}</strong>
+      <p>${money(unitPrice)} cada</p>
+      <button type="button" data-cart-action="dec" data-product-id="${item.product.id}">−</button>
+      <span>${item.quantity}</span>
+      <button type="button" data-cart-action="inc" data-product-id="${item.product.id}">+</button>
+      <button type="button" data-cart-action="remove" data-product-id="${item.product.id}">Remover</button>
+    </div>`;
+  }).join('');
+
+  cartCount.textContent = `${count} ${count === 1 ? 'peça selecionada' : 'peças selecionadas'}.`;
+  cartTotal.textContent = `Total: ${money(total)}`;
+  cartNotice.textContent = wholesaleActive
+    ? 'Atacado liberado! Preços de atacado aplicados aos produtos elegíveis.'
+    : `Adicione mais ${5 - count} ${5 - count === 1 ? 'peça' : 'peças'} para liberar o atacado.`;
+
+  checkoutBtn.disabled = count === 0;
+}
+
+document.getElementById('products').addEventListener('click', event => {
+  const button = event.target.closest('.add-to-cart');
+  if (!button) return;
+
+  const product = products.find(p => String(p.id) === button.dataset.productId);
+  if (!product) return;
+
+  const id = String(product.id);
+  const existing = cart.get(id);
+
+  cart.set(id, {
+    product,
+    quantity: existing ? existing.quantity + 1 : 1
+  });
+
+  renderCart();
+});
+
+document.getElementById('cartItems').addEventListener('click', event => {
+  const button = event.target.closest('button[data-cart-action]');
+  if (!button) return;
+
+  const id = button.dataset.productId;
+  const item = cart.get(id);
+  if (!item) return;
+
+  if (button.dataset.cartAction === 'inc') {
+    item.quantity++;
+  } else if (button.dataset.cartAction === 'dec') {
+    item.quantity--;
+    if (item.quantity <= 0) {
+      cart.delete(id);
+    }
+  } else if (button.dataset.cartAction === 'remove') {
+    cart.delete(id);
+  }
+
+  renderCart();
+});
+
+document.getElementById('checkoutBtn').addEventListener('click', () => {
+  const items = Array.from(cart.values());
+  const count = items.reduce((sum, item) => sum + item.quantity, 0);
+  if (!count) return;
+
+  const wholesaleActive = count >= 5;
+  let total = 0;
+
+  const lines = items.map(item => {
+    const unitPrice = wholesaleActive && item.product.wholesale_price != null
+      ? item.product.wholesale_price
+      : item.product.price;
+
+    const subtotal = unitPrice * item.quantity;
+    total += subtotal;
+
+    return `${item.quantity}x ${item.product.name} — ${money(unitPrice)} cada = ${money(subtotal)}`;
+  });
+
+  const message = `Olá, WJAY STORE! Quero fazer este pedido:\n\n${lines.join('\n')}\n\nTotal de peças: ${count}\n${wholesaleActive ? 'Atacado liberado.' : 'Preço de varejo.'}\nTotal do pedido: ${money(total)}`;
+
+  window.open(whatsappUrl(message), '_blank');
+});
+
+renderCart();
+
+ loadProducts();
 </script>
 </body></html>
