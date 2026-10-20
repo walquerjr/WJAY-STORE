@@ -9,6 +9,11 @@
 @media(max-width:900px){.hero{grid-template-columns:1fr 1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.navlinks{gap:12px}.benefit{padding:22px 15px}}@media(max-width:620px){.nav{height:65px;padding:0 17px}.brand{font-size:22px}.navlinks{display:none}.nav-cta{padding:11px;font-size:9px}.hero{grid-template-columns:1fr;padding-top:35px;gap:24px}.hero h1{font-size:57px}.hero-img{min-height:280px}.section{padding:43px 17px}.section-head{align-items:flex-start;flex-direction:column}.section-head p{max-width:300px}.grid{gap:10px}.product-info{padding:11px}.product h3{font-size:12px}.price{font-size:17px}.desc{font-size:10px}.benefits{grid-template-columns:1fr}.benefit{padding:19px}.about{grid-template-columns:1fr;gap:22px}.footer{align-items:flex-start;flex-direction:column}.wa-float{right:12px;bottom:12px;padding:12px 14px}}
 
 .wholesale-progress {
+  position: fixed;
+top: 0;
+left: 0;
+right: 0;
+z-index: 9999;
   margin: 18px 0;
   padding: 16px;
   border: 1px solid #e1e5c8;
@@ -60,6 +65,12 @@
   }
 }
 
+.wholesale-progress {
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 0;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+}
 </style>
 </head>
 <body>
