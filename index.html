@@ -15,7 +15,14 @@
 <main>
 <section class="hero" id="inicio"><div><div class="eyebrow">Nova coleção • WJAY STORE</div><h1>SEU ESTILO.<br><em>SEU JOGO.</em></h1><p>Peças esportivas e casuais para quem curte conforto, personalidade e presença. Encontre sua próxima favorita.</p><a class="primary" href="#catalogo">Explorar catálogo <span>↘</span></a><div class="hero-note">ESCOLHA SUA PEÇA • CONSULTE TAMANHOS • PEÇA PELO WHATSAPP</div></div><div class="hero-img"><img src="https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1100&q=85" alt="Moda casual masculina" onerror="this.style.display='none'"><div class="hero-stamp">PERFORMANCE MEETS STYLE</div></div></section>
 <div class="ticker">✳ NOVAS PEÇAS • ESTILO AUTÊNTICO • ATENDIMENTO DIRETO ✳</div>
-<section class="section" id="catalogo"><div class="section-head"><div><div class="eyebrow" style="color:#5d650e">Escolha sua peça</div><h2>CATÁLOGO <span style="color:#8da600">WJAY</span></h2></div><p>Confira os modelos abaixo.<br>Gostou? Faça seu pedido pelo WhatsApp.</p></div><div class="filters" role="group" aria-label="Filtrar produtos"><button class="filter active" data-filter="todos">Todos</button><button class="filter" data-filter="camisetas">Camisetas</button><button class="filter" data-filter="bermudas">Bermudas</button><button class="filter" data-filter="conjuntos">Conjuntos</button><button class="filter" data-filter="promocoes">Ofertas</button></div><div class="grid" id="products"></div><div class="empty" id="empty">Não há produtos nessa categoria no momento.</div><p class="hint">Produtos e informações são cadastrados no painel administrativo da WJAY STORE.</p></section>
+<section class="section" id="catalogo"><div class="section-head"><div><div class="eyebrow" style="color:#5d650e">Escolha sua peça</div><h2>CATÁLOGO <span style="color:#8da600">WJAY</span></h2></div><p>Confira os modelos abaixo.<br>Gostou? Faça seu pedido pelo WhatsApp.</p></div><div class="filters" role="group" aria-label="Filtrar produtos"><button class="filter active" data-filter="todos">Todos</button><button class="filter" data-filter="camisetas">Camisetas</button><button class="filter" data-filter="bermudas">Bermudas</button><button class="filter" data-filter="conjuntos">Conjuntos</button><button class="filter" data-filter="promocoes">Ofertas</button></div><div id="cart" class="cart">
+  <h3>Seu carrinho</h3>
+  <p id="cartCount">Nenhuma peça selecionada.</p>
+  <div id="cartItems"></div>
+  <p id="cartTotal">Total: R$ 0,00</p>
+  <p id="cartNotice">Adicione produtos para começar. O atacado é liberado a partir de 5 peças.</p>
+  <button type="button" class="primary" id="checkoutBtn">Finalizar pedido pelo WhatsApp</button>
+</div><div class="grid" id="products"></div><div class="empty" id="empty">Não há produtos nessa categoria no momento.</div><p class="hint">Produtos e informações são cadastrados no painel administrativo da WJAY STORE.</p></section>
 <section class="benefits"><div class="benefit"><div class="benefit-icon">✳</div><div><strong>Atendimento direto</strong><p>Tire dúvidas e confirme seu pedido com a gente pelo WhatsApp.</p></div></div><div class="benefit"><div class="benefit-icon">◈</div><div><strong>Escolha seu tamanho</strong><p>Consulte os tamanhos e as cores disponíveis para cada peça.</p></div></div><div class="benefit"><div class="benefit-icon">↗</div><div><strong>Novidades e ofertas</strong><p>Acompanhe as novidades e fique de olho nas próximas promoções.</p></div></div></section>
 <section class="section about" id="sobre"><div><div class="eyebrow" style="color:#5d650e">Nossa ideia</div><h2>ESTILO QUE<br>COMBINA COM VOCÊ.</h2><p>A WJAY STORE reúne peças para compor seu visual do dia a dia. Navegue pelo catálogo, confira os detalhes e chame a loja para confirmar disponibilidade, pagamento e entrega.</p><a class="primary" href="#catalogo">Ver coleção ↗</a></div><div class="about-card"><span>WJAY STORE / DESDE JÁ, SEU ESTILO</span><strong>VISTA SUA<br>ATITUDE.</strong><span>SPORTSWEAR • CASUAL • STREETWEAR</span></div></section>
 </main>
@@ -113,9 +120,7 @@ document.getElementById('products').addEventListener('click', event => {
   });
 
   renderCart();
- loadProducts();
 });
-
 document.getElementById('cartItems').addEventListener('click', event => {
   const button = event.target.closest('button[data-cart-action]');
   if (!button) return;
