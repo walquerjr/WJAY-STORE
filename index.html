@@ -10,7 +10,7 @@
 
 .wholesale-progress {
   position: fixed;
-top: 0;
+bottom: 0;
 left: 0;
 right: 0;
 z-index: 9999;
@@ -68,8 +68,43 @@ z-index: 9999;
 .wholesale-progress {
   box-sizing: border-box;
   width: 100%;
-  border-radius: 0;
+  border-radius: 14px 14px 0 0;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+}
+
+body {
+  padding-bottom: 110px;
+}
+
+@media (max-width: 480px) {
+  .wholesale-progress {
+    padding: 10px 12px;
+  }
+
+  .wholesale-progress-top {
+    font-size: 12px;
+  }
+
+  #wholesaleProgressMessage {
+    font-size: 12px;
+  }
+
+  body {
+    padding-bottom: 120px;
+  }
+}
+
+.wholesale-cart-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #566414;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.wholesale-cart-link:hover {
+  text-decoration: underline;
 }
 </style>
 </head>
@@ -94,7 +129,7 @@ z-index: 9999;
     <div id="wholesaleProgressBar" class="wholesale-progress-bar"></div>
   </div>
   <p id="wholesaleProgressMessage">Faltam 5 peças para liberar o atacado!</p>
-</div>
+<a href="#cart" class="wholesale-cart-link">Ver carrinho ↑</a></div>
   <button type="button" class="primary" id="checkoutBtn">Finalizar pedido pelo WhatsApp</button>
 </div><div class="grid" id="products"></div><div class="empty" id="empty">Não há produtos nessa categoria no momento.</div><p class="hint">Produtos e informações são cadastrados no painel administrativo da WJAY STORE.</p></section>
 <section class="benefits"><div class="benefit"><div class="benefit-icon">✳</div><div><strong>Atendimento direto</strong><p>Tire dúvidas e confirme seu pedido com a gente pelo WhatsApp.</p></div></div><div class="benefit"><div class="benefit-icon">◈</div><div><strong>Escolha seu tamanho</strong><p>Consulte os tamanhos e as cores disponíveis para cada peça.</p></div></div><div class="benefit"><div class="benefit-icon">↗</div><div><strong>Novidades e ofertas</strong><p>Acompanhe as novidades e fique de olho nas próximas promoções.</p></div></div></section>
