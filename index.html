@@ -281,12 +281,14 @@ document.getElementById('products').addEventListener('click', event => {
   const id = String(product.id);
   const existing = cart.get(id);
 
-  cart.set(id, {
-    product,
-    quantity: existing ? existing.quantity + 1 : 1
-  });
+ cart.set(id, {
+  product,
+  quantity: existing ? existing.quantity + 1 : 1
+});
 
-  renderCart();
+localStorage.setItem('wjay_cart', JSON.stringify(Array.from(cart.entries())));
+
+renderCart();
 });
 document.getElementById('cartItems').addEventListener('click', event => {
   const button = event.target.closest('button[data-cart-action]');
