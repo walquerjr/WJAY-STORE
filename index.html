@@ -48,7 +48,21 @@ const demoProducts = [
 const money = n => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function whatsappUrl(message){const number=WHATSAPP_NUMBER.replace(/\D/g,'');return 'https://wa.me/'+number+'?text='+encodeURIComponent(message)}
 
-function productCard(p){
+let currentFilter = 'todos';
+
+function render(filter = currentFilter) {
+  currentFilter = filter;
+
+  const grid = document.getElementById('products');
+  if (!grid) return;
+
+  const filteredProducts = filter === 'todos'
+    ? products
+    : products.filter(p => p.category === filter);
+
+  grid.innerHTML = filteredProducts.map(productCard).join('');
+}
+  function productCard(p){
   return `<article class="product" data-category="${p.category}">
     <div class="product-photo">
       <img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
