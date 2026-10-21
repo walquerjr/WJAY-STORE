@@ -120,9 +120,14 @@
       <p id="pieceCount">0 peças</p>
       <p class="total" id="total">Total: R$ 0,00</p>
       <button class="primary whatsapp" id="checkout">Finalizar pedido pelo WhatsApp</button>
+      <button class="primary" id="mercadoPagoBtn" type="button">
+  Pagar com Mercado Pago
+</button>
+<p id="paymentMessage" role="status"></p>
     </section>
   </main>
 
+  <script src="config.js"></script>
   <script>
     const CART_KEY = 'wjay_cart';
     const WHATSAPP = '5521965424073';
@@ -133,6 +138,9 @@
     const progressText = document.getElementById('progressText');
     const progressBar = document.getElementById('progressBar');
     const checkoutButton = document.getElementById('checkout');
+    const mercadoPagoBtn = document.getElementById('mercadoPagoBtn');
+const paymentMessage = document.getElementById('paymentMessage');
+const config = window.WJAY_CONFIG;
 
     function money(value) {
       return Number(value || 0).toLocaleString('pt-BR', {
@@ -298,6 +306,54 @@
       window.open(url, '_blank');
     });
 
+  
+mercadoPagoBtn.addEventListener('click', async () => {
+  if (cart.size === 0) {
+    paymentMessage.textContent = 'Seu carrinho está vazio.';
+    return;
+  }
+
+  if (!config || !config.supabaseUrl || !config.supabaseKey) {
+    paymentMessage.textContent = 'Configuração de pagamento não encontrada.';
+    return;
+  }
+
+  mercadoPagoBtn.disabled = true;
+  paymentMessage.textContent = 'Preparando seu pagamento...';
+
+  try {
+    const items = Array.from(cart.entries()).map(([id, item]) => ({
+      id: String(id),
+      quantity: Number(item.quantity)
+    }));
+
+    const response = await fetch(
+      config.supabaseUrl + '/functions/v1/mercadopago-checkout',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': config.supabaseKey,
+          'Authorization': 'Bearer ' + config.supabaseAnonKey
+        },
+        body: JSON.stringify({ items })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.checkout_url) {
+      throw new Error(data.error || 'Não foi possível iniciar o pagamento.');
+    }
+
+    window.location.href = data.checkout_url;
+  } catch (error) {
+    paymentMessage.textContent =
+      error.message || 'Erro ao preparar o pagamento. Tente novamente.';
+    mercadoPagoBtn.disabled = false;
+  }
+});
+ 
     renderCart();
   </script>
 </body>
