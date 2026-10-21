@@ -5,5 +5,6 @@
 window.WJAY_CONFIG = {
   supabaseUrl: "https://rtdflvngfpiynafhojdk.supabase.co",
   supabaseKey: "sb_publishable_diHsx9VG1pxyqeoBZ_WpdA_RkWjTvtI",
+   supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0ZGZsdm5nZnBpeW5hZmhvamRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NzkxNzUsImV4cCI6MjEwNzU1NTE3NX0.tE_IzGfzhxadfFrQqyhnyzGaoZPN3m6DZpjbQIEIGSc",
   whatsappNumber: "5521965424073"
 };
