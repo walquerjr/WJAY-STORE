@@ -211,7 +211,7 @@ function render(filter = currentFilter) {
       <div class="price">
         ${money(p.price)}
         ${p.wholesale_price != null && p.wholesale_price !== ''
-          ? `<p class="wholesale-price">Atacado: ${money(p.wholesale_price)} cada (mínimo 5 peças)</p>`
+          ? `<div class="wholesale-price">     <span class="wholesale-label">PREÇO DE ATACADO</span>     <strong>${money(p.wholesale_price)}</strong>     <span class="wholesale-note">por peça · mínimo 5 peças</span>   </div>`
           : ''}
       </div>
       <div class="sizes">Tamanhos: ${p.sizes}</div>
