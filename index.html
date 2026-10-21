@@ -236,10 +236,21 @@ function render(filter = currentFilter) {
 }
   function productCard(p){
   return `<article class="product" data-category="${p.category}">
-    <div class="product-photo">
-      <img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
-      <span class="tag">${p.label}</span>
-    </div>
+ 
+<div class="product-photo">
+  <img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
+  <span class="tag">${p.label}</span>
+</div>
+${p.images && p.images.length > 1 ? `
+  <div class="product-gallery">
+    ${p.images.map((image, index) => `
+      <button type="button" class="gallery-thumb ${index === 0 ? 'active' : ''}" data-image="${image}" aria-label="Ver foto ${index + 1} de ${p.name}">
+        <img src="${image}" alt="${p.name} - foto ${index + 1}" loading="lazy">
+      </button>
+    `).join('')}
+  </div>
+` : ''}
+
     <div class="product-info">
       <div class="category">${p.category}</div>
       <h3>${p.name}</h3>
