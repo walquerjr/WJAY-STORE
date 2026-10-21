@@ -148,10 +148,22 @@ body {
 
 
 
-/* Exibe o carrinho somente na página carrinho.html */
+
+/* Mantém o carrinho disponível para o JavaScript */
 #cart {
+  display: block !important;
+}
+
+/* Esconde os itens do carrinho na página principal */
+#cart > h3,
+#cart > #cartCount,
+#cart > #cartItems,
+#cart > #cartTotal,
+#cart > #cartNotice,
+#cart > #checkoutBtn {
   display: none !important;
 }
+
 
 </style>
 </head>
