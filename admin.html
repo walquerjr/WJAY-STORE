@@ -8,10 +8,52 @@
 <div><label>Preço de atacado (R$)</label><input id="wholesalePrice" type="number" min="0" step="0.01" placeholder="Ex.: 25,00"></div>
 
 <section class="card"><h2>Produtos cadastrados</h2><div id="productList" class="muted">Carregando...</div></section></section></main>
+  <section class="card">
+  <h2>Pedidos</h2>
+  <button type="button" onclick="loadOrders()">Atualizar pedidos</button>
+  <div id="orderStatus" class="muted"></div>
+  <div id="orderList">Carregando pedidos...</div>
+</section>
 <script>
 let db=null, currentUser=null, products=[]; const $=id=>document.getElementById(id); const status=(msg)=>{const el=$('status');el.textContent=msg;el.classList.remove('hidden')};
 function money(n){return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
-function showApp(user){currentUser=user;$('loginCard').classList.add('hidden');$('app').classList.remove('hidden');loadProducts()}
+function showApp(user){
+  currentUser=user;
+  $('loginCard').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  loadProducts();
+  loadOrders();
+}
+
+async function loadOrders(){
+  const statusEl=$('orderStatus');
+  const listEl=$('orderList');
+  statusEl.textContent='Carregando pedidos...';
+  const {data,error}=await db.from('orders')
+    .select('created_at,total,payment_status,order_status,external_reference,items')
+    .order('created_at',{ascending:false});
+  if(error){
+    statusEl.textContent='Erro ao carregar pedidos: '+error.message;
+    return;
+  }
+  statusEl.textContent=data.length+' pedido(s) encontrado(s).';
+  if(!data.length){
+    listEl.innerHTML='<p>Nenhum pedido encontrado.</p>';
+    return;
+  }
+  listEl.innerHTML=data.map(o=>`
+    <article class="product">
+      <div>
+        <strong>Pedido: ${escapeHtml(o.external_reference)}</strong>
+        <div>${new Date(o.created_at).toLocaleString('pt-BR')}</div>
+        <div>Total: ${money(o.total)}</div>
+        <div>Pagamento: ${escapeHtml(o.payment_status)}</div>
+        <div>Pedido: ${escapeHtml(o.order_status)}</div>
+        <div>Itens: ${escapeHtml(JSON.stringify(o.items))}</div>
+      </div>
+    </article>
+  `).join('');
+}
 async function init(){if(!window.WJAY_CONFIG||!WJAY_CONFIG.supabaseUrl||WJAY_CONFIG.supabaseUrl.includes('COLE_AQUI')||!WJAY_CONFIG.supabaseKey||WJAY_CONFIG.supabaseKey.includes('COLE_AQUI')){$('loginStatus').textContent='Falta preencher a URL e a chave publicável do Supabase no arquivo config.js.';$('loginStatus').classList.remove('hidden');return}db=window.supabase.createClient(WJAY_CONFIG.supabaseUrl,WJAY_CONFIG.supabaseKey);const {data:{session}}=await db.auth.getSession();if(session)showApp(session.user)}
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginStatus').textContent='Verificando acesso...';$('loginStatus').classList.remove('hidden');const {data,error}=await db.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error){$('loginStatus').textContent='Não foi possível entrar: '+error.message;return}$('loginStatus').classList.add('hidden');showApp(data.user)});
 $('logout').onclick=async()=>{await db.auth.signOut();$('app').classList.add('hidden');$('loginCard').classList.remove('hidden')};
