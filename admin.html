@@ -118,4 +118,35 @@ window.editProduct=(id)=>{const p=products.find(x=>String(x.id)===String(id));if
 $('cancelEdit').onclick=()=>{$('productForm').reset();$('productId').value='';$('active').checked=true;$('formTitle').textContent='Cadastrar novo produto';$('saveBtn').textContent='Salvar produto'};
 $('productForm').addEventListener('submit',async e=>{e.preventDefault();const id=$('productId').value;const btn=$('saveBtn');btn.disabled=true;btn.textContent='Salvando...';try{let imageUrl= id?(products.find(p=>String(p.id)===String(id))?.image_url||''):'';const file=$('image').files[0];if(file){if(file.size>5*1024*1024)throw new Error('A foto ultrapassa 5 MB. Escolha uma imagem menor.');const ext=(file.name.split('.').pop()||'jpg').toLowerCase();const path=Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+ext;const {error:upErr}=await db.storage.from('product-images').upload(path,file,{upsert:false,contentType:file.type});if(upErr)throw upErr;const {data}=db.storage.from('product-images').getPublicUrl(path);imageUrl=data.publicUrl}const payload={name:$('name').value.trim(),price:Number($('price').value),wholesale_price:$('wholesalePrice').value===''?null:Number($('wholesalePrice').value),stock:Math.max(0,Number($('stock').value)||0),featured:$('featured').checked,category:$('category').value,sizes:$('sizes').value.split(',').map(s=>s.trim()).filter(Boolean),description:$('description').value.trim(),image_url:imageUrl,active:$('active').checked};if(id){const {error}=await db.from('products').update(payload).eq('id',id);if(error)throw error}else{const {error}=await db.from('products').insert(payload);if(error)throw error}$('productForm').reset();$('productId').value='';$('wholesalePrice').value='';$('active').checked=true;$('formTitle').textContent='Cadastrar novo produto';btn.textContent='Salvar produto';await loadProducts();status('Produto salvo com sucesso!')}catch(err){status('Não foi possível salvar: '+(err.message||err))}finally{btn.disabled=false;btn.textContent=$('productId').value?'Salvar alterações':'Salvar produto'}});
 window.deleteProduct=async id=>{const p=products.find(x=>String(x.id)===String(id));if(!p||!confirm('Excluir o produto “'+p.name+'”?'))return;const {error}=await db.from('products').delete().eq('id',id);if(error){status('Erro ao excluir: '+error.message);return}await loadProducts();status('Produto excluído.')};init();
-</script></body></html>
+<!-- ABA FATURAMENTO WJAY STORE -->
+<section id="financialSection" style="display:none; padding:20px; color:#f5f5f5;">
+  <h2>Faturamento</h2>
+  <p>Controle financeiro da WJAY STORE</p>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px;">
+    <div style="background:#202124; padding:16px; border-radius:12px;">
+      <h3>Vendas recebidas</h3>
+      <p id="finReceived">R$ 0,00</p>
+    </div>
+
+    <div style="background:#202124; padding:16px; border-radius:12px;">
+      <h3>Investimento em estoque</h3>
+      <p id="finStock">R$ 0,00</p>
+    </div>
+
+    <div style="background:#202124; padding:16px; border-radius:12px;">
+      <h3>Despesas extras</h3>
+      <p id="finExpenses">R$ 0,00</p>
+    </div>
+
+    <div style="background:#202124; padding:16px; border-radius:12px;">
+      <h3>Lucro calculado</h3>
+      <p id="finProfit">Aguardando dados</p>
+    </div>
+  </div>
+
+  <p style="margin-top:20px; color:#aaa;">
+    Os valores serão calculados após conectarmos as compras, despesas e vendas reais.
+  </p>
+</section>
+<!-- FIM ABA FATURAMENTO --></script></body></html>
