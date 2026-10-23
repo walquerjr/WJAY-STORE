@@ -200,6 +200,9 @@ const config = window.WJAY_CONFIG;
 
         const title = document.createElement('h3');
         title.textContent = product.name || 'Produto';
+        const sizeInfo = document.createElement('p');
+sizeInfo.className = 'muted';
+sizeInfo.textContent = 'Tamanho: ' + (item.size || 'Não informado');
 
         const price = document.createElement('p');
         price.textContent = money(unitPrice) + ' cada';
@@ -227,7 +230,7 @@ const config = window.WJAY_CONFIG;
         increase.dataset.id = id;
 
         quantityControls.append(decrease, qty, increase);
-        details.append(title, price, subtotal, quantityControls);
+       details.append(title, sizeInfo, price, subtotal, quantityControls);
 
         const remove = document.createElement('button');
         remove.className = 'remove';
