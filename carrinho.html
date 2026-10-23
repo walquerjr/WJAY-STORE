@@ -325,10 +325,11 @@ mercadoPagoBtn.addEventListener('click', async () => {
   paymentMessage.textContent = 'Preparando seu pagamento...';
 
   try {
-    const items = Array.from(cart.entries()).map(([id, item]) => ({
-      id: String(id),
-      quantity: Number(item.quantity)
-    }));
+   const items = Array.from(cart.values()).map(item => ({
+  id: String(item.product.id),
+  size: item.size || '',
+  quantity: Number(item.quantity)
+}));
 
     const response = await fetch(
       config.supabaseUrl + '/functions/v1/mercadopago-checkout',
