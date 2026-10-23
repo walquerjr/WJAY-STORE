@@ -1,5 +1,18 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Painel | WJAY STORE</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><style>
-:root{--lime:#d8ff36;--ink:#101114;--muted:#62666a;--line:#e2e3df}*{box-sizing:border-box}body{margin:0;background:#f4f5f1;color:var(--ink);font:15px Arial,sans-serif}.top{background:var(--ink);color:white;padding:20px max(18px,calc((100% - 1000px)/2));display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{font-weight:900;font-size:21px}.brand span{color:var(--lime)}main{max-width:1000px;margin:25px auto;padding:0 16px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 4px 18px #00006}.hidden{display:none!important}h1{font-size:25px;margin:0 0 8px}h2{font-size:18px;margin:0 0 16px}.muted{color:var(--muted);font-size:13px;line-height:1.5}label{display:block;font-weight:700;font-size:13px;margin:12px 0 6px}input,textarea,select{width:100%;padding:12px;border:1px solid #d5d8d1;border-radius:8px;font:inherit;background:white}textarea{min-height:75px}button,.btn{border:0;border-radius:8px;padding:12px 16px;background:var(--lime);font-weight:800;cursor:pointer;color:#101114}button.secondary{background:#eceee8}button.danger{background:#ffe0dc;color:#8d2118}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.status{padding:10px;background:#f0f3e9;border-radius:8px;margin:12px 0;font-size:13px}.product{display:grid;grid-template-columns:70px 1fr auto;align-items:center;gap:14px;border-top:1px solid var(--line);padding:13px 0}.product img{width:70px;height:75px;object-fit:cover;border-radius:8px;background:#eee}.product strong{display:block;margin-bottom:5px}.smallbtn{padding:8px 10px;font-size:12px}.login{max-width:450px;margin:45px auto}@media(max-width:650px){.row{grid-template-columns:1fr}.product{grid-template-columns:55px 1fr}.product img{width:55px;height:65px}.product .actions{grid-column:1/-1}.top{padding:18px}}
+:root{--ink:#101923;--ink2:#172432;--green:#00a86b;--green-light:#d8f7e8;--muted:#64748b;--line:#e5eaf0;--bg:#f4f7fb;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#17202b;font:14px Inter,Arial,sans-serif}
+.top{background:var(--ink);color:white;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 3px 15px #0b17221c}
+.brand{font-weight:900;font-size:21px;letter-spacing:.2px}.brand span{color:#20d991}.top a{color:white;text-decoration:none;font-weight:700}
+main{max-width:1280px;margin:24px auto;padding:0 20px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:0 5px 22px #10243b0a}
+.hidden{display:none!important}h1{font-size:25px;margin:0 0 7px;letter-spacing:-.4px}h2{font-size:19px;margin:0 0 16px}.muted{color:var(--muted);font-size:13px;line-height:1.55}
+label{display:block;font-weight:700;font-size:13px;margin:12px 0 6px}input,textarea,select{width:100%;padding:12px;border:1px solid #d8e0e8;border-radius:9px;font:inherit;background:white;color:#17202b}input:focus,textarea:focus,select:focus{outline:2px solid #00a86b35;border-color:var(--green)}textarea{min-height:75px}
+button,.btn{border:0;border-radius:9px;padding:11px 15px;background:var(--green);font-weight:800;cursor:pointer;color:white;transition:.15s}button:hover{filter:brightness(.96)}button.secondary{background:#edf2f7;color:#253448}button.danger{background:#ffe5e5;color:#a42323}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.status{padding:12px 14px;background:#edf8f2;border:1px solid #d4efdf;color:#17633e;border-radius:10px;margin:12px 0;font-size:13px}
+.product{display:grid;grid-template-columns:70px 1fr auto;align-items:center;gap:14px;border-top:1px solid var(--line);padding:13px 0}.product img{width:70px;height:75px;object-fit:cover;border-radius:8px;background:#eee}.product strong{display:block;margin-bottom:5px}.smallbtn{padding:8px 10px;font-size:12px}
+.login{max-width:450px;margin:45px auto}
+#orderList{margin-top:16px;overflow-x:auto} .order-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0}.filter-buttons{display:flex;gap:8px;flex-wrap:wrap}.filter-buttons button{background:#f0f3f7;color:#344256}.filter-buttons button.active{background:var(--green);color:#fff}
+.order-table{width:100%;border-collapse:collapse;min-width:680px}.order-table th{text-align:left;color:#68778a;background:#f7f9fc;font-size:12px;padding:13px 12px}.order-table td{padding:14px 12px;border-top:1px solid var(--line);font-size:13px;vertical-align:middle}.order-table tr:hover td{background:#fbfdfc}.order-number{font-weight:800;color:#24364b}.pill{display:inline-block;padding:6px 10px;border-radius:20px;font-size:11px;font-weight:800;background:#edf2f7;color:#475569;white-space:nowrap}.pill.paid{background:#d8f7e8;color:#087443}.pill.pending{background:#fff0d3;color:#945b00}.pill.cancelled{background:#ffe1e1;color:#b42323}.pill.shipped{background:#dcecff;color:#1759a6}.order-total{font-weight:800;white-space:nowrap}.detail-btn{background:#eef3f8;color:#23354b;padding:8px 10px;font-size:12px}.order-detail{margin-top:15px;padding:18px;background:#f8fafc;border:1px solid var(--line);border-radius:12px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.detail-item{padding:12px;background:white;border:1px solid var(--line);border-radius:10px}.detail-item strong{display:block;margin-bottom:6px}.detail-products{margin-top:12px;padding:12px;background:white;border:1px solid var(--line);border-radius:10px;line-height:1.8}
+@media(max-width:700px){.row,.detail-grid{grid-template-columns:1fr}.top{padding:16px}.top .brand{font-size:18px}main{padding:0 12px;margin:14px auto}.card{padding:16px}.product{grid-template-columns:55px 1fr}.product img{width:55px;height:65px}.product .actions{grid-column:1/-1}.order-toolbar{align-items:stretch}.filter-buttons button{flex:1}.order-table{min-width:650px}}
 </style></head><body><header class="top"><div class="brand">WJAY<span> STORE</span> / PAINEL</div><a href="./" style="color:white">Ver loja ↗</a></header><main>
 <section id="loginCard" class="card login"><h1>Entrar no painel</h1><p class="muted">Use o e-mail e a senha do usuário administrador que você criou no Supabase.</p><form id="loginForm"><label>E-mail</label><input id="email" type="email" required autocomplete="username"><label>Senha</label><input id="password" type="password" required autocomplete="current-password"><div class="actions"><button type="submit">Entrar</button></div></form><div id="loginStatus" class="status hidden"></div></section>
 <section id="app" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap"><div><h1>Seus produtos</h1><p class="muted">Cadastre roupas, preços, tamanhos e fotos. Os produtos ativos aparecem na vitrine automaticamente.</p></div><button id="logout" class="secondary">Sair</button></div><div id="status" class="status">Conectando...</div></div>
@@ -7,18 +20,24 @@
   
 <div><label>Preço de atacado (R$)</label><input id="wholesalePrice" type="number" min="0" step="0.01" placeholder="Ex.: 25,00"></div>
 
-<section class="card"><h2>Produtos cadastrados</h2><div id="productList" class="muted">Carregando...</div></section></section></main>
-  <section class="card">
-  <h2>Pedidos</h2>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
-  <button type="button" onclick="filterOrders('todos')">Todos</button>
-  <button type="button" onclick="filterOrders('pending')">Pendentes</button>
-  <button type="button" onclick="filterOrders('paid')">Pagos</button>
-</div>
-  <button type="button" onclick="loadOrders()">Atualizar pedidos</button>
+<section class="card"><h2>Produtos cadastrados</h2><div id="productList" class="muted">Carregando...</div></section>
+  <section class="card" id="ordersCard">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+    <div><h2>Pedidos</h2><p class="muted">Acompanhe pagamentos e consulte os detalhes de cada compra.</p></div>
+    <button type="button" class="secondary" onclick="loadOrders()">↻ Atualizar</button>
+  </div>
+  <div class="order-toolbar">
+    <div class="filter-buttons">
+      <button type="button" class="active" data-filter="todos" onclick="filterOrders('todos',this)">Todos</button>
+      <button type="button" data-filter="pending" onclick="filterOrders('pending',this)">Pendentes</button>
+      <button type="button" data-filter="paid" onclick="filterOrders('paid',this)">Pagos</button>
+    </div>
+    <input id="orderSearch" type="search" placeholder="Buscar pedido..." style="max-width:300px">
+  </div>
   <div id="orderStatus" class="muted"></div>
   <div id="orderList">Carregando pedidos...</div>
-</section>
+  <div id="orderDetails"></div>
+</section></section></main>
 <script>
 let db=null, currentUser=null, products=[]; const $=id=>document.getElementById(id); const status=(msg)=>{const el=$('status');el.textContent=msg;el.classList.remove('hidden')};
 function money(n){return Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
@@ -32,45 +51,42 @@ function showApp(user){
 
 let allOrders = [];
 
-function filterOrders(filter){
-  let filtered = allOrders;
-
-  if(filter === 'pending'){
-    filtered = allOrders.filter(o =>
-      o.payment_status === 'pending'
-    );
-  }
-
-  if(filter === 'paid'){
-    filtered = allOrders.filter(o =>
-      o.payment_status === 'approved' ||
-      o.order_status === 'paid'
-    );
-  }
-
+function filterOrders(filter,button){
+  currentOrderFilter=filter;
+  document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b===button));
+  applyOrderFilters();
+}
+let currentOrderFilter='todos';
+function applyOrderFilters(){
+  let filtered=allOrders;
+  if(currentOrderFilter==='pending') filtered=filtered.filter(o=>o.payment_status==='pending');
+  if(currentOrderFilter==='paid') filtered=filtered.filter(o=>o.payment_status==='approved'||o.order_status==='paid');
+  const query=($('orderSearch')?.value||'').trim().toLowerCase();
+  if(query) filtered=filtered.filter(o=>String(o.external_reference||'').toLowerCase().includes(query));
   renderOrders(filtered);
 }
-
+function statusLabel(o){
+  const p=String(o.payment_status||'').toLowerCase(), st=String(o.order_status||'').toLowerCase();
+  if(p==='approved'||st==='paid') return ['Pago','paid'];
+  if(p==='pending') return ['Pendente','pending'];
+  if(['cancelled','canceled','rejected'].includes(p)||['cancelled','canceled'].includes(st)) return ['Cancelado','cancelled'];
+  if(['shipped','sent','enviado'].includes(st)) return ['Enviado','shipped'];
+  return [o.payment_status||o.order_status||'Em análise',''];
+}
 function renderOrders(data){
-  const listEl = $('orderList');
-
-  if(!data.length){
-    listEl.innerHTML = '<p>Nenhum pedido encontrado.</p>';
-    return;
-  }
-
-  listEl.innerHTML = data.map(o => `
-    <article class="product">
-      <div>
-        <strong>Pedido: ${escapeHtml(o.external_reference)}</strong>
-        <div>${new Date(o.created_at).toLocaleString('pt-BR')}</div>
-        <div>Total: ${money(o.total)}</div>
-        <div>Pagamento: ${escapeHtml(o.payment_status)}</div>
-        <div>Status: ${escapeHtml(o.order_status)}</div>
-        <div><strong>Produtos:</strong><br>${formatOrderItems(o.items)}</div>
-      </div>
-    </article>
-  `).join('');
+  const listEl=$('orderList');
+  $('orderDetails').innerHTML='';
+  if(!data.length){listEl.innerHTML='<p class="muted">Nenhum pedido encontrado.</p>';return;}
+  listEl.innerHTML=`<table class="order-table"><thead><tr><th>Nº PEDIDO</th><th>DATA</th><th>TOTAL</th><th>PAGAMENTO</th><th>AÇÕES</th></tr></thead><tbody>${data.map((o,i)=>{
+    const label=statusLabel(o);
+    return `<tr><td><span class="order-number">${escapeHtml(o.external_reference||('Pedido '+(i+1)))}</span></td><td>${new Date(o.created_at).toLocaleString('pt-BR')}</td><td class="order-total">${money(o.total)}</td><td><span class="pill ${label[1]}">${escapeHtml(label[0])}</span></td><td><button class="detail-btn" type="button" onclick="showOrderDetails(${allOrders.indexOf(o)})">Ver detalhes</button></td></tr>`;
+  }).join('')}</tbody></table>`;
+}
+window.showOrderDetails=(index)=>{
+  const o=allOrders[index]; if(!o)return;
+  const label=statusLabel(o);
+  $('orderDetails').innerHTML=`<div class="order-detail"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><div><h2 style="margin-bottom:6px">Pedido ${escapeHtml(o.external_reference||'')}</h2><p class="muted">${new Date(o.created_at).toLocaleString('pt-BR')}</p></div><span class="pill ${label[1]}">${escapeHtml(label[0])}</span></div><div class="detail-grid"><div class="detail-item"><strong>Total do pedido</strong>${money(o.total)}</div><div class="detail-item"><strong>Pagamento</strong>${escapeHtml(o.payment_status||'Não informado')}</div><div class="detail-item"><strong>Status do pedido</strong>${escapeHtml(o.order_status||'Não informado')}</div></div><div class="detail-products"><strong>Itens do pedido</strong><br>${formatOrderItems(o.items)}</div><div class="actions"><button type="button" class="secondary" onclick="document.getElementById('orderDetails').innerHTML=''">Fechar detalhes</button></div></div>`;
+  $('orderDetails').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
   function formatOrderItems(items){
   if(!Array.isArray(items)||!items.length) return 'Itens não disponíveis';
@@ -82,33 +98,16 @@ function renderOrders(data){
 } 
   async function loadOrders(){
   const statusEl=$('orderStatus');
-  const listEl=$('orderList');
   statusEl.textContent='Carregando pedidos...';
   const {data,error}=await db.from('orders')
     .select('created_at,total,payment_status,order_status,external_reference,items')
     .order('created_at',{ascending:false});
-  if(error){
-    statusEl.textContent='Erro ao carregar pedidos: '+error.message;
-    return;
-  }
- allOrders = data || [];
-statusEl.textContent = allOrders.length + ' pedido(s) encontrado(s).';
-renderOrders(allOrders);
-return;
-
-  listEl.innerHTML=data.map(o=>`
-    <article class="product">
-      <div>
-        <strong>Pedido: ${escapeHtml(o.external_reference)}</strong>
-        <div>${new Date(o.created_at).toLocaleString('pt-BR')}</div>
-        <div>Total: ${money(o.total)}</div>
-        <div>Pagamento: ${escapeHtml(o.payment_status)}</div>
-        <div>Pedido: ${escapeHtml(o.order_status)}</div>
-        <div><strong>Produtos:</strong><br>${formatOrderItems(o.items)}</div>
-      </div>
-    </article>
-  `).join('');
+  if(error){statusEl.textContent='Erro ao carregar pedidos: '+error.message;return;}
+  allOrders=data||[];
+  statusEl.textContent=allOrders.length+' pedido(s) encontrado(s).';
+  applyOrderFilters();
 }
+$('orderSearch')?.addEventListener('input',applyOrderFilters);
 async function init(){if(!window.WJAY_CONFIG||!WJAY_CONFIG.supabaseUrl||WJAY_CONFIG.supabaseUrl.includes('COLE_AQUI')||!WJAY_CONFIG.supabaseKey||WJAY_CONFIG.supabaseKey.includes('COLE_AQUI')){$('loginStatus').textContent='Falta preencher a URL e a chave publicável do Supabase no arquivo config.js.';$('loginStatus').classList.remove('hidden');return}db=window.supabase.createClient(WJAY_CONFIG.supabaseUrl,WJAY_CONFIG.supabaseKey);const {data:{session}}=await db.auth.getSession();if(session)showApp(session.user)}
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginStatus').textContent='Verificando acesso...';$('loginStatus').classList.remove('hidden');const {data,error}=await db.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error){$('loginStatus').textContent='Não foi possível entrar: '+error.message;return}$('loginStatus').classList.add('hidden');showApp(data.user)});
 $('logout').onclick=async()=>{await db.auth.signOut();$('app').classList.add('hidden');$('loginCard').classList.remove('hidden')};
