@@ -41,6 +41,14 @@ async function loadOrders(){
     listEl.innerHTML='<p>Nenhum pedido encontrado.</p>';
     return;
   }
+ function formatOrderItems(items){
+  if(!Array.isArray(items)||!items.length) return 'Itens não disponíveis';
+  return items.map(item=>{
+    const name=item.name||item.product_name||item.title||'Produto';
+    const quantity=Number(item.quantity)||1;
+    return `${escapeHtml(name)} — ${quantity} un.`;
+  }).join('<br>');
+}
   listEl.innerHTML=data.map(o=>`
     <article class="product">
       <div>
@@ -49,7 +57,7 @@ async function loadOrders(){
         <div>Total: ${money(o.total)}</div>
         <div>Pagamento: ${escapeHtml(o.payment_status)}</div>
         <div>Pedido: ${escapeHtml(o.order_status)}</div>
-        <div>Itens: ${escapeHtml(JSON.stringify(o.items))}</div>
+        <div><strong>Produtos:</strong><br>${formatOrderItems(o.items)}</div>
       </div>
     </article>
   `).join('');
