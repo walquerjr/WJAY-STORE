@@ -294,7 +294,7 @@ ${p.images && p.images.length > 1 ? `
           ? `<div class="wholesale-price">     <span class="wholesale-label">PREÇO DE ATACADO</span>     <strong>${money(p.wholesale_price)}</strong>     <span class="wholesale-note">por peça · mínimo 5 peças</span>   </div>`
           : ''}
       </div>
-      <div class="sizes">Tamanhos: ${p.sizes}</div>
+      <div class="sizes">   <label for="size-${p.id}">Escolha o tamanho:</label>   <select class="product-size" id="size-${p.id}">     ${String(p.sizes || '').split(',').map(size => size.trim()).filter(Boolean).map(size =>       `<option value="${size}">${size}</option>`     ).join('')}   </select> </div>
       <button type="button" class="buy add-to-cart" data-product-id="${p.id}">Adicionar ao carrinho</button>
     </div>
   </article>`;
@@ -417,11 +417,20 @@ document.getElementById('products').addEventListener('click', event => {
   const product = products.find(p => String(p.id) === button.dataset.productId);
   if (!product) return;
 
-  const id = String(product.id);
-  const existing = cart.get(id);
+const sizeSelect = document.getElementById(`size-${product.id}`);
 
- cart.set(id, {
+if (!sizeSelect || !sizeSelect.value) {
+  alert('Escolha um tamanho antes de adicionar ao carrinho.');
+  return;
+}
+
+const size = sizeSelect.value;
+const id = `${product.id}-${size}`;
+const existing = cart.get(id);
+
+cart.set(id, {
   product,
+  size,
   quantity: existing ? existing.quantity + 1 : 1
 });
 
