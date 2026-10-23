@@ -10,6 +10,11 @@
 <section class="card"><h2>Produtos cadastrados</h2><div id="productList" class="muted">Carregando...</div></section></section></main>
   <section class="card">
   <h2>Pedidos</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
+  <button type="button" onclick="filterOrders('todos')">Todos</button>
+  <button type="button" onclick="filterOrders('pending')">Pendentes</button>
+  <button type="button" onclick="filterOrders('paid')">Pagos</button>
+</div>
   <button type="button" onclick="loadOrders()">Atualizar pedidos</button>
   <div id="orderStatus" class="muted"></div>
   <div id="orderList">Carregando pedidos...</div>
