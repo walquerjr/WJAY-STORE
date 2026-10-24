@@ -9,18 +9,20 @@ label{display:block;font-weight:700;font-size:13px;margin:12px 0 6px}input,texta
 button,.btn{border:0;border-radius:9px;padding:11px 15px;background:var(--green);font-weight:800;cursor:pointer;color:white;transition:.15s}button:hover{filter:brightness(.96)}button.secondary{background:#edf2f7;color:#253448}button.danger{background:#ffe5e5;color:#a42323}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.status{padding:12px 14px;background:#edf8f2;border:1px solid #d4efdf;color:#17633e;border-radius:10px;margin:12px 0;font-size:13px}
 .product{display:grid;grid-template-columns:70px 1fr auto;align-items:center;gap:14px;border-top:1px solid var(--line);padding:13px 0}.product img{width:70px;height:75px;object-fit:cover;border-radius:8px;background:#eee}.product strong{display:block;margin-bottom:5px}.smallbtn{padding:8px 10px;font-size:12px}
-.login{max-width:450px;margin:45px auto}
+.login{max-width:450px;margin:45px auto}.tab-btn.active{background:var(--green);color:#fff}.tab-btn:not(.active){background:#edf2f7;color:#253448}
 #orderList{margin-top:16px;overflow-x:auto} .order-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0}.filter-buttons{display:flex;gap:8px;flex-wrap:wrap}.filter-buttons button{background:#f0f3f7;color:#344256}.filter-buttons button.active{background:var(--green);color:#fff}
 .order-table{width:100%;border-collapse:collapse;min-width:680px}.order-table th{text-align:left;color:#68778a;background:#f7f9fc;font-size:12px;padding:13px 12px}.order-table td{padding:14px 12px;border-top:1px solid var(--line);font-size:13px;vertical-align:middle}.order-table tr:hover td{background:#fbfdfc}.order-number{font-weight:800;color:#24364b}.pill{display:inline-block;padding:6px 10px;border-radius:20px;font-size:11px;font-weight:800;background:#edf2f7;color:#475569;white-space:nowrap}.pill.paid{background:#d8f7e8;color:#087443}.pill.pending{background:#fff0d3;color:#945b00}.pill.cancelled{background:#ffe1e1;color:#b42323}.pill.shipped{background:#dcecff;color:#1759a6}.order-total{font-weight:800;white-space:nowrap}.detail-btn{background:#eef3f8;color:#23354b;padding:8px 10px;font-size:12px}.order-detail{margin-top:15px;padding:18px;background:#f8fafc;border:1px solid var(--line);border-radius:12px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.detail-item{padding:12px;background:white;border:1px solid var(--line);border-radius:10px}.detail-item strong{display:block;margin-bottom:6px}.detail-products{margin-top:12px;padding:12px;background:white;border:1px solid var(--line);border-radius:10px;line-height:1.8}
 @media(max-width:700px){.row,.detail-grid{grid-template-columns:1fr}.top{padding:16px}.top .brand{font-size:18px}main{padding:0 12px;margin:14px auto}.card{padding:16px}.product{grid-template-columns:55px 1fr}.product img{width:55px;height:65px}.product .actions{grid-column:1/-1}.order-toolbar{align-items:stretch}.filter-buttons button{flex:1}.order-table{min-width:650px}}
 </style></head><body><header class="top"><div class="brand">WJAY<span> STORE</span> / PAINEL</div><a href="./" style="color:white">Ver loja ↗</a></header><main>
 <section id="loginCard" class="card login"><h1>Entrar no painel</h1><p class="muted">Use o e-mail e a senha do usuário administrador que você criou no Supabase.</p><form id="loginForm"><label>E-mail</label><input id="email" type="email" required autocomplete="username"><label>Senha</label><input id="password" type="password" required autocomplete="current-password"><div class="actions"><button type="submit">Entrar</button></div></form><div id="loginStatus" class="status hidden"></div></section>
 <section id="app" class="hidden"><div class="card"><div style="display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap"><div><h1>Seus produtos</h1><p class="muted">Cadastre roupas, preços, tamanhos e fotos. Os produtos ativos aparecem na vitrine automaticamente.</p></div><button id="logout" class="secondary">Sair</button></div><div id="status" class="status">Conectando...</div></div>
-<section class="card"><h2 id="formTitle">Cadastrar novo produto</h2><form id="productForm"><input id="productId" type="hidden"><div class="row"><div><label>Nome do produto *</label><input id="name" required placeholder="Ex.: Camiseta esportiva"></div><div><label>Preço (R$) *</label><input id="price" type="number" min="0" step="0.01" required placeholder="59,90"></div></div><div class="row"><div><label>Categoria *</label><select id="category" required><option value="camisetas">Camisetas</option><option value="bermudas">Bermudas</option><option value="conjuntos">Conjuntos</option><option value="promocoes">Ofertas / Outros</option></select></div><div><label>Tamanhos disponíveis</label><input id="sizes" placeholder="P, M, G, GG"></div></div><div class="row"><div><label>Estoque (quantidade)</label><input id="stock" type="number" min="0" step="1" value="0" required></div><div><label><input id="featured" type="checkbox" style="width:auto;margin-right:8px"> Produto em destaque</label></div></div><label>Descrição</label><textarea id="description" placeholder="Detalhes da peça, cores, tecido..."></textarea><label>Foto do produto</label><input id="image" type="file" accept="image/png,image/jpeg,image/webp"><p class="muted">JPG, PNG ou WebP. Recomendado até 5 MB. Ao editar, deixe vazio para manter a foto atual.</p><div class="row"><div><label><input id="active" type="checkbox" checked style="width:auto;margin-right:8px"> Produto ativo (visível na loja)</label></div></div><div class="actions"><button type="submit" id="saveBtn">Salvar produto</button><button type="button" class="secondary" id="cancelEdit">Limpar formulário</button></div></form></section>
-  
-<div><label>Preço de atacado (R$)</label><input id="wholesalePrice" type="number" min="0" step="0.01" placeholder="Ex.: 25,00"></div>
-
-<section class="card"><h2>Produtos cadastrados</h2><div id="productList" class="muted">Carregando...</div></section>
+<nav class="card" aria-label="Navegação do painel" style="display:flex;gap:10px;flex-wrap:wrap;padding:14px">
+<button type="button" class="tab-btn active" data-tab="products" onclick="showTab('products')">Produtos</button>
+<button type="button" class="tab-btn" data-tab="orders" onclick="showTab('orders')">Pedidos</button>
+<button type="button" class="tab-btn" data-tab="financial" onclick="showTab('financial')">Faturamento</button>
+</nav>
+<section class="card" id="productFormCard"><h2 id="formTitle">Cadastrar novo produto</h2><form id="productForm"><input id="productId" type="hidden"><div class="row"><div><label>Nome do produto *</label><input id="name" required placeholder="Ex.: Camiseta esportiva"></div><div><label>Preço (R$) *</label><input id="price" type="number" min="0" step="0.01" required placeholder="59,90"></div><div><label>Preço de atacado (R$)</label><input id="wholesalePrice" type="number" min="0" step="0.01" placeholder="Ex.: 25,00"></div></div><div class="row"><div><label>Categoria *</label><select id="category" required><option value="camisetas">Camisetas</option><option value="bermudas">Bermudas</option><option value="conjuntos">Conjuntos</option><option value="promocoes">Ofertas / Outros</option></select></div><div><label>Tamanhos disponíveis</label><input id="sizes" placeholder="P, M, G, GG"></div></div><div class="row"><div><label>Estoque (quantidade)</label><input id="stock" type="number" min="0" step="1" value="0" required></div><div><label><input id="featured" type="checkbox" style="width:auto;margin-right:8px"> Produto em destaque</label></div></div><label>Descrição</label><textarea id="description" placeholder="Detalhes da peça, cores, tecido..."></textarea><label>Foto do produto</label><input id="image" type="file" accept="image/png,image/jpeg,image/webp"><p class="muted">JPG, PNG ou WebP. Recomendado até 5 MB. Ao editar, deixe vazio para manter a foto atual.</p><div class="row"><div><label><input id="active" type="checkbox" checked style="width:auto;margin-right:8px"> Produto ativo (visível na loja)</label></div></div><div class="actions"><button type="submit" id="saveBtn">Salvar produto</button><button type="button" class="secondary" id="cancelEdit">Limpar formulário</button></div></form></section>
+<section class="card" id="productListCard"><h2>Produtos cadastrados</h2><div id="productList" class="muted">Carregando...</div></section>
   <section class="card" id="ordersCard">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
     <div><h2>Pedidos</h2><p class="muted">Acompanhe pagamentos e consulte os detalhes de cada compra.</p></div>
@@ -37,6 +39,17 @@ button,.btn{border:0;border-radius:9px;padding:11px 15px;background:var(--green)
   <div id="orderStatus" class="muted"></div>
   <div id="orderList">Carregando pedidos...</div>
   <div id="orderDetails"></div>
+</section>
+<section class="card hidden" id="financialSection">
+<h2>Faturamento</h2>
+<p class="muted">Área financeira da WJAY STORE. Estes indicadores ainda não estão conectados aos dados financeiros e não representam valores reais.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+<div class="detail-item"><strong>Vendas recebidas</strong><p id="finReceived">Aguardando integração</p></div>
+<div class="detail-item"><strong>Investimento em estoque</strong><p id="finStock">Aguardando integração</p></div>
+<div class="detail-item"><strong>Despesas extras</strong><p id="finExpenses">Aguardando integração</p></div>
+<div class="detail-item"><strong>Lucro calculado</strong><p id="finProfit">Aguardando integração</p></div>
+</div>
+<p class="muted" style="margin-top:16px">A próxima etapa será conectar compras, despesas, custos dos produtos e pagamentos aprovados no Supabase, sem contar pedidos de teste como vendas reais.</p>
 </section></section></main>
 <script>
 let db=null, currentUser=null, products=[]; const $=id=>document.getElementById(id); const status=(msg)=>{const el=$('status');el.textContent=msg;el.classList.remove('hidden')};
@@ -47,6 +60,17 @@ function showApp(user){
   $('app').classList.remove('hidden');
   loadProducts();
   loadOrders();
+  showTab('products');
+}
+function showTab(tab){
+  $('productFormCard').classList.toggle('hidden',tab!=='products');
+  $('productListCard').classList.toggle('hidden',tab!=='products');
+  $('ordersCard').classList.toggle('hidden',tab!=='orders');
+  $('financialSection').classList.toggle('hidden',tab!=='financial');
+  document.querySelectorAll('[data-tab]').forEach(b=>{
+    const active=b.dataset.tab===tab;
+    b.classList.toggle('active',active);
+  });
 }
 
 let allOrders = [];
@@ -120,38 +144,6 @@ $('productForm').addEventListener('submit',async e=>{e.preventDefault();const id
 window.deleteProduct=async id=>{const p=products.find(x=>String(x.id)===String(id));if(!p||!confirm('Excluir o produto “'+p.name+'”?'))return;const {error}=await db.from('products').delete().eq('id',id);if(error){status('Erro ao excluir: '+error.message);return}await loadProducts();status('Produto excluído.')};init();
 </script>
  
-<!-- ABA FATURAMENTO WJAY STORE -->
-<section id="financialSection" style="display:none; padding:20px; color:#f5f5f5;">
-  <h2>Faturamento</h2>
-  <p>Controle financeiro da WJAY STORE</p>
-
-  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px;">
-    <div style="background:#202124; padding:16px; border-radius:12px;">
-      <h3>Vendas recebidas</h3>
-      <p id="finReceived">R$ 0,00</p>
-    </div>
-
-    <div style="background:#202124; padding:16px; border-radius:12px;">
-      <h3>Investimento em estoque</h3>
-      <p id="finStock">R$ 0,00</p>
-    </div>
-
-    <div style="background:#202124; padding:16px; border-radius:12px;">
-      <h3>Despesas extras</h3>
-      <p id="finExpenses">R$ 0,00</p>
-    </div>
-
-    <div style="background:#202124; padding:16px; border-radius:12px;">
-      <h3>Lucro calculado</h3>
-      <p id="finProfit">Aguardando dados</p>
-    </div>
-  </div>
-
-  <p style="margin-top:20px; color:#aaa;">
-    Os valores serão calculados após conectarmos as compras, despesas e vendas reais.
-  </p>
-</section>
-<!-- FIM ABA FATURAMENTO -->
 </body>
 </html>
 
