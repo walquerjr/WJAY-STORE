@@ -376,11 +376,24 @@ const unitPrice =
         const article = document.createElement('article');
         article.className = 'item';
 
-        const img = document.createElement('img');
-        img.src = product.image || '';
-        img.alt = product.name || 'Produto';
-        img.onerror = () => { img.style.display = 'none'; };
+     const img = document.createElement('img');
 
+const printIndex = item.selectedPrint
+  ? Number(item.selectedPrint.replace('Estampa ', '')) - 1
+  : 0;
+
+const images = Array.isArray(product.images)
+  ? product.images
+  : [];
+
+img.src = images[printIndex] || product.image || '';
+img.alt = product.name
+  ? product.name + (item.selectedPrint ? ' - ' + item.selectedPrint : '')
+  : 'Produto';
+
+img.onerror = () => {
+  img.style.display = 'none';
+};
         const details = document.createElement('div');
         details.className = 'details';
 
