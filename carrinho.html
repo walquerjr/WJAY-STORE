@@ -428,16 +428,33 @@ sizeInfo.textContent = 'Tamanho: ' + (item.size || 'Não informado');
         itemsElement.appendChild(article);
       }
 
-      pieceCountElement.textContent = count + (count === 1 ? ' peça' : ' peças');
-      totalElement.textContent = 'Total: ' + money(total);
-      progressBar.style.width = Math.min(count / 5 * 100, 100) + '%';
+     pieceCountElement.textContent =
+  count + (count === 1 ? ' peça' : ' peças');
 
-      if (count >= 5) {
-        progressText.textContent = 'Atacado liberado! Preços aplicados aos produtos elegíveis.';
-      } else {
-        const missing = 5 - count;
-        progressText.textContent = 'Faltam ' + missing + (missing === 1 ? ' peça' : ' peças') + ' para liberar o atacado.';
-      }
+totalElement.textContent = 'Total: ' + money(total);
+
+const groupQuantities = Array.from(quantityBySupplier.values());
+
+if (groupQuantities.length === 0) {
+  progressBar.style.width = '0%';
+  progressText.textContent =
+    'Adicione peças do mesmo grupo de fornecedor para liberar o atacado.';
+} else {
+  const bestProgress = Math.max(...groupQuantities);
+  progressBar.style.width =
+    Math.min(bestProgress / 5 * 100, 100) + '%';
+
+  if (groupQuantities.some(quantity => quantity >= 5)) {
+    progressText.textContent =
+      'Atacado liberado para os produtos elegíveis de cada grupo.';
+  } else {
+    const missing = 5 - bestProgress;
+    progressText.textContent =
+      'No grupo mais próximo, faltam ' + missing +
+      (missing === 1 ? ' peça' : ' peças') +
+      ' para liberar o atacado.';
+  }
+}
     }
 
     itemsElement.addEventListener('click', event => {
