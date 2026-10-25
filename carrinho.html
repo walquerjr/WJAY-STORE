@@ -157,6 +157,44 @@ const eligibleProducts = document.getElementById('eligibleProducts');
 const eligibleSummary = document.getElementById('eligibleSummary');
 
 let allProducts = [];
+    async function loadEligibleProducts() {
+  eligibleSummary.textContent = 'Carregando peças disponíveis...';
+  showEligibleButton.disabled = true;
+
+  try {
+    const response = await fetch(
+      config.supabaseUrl +
+      '/rest/v1/products?select=id,name,price,wholesale_price,image_url,image_urls,sizes,supplier,active&active=eq.true&order=name.asc',
+      {
+        headers: {
+          apikey: config.supabaseKey,
+          Authorization: 'Bearer ' + config.supabaseAnonKey
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Não foi possível carregar os produtos.');
+    }
+
+    allProducts = await response.json();
+    eligibleSummary.textContent =
+      'Produtos disponíveis carregados. Vamos identificar os grupos elegíveis.';
+  } catch (error) {
+    eligibleSummary.textContent =
+      'Não foi possível carregar as peças. Tente novamente.';
+  } finally {
+    showEligibleButton.disabled = false;
+  }
+}
+
+showEligibleButton.addEventListener('click', async () => {
+  if (allProducts.length === 0) {
+    await loadEligibleProducts();
+  }
+
+  eligibleProducts.hidden = false;
+});
 
     function money(value) {
       return Number(value || 0).toLocaleString('pt-BR', {
