@@ -478,6 +478,7 @@ const size = sizeSelect.value;
 const card = button.closest('.product');
 const printSelect = card?.querySelector('.product-print');
 const selectedPrint = printSelect ? printSelect.value : '';
+  alert('Estampa selecionada: ' + selectedPrint);
 const id = `${product.id}-${size}-${selectedPrint}`;
 const existing = cart.get(id);
 
