@@ -547,9 +547,22 @@ const price =
     : regularPrice;
         const subtotal = price * item.quantity;
         total += subtotal;
-        lines.push((p.name || 'Produto') + ' — ' + item.quantity +
-          ' un. × ' + money(price) + ' = ' + money(subtotal));
-        if (p.sizes) lines.push('Tamanhos: ' + p.sizes);
+       const printText = item.selectedPrint
+  ? ' — ' + item.selectedPrint
+  : '';
+
+const sizeText = item.size
+  ? ' — Tam.: ' + item.size
+  : '';
+
+lines.push(
+  (p.name || 'Produto') +
+  printText +
+  sizeText +
+  ' — ' + item.quantity +
+  ' un. × ' + money(price) +
+  ' = ' + money(subtotal)
+);
       }
 
       lines.push('');
