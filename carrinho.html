@@ -193,9 +193,110 @@ showEligibleButton.addEventListener('click', async () => {
     await loadEligibleProducts();
   }
 
+  if (allProducts.length === 0) return;
+
+  const cartEntries = Array.from(cart.values());
+  const supplierGroups = new Map();
+
+  for (const item of cartEntries) {
+    const product = item.product || {};
+    const supplier = String(product.supplier || '').trim();
+
+    if (!supplier) continue;
+
+    const key = supplier.toLocaleLowerCase('pt-BR');
+    supplierGroups.set(
+      key,
+      (supplierGroups.get(key) || 0) + Number(item.quantity || 0)
+    );
+  }
+
+  eligibleProducts.innerHTML = '';
+
+  if (supplierGroups.size === 0) {
+    eligibleProducts.textContent =
+      'Para encontrar peças elegíveis, adicione primeiro um produto com grupo de atacado cadastrado.';
+    eligibleProducts.hidden = false;
+    return;
+  }
+
+  let found = 0;
+
+  for (const [supplierKey, quantity] of supplierGroups) {
+    if (quantity >= 5) continue;
+
+    const groupProducts = allProducts.filter(product =>
+      String(product.supplier || '').trim().toLocaleLowerCase('pt-BR')
+        === supplierKey
+    );
+
+    const heading = document.createElement('h4');
+    heading.textContent = quantity + '/5 peças neste grupo';
+    eligibleProducts.appendChild(heading);
+
+    for (const product of groupProducts) {
+      const alreadyInCart = cartEntries.some(item =>
+        String(item.product?.id) === String(product.id)
+      );
+
+      if (alreadyInCart) continue;
+
+      const row = document.createElement('div');
+      row.className = 'item';
+
+      const name = document.createElement('strong');
+      name.textContent = product.name;
+
+      const price = document.createElement('span');
+      price.textContent = money(product.price);
+
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.textContent = 'Adicionar';
+      add.addEventListener('click', () => {
+        const sizeValue = product.sizes;
+        const sizes = Array.isArray(sizeValue)
+          ? sizeValue
+          : String(sizeValue || '').split(',').map(s => s.trim()).filter(Boolean);
+
+        const size = sizes[0] || '';
+        const key = String(product.id) + '-' + size;
+        const existing = cart.get(key);
+
+        const mappedProduct = {
+          ...product,
+          image: product.image_url || product.image || '',
+          supplier: product.supplier || ''
+        };
+
+        if (existing) {
+          existing.quantity = Number(existing.quantity || 0) + 1;
+        } else {
+          cart.set(key, {
+            product: mappedProduct,
+            size,
+            quantity: 1
+          });
+        }
+
+        saveCart();
+        renderCart();
+        showEligibleButton.click();
+      });
+
+      row.append(name, price, add);
+      eligibleProducts.appendChild(row);
+      found++;
+    }
+  }
+
+  if (found === 0) {
+    eligibleProducts.textContent =
+      'Não encontramos outras peças disponíveis nesses grupos.';
+  }
+
   eligibleProducts.hidden = false;
 });
-
     function money(value) {
       return Number(value || 0).toLocaleString('pt-BR', {
         style: 'currency',
@@ -220,10 +321,25 @@ showEligibleButton.addEventListener('click', async () => {
     }
 
     function renderCart() {
-      const entries = Array.from(cart.entries());
-      const count = entries.reduce((sum, entry) => sum + entry[1].quantity, 0);
-      const wholesale = count >= 5;
-      let total = 0;
+     const entries = Array.from(cart.entries());
+const count = entries.reduce(
+  (sum, entry) => sum + (Number(entry[1].quantity) || 0), 0
+);
+let total = 0;
+
+// Conta as peças separadamente por fornecedor.
+const quantityBySupplier = new Map();
+
+for (const [, item] of entries) {
+  const supplier = String(item.product?.supplier || '').trim();
+  if (!supplier) continue;
+
+  const key = supplier.toLocaleLowerCase('pt-BR');
+  quantityBySupplier.set(
+    key,
+    (quantityBySupplier.get(key) || 0) + (Number(item.quantity) || 0)
+  );
+}
 
       itemsElement.innerHTML = '';
       emptyElement.hidden = count !== 0;
@@ -233,11 +349,27 @@ showEligibleButton.addEventListener('click', async () => {
       for (const [id, item] of entries) {
         const product = item.product || {};
         const quantity = Number(item.quantity) || 0;
-        const wholesalePrice = product.wholesale_price;
-        const unitPrice = wholesale && wholesalePrice !== null &&
-          wholesalePrice !== undefined && wholesalePrice !== ''
-          ? Number(wholesalePrice)
-          : Number(product.price) || 0;
+      const supplier = String(product.supplier || '').trim();
+const supplierKey = supplier.toLocaleLowerCase('pt-BR');
+const supplierQuantity = supplier
+  ? (quantityBySupplier.get(supplierKey) || 0)
+  : 0;
+
+const wholesalePrice = Number(product.wholesale_price);
+const regularPrice = Number(product.price) || 0;
+
+const hasWholesalePrice =
+  product.wholesale_price !== null &&
+  product.wholesale_price !== undefined &&
+  product.wholesale_price !== '' &&
+  Number.isFinite(wholesalePrice) &&
+  wholesalePrice > 0 &&
+  wholesalePrice <= regularPrice;
+
+const unitPrice =
+  supplierQuantity >= 5 && hasWholesalePrice
+    ? wholesalePrice
+    : regularPrice;
 
         total += unitPrice * quantity;
 
