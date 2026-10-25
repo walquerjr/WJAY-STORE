@@ -151,6 +151,12 @@
     const mercadoPagoBtn = document.getElementById('mercadoPagoBtn');
 const paymentMessage = document.getElementById('paymentMessage');
 const config = window.WJAY_CONFIG;
+    const eligibleSection = document.getElementById('eligibleSection');
+const showEligibleButton = document.getElementById('showEligible');
+const eligibleProducts = document.getElementById('eligibleProducts');
+const eligibleSummary = document.getElementById('eligibleSummary');
+
+let allProducts = [];
 
     function money(value) {
       return Number(value || 0).toLocaleString('pt-BR', {
