@@ -326,11 +326,15 @@ async function loadProducts(){
   try {
     if (!window.supabase || !WJAY_CONFIG.supabaseUrl || !WJAY_CONFIG.supabaseKey) { products=demoProducts; render(); return; }
     const client=window.supabase.createClient(WJAY_CONFIG.supabaseUrl,WJAY_CONFIG.supabaseKey);
-     const {data,error}=await client.from('products').select('id,name,description,price,wholesale_price,image_url,image_urls,category,sizes,active').eq('active',true).order('created_at',{ascending:false});
+     const {data,error}=await client.from('products').select('id,name,description,price,wholesale_price,image_url,image_urls,category,sizes,active,supplier').eq('active',true).order('created_at',{ascending:false});'id,name,description,price,wholesale_price,image_url,image_urls,category,sizes,active').eq('active',true).order('created_at',{ascending:false});
     if(error) throw error;
    
 products=(data||[]).map(p=>({
   id:p.id,
+  products=(data||[]).map(p=>({
+  id:p.id,
+  supplier:p.supplier || '',
+  name:p.name,
   name:p.name,
   category:p.category||'promocoes',
   label:'WJAY STORE',
