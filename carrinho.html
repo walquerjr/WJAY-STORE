@@ -482,18 +482,50 @@ if (groupQuantities.length === 0) {
       const entries = Array.from(cart.values());
       if (!entries.length) return;
 
-      const count = entries.reduce((sum, item) => sum + item.quantity, 0);
-      const wholesale = count >= 5;
-      let total = 0;
+     let total = 0;
+
+const quantityBySupplier = new Map();
+
+for (const item of entries) {
+  const supplier = String(item.product?.supplier || '').trim();
+  if (!supplier) continue;
+
+  const key = supplier.toLocaleLowerCase('pt-BR');
+  quantityBySupplier.set(
+    key,
+    (quantityBySupplier.get(key) || 0) + (Number(item.quantity) || 0)
+  );
+}
+
+const count = entries.reduce(
+  (sum, item) => sum + (Number(item.quantity) || 0),
+  0
+);
       const lines = ['Olá! Quero fazer um pedido na WJAY STORE:', ''];
 
       for (const item of entries) {
         const p = item.product || {};
-        const wholesalePrice = p.wholesale_price;
-        const price = wholesale && wholesalePrice !== null &&
-          wholesalePrice !== undefined && wholesalePrice !== ''
-          ? Number(wholesalePrice)
-          : Number(p.price) || 0;
+      const supplier = String(p.supplier || '').trim();
+const supplierKey = supplier.toLocaleLowerCase('pt-BR');
+const supplierQuantity = supplier
+  ? (quantityBySupplier.get(supplierKey) || 0)
+  : 0;
+
+const wholesalePrice = Number(p.wholesale_price);
+const regularPrice = Number(p.price) || 0;
+
+const hasWholesalePrice =
+  p.wholesale_price !== null &&
+  p.wholesale_price !== undefined &&
+  p.wholesale_price !== '' &&
+  Number.isFinite(wholesalePrice) &&
+  wholesalePrice > 0 &&
+  wholesalePrice <= regularPrice;
+
+const price =
+  supplierQuantity >= 5 && hasWholesalePrice
+    ? wholesalePrice
+    : regularPrice;
         const subtotal = price * item.quantity;
         total += subtotal;
         lines.push((p.name || 'Produto') + ' — ' + item.quantity +
