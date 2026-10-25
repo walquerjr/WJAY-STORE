@@ -294,6 +294,16 @@ ${p.images && new Set(p.images).size > 1 ? `
           ? `<div class="wholesale-price">     <span class="wholesale-label">PREÇO DE ATACADO</span>     <strong>${money(p.wholesale_price)}</strong>     <span class="wholesale-note">por peça · mínimo 5 peças</span>   </div>`
           : ''}
       </div>
+      ${p.hasPrints && p.images && p.images.length > 1 ? `
+  <div class="sizes">
+    <label for="print-${p.id}">Escolha a estampa:</label>
+    <select class="product-print" id="print-${p.id}">
+      ${p.images.map((image, index) => `
+        <option value="Estampa ${index + 1}">Estampa ${index + 1}</option>
+      `).join('')}
+    </select>
+  </div>
+` : ''}
       <div class="sizes">   <label for="size-${p.id}">Escolha o tamanho:</label>   <select class="product-size" id="size-${p.id}">     ${String(p.sizes || '').split(',').map(size => size.trim()).filter(Boolean).map(size =>       `<option value="${size}">${size}</option>`     ).join('')}   </select> </div>
       <button type="button" class="buy add-to-cart" data-product-id="${p.id}">Adicionar ao carrinho</button>
     </div>
@@ -319,6 +329,21 @@ document.addEventListener('click', function(event) {
 
   thumb.classList.add('active');
 });
+
+document.addEventListener('change', function(event) {
+  const select = event.target.closest('.product-print');
+  if (!select) return;
+
+  const card = select.closest('.product');
+  if (!card) return;
+
+  const index = select.selectedIndex;
+  const thumb = card.querySelectorAll('.gallery-thumb')[index];
+
+  if (thumb) {
+    thumb.click();
+  }
+});
 document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render(btn.dataset.filter)}));
 const generalMessage='Olá, WJAY STORE! Gostaria de conhecer os produtos e as ofertas.';['footerWhats','floatWhats'].forEach(id=>{const el=document.getElementById(id);el.href=whatsappUrl(generalMessage);el.target='_blank';el.rel='noopener';});
 document.getElementById('year').textContent=new Date().getFullYear();
@@ -341,7 +366,8 @@ async function loadProducts(){
       supplier:p.supplier||'',
       category:p.category||'promocoes',
       label:'WJAY STORE',
-      desc:p.description||'',
+      desc:p.description||'', 
+      hasPrints:(p.description||'').toUpperCase().includes('ESTAMPAS DIFERENTES'),
       price:Number(p.price)||0,
       wholesale_price:p.wholesale_price==null?null:Number(p.wholesale_price),
       sizes:p.sizes||'Consulte disponibilidade',
@@ -449,12 +475,16 @@ if (!sizeSelect || !sizeSelect.value) {
 }
 
 const size = sizeSelect.value;
-const id = `${product.id}-${size}`;
+const card = button.closest('.product');
+const printSelect = card?.querySelector('.product-print');
+const selectedPrint = printSelect ? printSelect.value : '';
+const id = `${product.id}-${size}-${selectedPrint}`;
 const existing = cart.get(id);
 
 cart.set(id, {
   product,
   size,
+  selectedPrint,
   quantity: existing ? existing.quantity + 1 : 1
 });
 
@@ -502,7 +532,7 @@ document.getElementById('checkoutBtn').addEventListener('click', () => {
     const subtotal = unitPrice * item.quantity;
     total += subtotal;
 
-    return `${item.quantity}x ${item.product.name} — ${money(unitPrice)} cada = ${money(subtotal)}`;
+    return `${item.quantity}x ${item.product.name}${item.selectedPrint ? ' — ' + item.selectedPrint : ''} — Tam.: ${item.size} — ${money(unitPrice)} cada = ${money(subtotal)}`;
   });
 
   const message = `Olá, WJAY STORE! Quero fazer este pedido:\n\n${lines.join('\n')}\n\nTotal de peças: ${count}\n${wholesaleActive ? 'Atacado liberado.' : 'Preço de varejo.'}\nTotal do pedido: ${money(total)}`;
