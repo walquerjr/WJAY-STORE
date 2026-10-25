@@ -389,6 +389,12 @@ const unitPrice =
         const sizeInfo = document.createElement('p');
 sizeInfo.className = 'muted';
 sizeInfo.textContent = 'Tamanho: ' + (item.size || 'Não informado');
+        if (item.selectedPrint) {
+  const printInfo = document.createElement('p');
+  printInfo.className = 'muted';
+  printInfo.textContent = 'Estampa: ' + item.selectedPrint;
+  details.appendChild(printInfo);
+}
 
         const price = document.createElement('p');
         price.textContent = money(unitPrice) + ' cada';
