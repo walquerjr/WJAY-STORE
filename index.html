@@ -326,26 +326,29 @@ async function loadProducts(){
   try {
     if (!window.supabase || !WJAY_CONFIG.supabaseUrl || !WJAY_CONFIG.supabaseKey) { products=demoProducts; render(); return; }
     const client=window.supabase.createClient(WJAY_CONFIG.supabaseUrl,WJAY_CONFIG.supabaseKey);
-     const {data,error}=await client.from('products').select('id,name,description,price,wholesale_price,supplier,image_url,image_urls,category,sizes,active,supplier').eq('active',true).order('created_at',{ascending:false});'id,name,description,price,wholesale_price,image_url,image_urls,category,sizes,active').eq('active',true).order('created_at',{ascending:false});
-    if(error) throw error;
    
-products=(data||[]).map(p=>({
-  id:p.id,
-  products=(data||[]).map(p=>({
-  id:p.id,
-  supplier:p.supplier || '',
-  name:p.name,
-  name:p.name,
-  category:p.category||'promocoes',
-  label:'WJAY STORE',
-  desc:p.description||'',
-  price:Number(p.price)||0,
-  wholesale_price:p.wholesale_price==null?null:Number(p.wholesale_price),
-  supplier:p.supplier||'',
-  sizes:p.sizes||'Consulte disponibilidade',
-  image:p.image_url||'',
-  images:[p.image_url,...(Array.isArray(p.image_urls)?p.image_urls:typeof p.image_urls==='string'?p.image_urls.split(/\n|,/).map(s=>s.trim()).filter(Boolean):[])].filter(Boolean)
-}));
+    const {data,error}=await client
+      .from('products')
+      .select('id,name,description,price,wholesale_price,supplier,image_url,image_urls,category,sizes,active')
+      .eq('active',true)
+      .order('created_at',{ascending:false});
+
+    if(error) throw error;
+
+    products=(data||[]).map(p=>({
+      id:p.id,
+      name:p.name,
+      supplier:p.supplier||'',
+      category:p.category||'promocoes',
+      label:'WJAY STORE',
+      desc:p.description||'',
+      price:Number(p.price)||0,
+      wholesale_price:p.wholesale_price==null?null:Number(p.wholesale_price),
+      sizes:p.sizes||'Consulte disponibilidade',
+      image:p.image_url||'',
+      images:[p.image_url,...(Array.isArray(p.image_urls)?p.image_urls:typeof p.image_urls==='string'?p.image_urls.split(/\n|,/).map(s=>s.trim()).filter(Boolean):[])].filter(Boolean)
+    }));
+
 
     render();
   } catch(e) { console.error('Não foi possível carregar os produtos:',e); products=demoProducts; render(); }
