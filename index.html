@@ -346,7 +346,7 @@ async function loadProducts(){
       wholesale_price:p.wholesale_price==null?null:Number(p.wholesale_price),
       sizes:p.sizes||'Consulte disponibilidade',
       image:p.image_url||'',
-      images:[p.image_url,...(Array.isArray(p.image_urls)?p.image_urls:typeof p.image_urls==='string'?p.image_urls.split(/\n|,/).map(s=>s.trim()).filter(Boolean):[])].filter(Boolean)
+    images:[...new Set([p.image_url,...(Array.isArray(p.image_urls)?p.image_urls:typeof p.image_urls==='string'?p.image_urls.split(/\n|,/).map(s=>s.trim()).filter(Boolean):[])].filter(Boolean))]
     }));
 
 
