@@ -234,7 +234,7 @@ body {
     <div id="wholesaleProgressBar" class="wholesale-progress-bar"></div>
   </div>
   <p id="wholesaleProgressMessage">Faltam 5 peças para liberar o atacado!</p>
-<a href="#cart" class="wholesale-cart-link">Ver carrinho ↑</a></div>
+<a href="carrinho.html" class="wholesale-cart-link">Ver carrinho ↑</a></div>
   <button type="button" class="primary" id="checkoutBtn">Finalizar pedido pelo WhatsApp</button>
 </div><div class="grid" id="products"></div><div class="empty" id="empty">Não há produtos nessa categoria no momento.</div><p class="hint">Produtos e informações são cadastrados no painel administrativo da WJAY STORE.</p></section>
 <section class="benefits"><div class="benefit"><div class="benefit-icon">✳</div><div><strong>Atendimento direto</strong><p>Tire dúvidas e confirme seu pedido com a gente pelo WhatsApp.</p></div></div><div class="benefit"><div class="benefit-icon">◈</div><div><strong>Escolha seu tamanho</strong><p>Consulte os tamanhos e as cores disponíveis para cada peça.</p></div></div><div class="benefit"><div class="benefit-icon">↗</div><div><strong>Novidades e ofertas</strong><p>Acompanhe as novidades e fique de olho nas próximas promoções.</p></div></div></section>
@@ -270,11 +270,20 @@ function render(filter = currentFilter) {
   const grid = document.getElementById('products');
   if (!grid) return;
 
+  const normalizeCategory = value => String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '');
+
   const filteredProducts = filter === 'todos'
     ? products
-    : products.filter(p => p.category === filter);
+    : products.filter(p => normalizeCategory(p.category) === normalizeCategory(filter));
 
   grid.innerHTML = filteredProducts.map(productCard).join('');
+
+  const empty = document.getElementById('empty');
+  if (empty) empty.style.display = filteredProducts.length ? 'none' : 'block';
 }
   function productCard(p){
   return `<article class="product" data-category="${p.category}">
