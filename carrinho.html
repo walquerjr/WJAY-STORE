@@ -87,6 +87,9 @@
       transition: width .25s;
     }
     .pix-box { text-align: center; }
+    .pix-options { margin-top: 14px; }
+    .pix-options button { width: 100%; margin-top: 10px; }
+    .pix-key { overflow-wrap: anywhere; font-size: 13px; background: #f5f5f5; padding: 12px; border-radius: 8px; }
     .pix-qr {
       display: block;
       width: min(100%, 280px);
@@ -138,23 +141,26 @@
       </div>
     </section>
 
-    <section class="card pix-box">
-      <h2>Pagar com Pix direto</h2>
-      <p>Escaneie o QR Code abaixo pelo aplicativo do seu banco e informe o valor total do pedido mostrado no carrinho.</p>
-      <img class="pix-qr" src="wjay-pix-qr.png" alt="QR Code Pix da WJAY STORE">
-      <p class="pix-note">Depois de pagar, toque no botão abaixo para avisar a WJAY STORE e envie o comprovante pelo WhatsApp. O pedido só será considerado pago após a conferência do recebimento.</p>
-      <button class="pix-button" id="pixWhatsApp" type="button">Já paguei via Pix — enviar comprovante</button>
-      <p class="muted">Confira o nome do destinatário no aplicativo do banco antes de confirmar o Pix.</p>
-    </section>
-
     <section class="card">
       <p id="pieceCount">0 peças</p>
       <p class="total" id="total">Total: R$ 0,00</p>
       <button class="primary whatsapp" id="checkout">Finalizar pedido pelo WhatsApp</button>
-      <button class="primary" id="mercadoPagoBtn" type="button">
-  Pagar com Mercado Pago
-</button>
-<p id="paymentMessage" role="status"></p>
+      <button class="primary" id="mercadoPagoBtn" type="button">Pagar com Mercado Pago</button>
+      <button class="primary pix-button" id="pixToggle" type="button" aria-expanded="false" aria-controls="pixOptions">Pagar com Pix</button>
+      <div id="pixOptions" class="pix-options" hidden>
+        <p>Escolha como deseja pagar:</p>
+        <button class="primary" id="copyPixKey" type="button">Copiar chave Pix</button>
+        <p class="pix-key" id="pixKeyText">20e5e60d-3bf8-4732-82f4-665af9c3d500</p>
+        <button class="primary" id="showPixQr" type="button" aria-expanded="false" aria-controls="pixQrPanel">Pagar com QR Code</button>
+        <div id="pixQrPanel" hidden>
+          <p>Abra o aplicativo do seu banco e escaneie o código. Confira o destinatário e informe o total do pedido antes de confirmar.</p>
+          <img class="pix-qr" src="wjay-pix-qr.png" alt="QR Code Pix da WJAY STORE">
+          <p class="pix-note">Após pagar, envie o comprovante pelo WhatsApp. O pedido só será considerado pago após a confirmação do recebimento.</p>
+          <button class="pix-button" id="pixWhatsApp" type="button">Já paguei via Pix — enviar comprovante</button>
+        </div>
+        <p id="pixMessage" class="muted" role="status" aria-live="polite"></p>
+      </div>
+      <p id="paymentMessage" role="status"></p>
     </section>
   </main>
 
@@ -172,6 +178,13 @@
     const mercadoPagoBtn = document.getElementById('mercadoPagoBtn');
 const paymentMessage = document.getElementById('paymentMessage');
 const pixWhatsAppButton = document.getElementById('pixWhatsApp');
+const pixToggle = document.getElementById('pixToggle');
+const pixOptions = document.getElementById('pixOptions');
+const copyPixKeyButton = document.getElementById('copyPixKey');
+const pixKeyText = document.getElementById('pixKeyText');
+const pixMessage = document.getElementById('pixMessage');
+const showPixQrButton = document.getElementById('showPixQr');
+const pixQrPanel = document.getElementById('pixQrPanel');
 const config = window.WJAY_CONFIG;
     const eligibleSection = document.getElementById('eligibleSection');
 const showEligibleButton = document.getElementById('showEligible');
@@ -599,6 +612,29 @@ lines.push(
     });
 
   
+pixToggle.addEventListener('click', () => {
+  const opening = pixOptions.hidden;
+  pixOptions.hidden = !opening;
+  pixToggle.setAttribute('aria-expanded', String(opening));
+});
+
+copyPixKeyButton.addEventListener('click', async () => {
+  const key = pixKeyText.textContent.trim();
+  try {
+    await navigator.clipboard.writeText(key);
+    pixMessage.textContent = 'Chave Pix copiada. Cole no aplicativo do seu banco e confira o destinatário antes de pagar.';
+  } catch (error) {
+    pixMessage.textContent = 'Não foi possível copiar automaticamente. Selecione e copie a chave exibida acima.';
+  }
+});
+
+showPixQrButton.addEventListener('click', () => {
+  const opening = pixQrPanel.hidden;
+  pixQrPanel.hidden = !opening;
+  showPixQrButton.setAttribute('aria-expanded', String(opening));
+  showPixQrButton.textContent = opening ? 'Ocultar QR Code' : 'Pagar com QR Code';
+});
+
 pixWhatsAppButton.addEventListener('click', () => {
   const entries = Array.from(cart.values());
   if (!entries.length) {
