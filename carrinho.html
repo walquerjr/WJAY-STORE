@@ -86,6 +86,18 @@
       background: #168b45;
       transition: width .25s;
     }
+    .pix-box { text-align: center; }
+    .pix-qr {
+      display: block;
+      width: min(100%, 280px);
+      height: auto;
+      margin: 16px auto;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      background: #fff;
+    }
+    .pix-button { background: #168b45; color: #fff; width: 100%; margin-top: 10px; }
+    .pix-note { background: #fff8e1; border-radius: 8px; padding: 12px; font-size: 14px; }
     #empty { text-align: center; padding: 30px 10px; }
     @media (max-width: 520px) {
       .item { align-items: flex-start; flex-wrap: wrap; }
@@ -126,6 +138,15 @@
       </div>
     </section>
 
+    <section class="card pix-box">
+      <h2>Pagar com Pix direto</h2>
+      <p>Escaneie o QR Code abaixo pelo aplicativo do seu banco e informe o valor total do pedido mostrado no carrinho.</p>
+      <img class="pix-qr" src="wjay-pix-qr.png" alt="QR Code Pix da WJAY STORE">
+      <p class="pix-note">Depois de pagar, toque no botão abaixo para avisar a WJAY STORE e envie o comprovante pelo WhatsApp. O pedido só será considerado pago após a conferência do recebimento.</p>
+      <button class="pix-button" id="pixWhatsApp" type="button">Já paguei via Pix — enviar comprovante</button>
+      <p class="muted">Confira o nome do destinatário no aplicativo do banco antes de confirmar o Pix.</p>
+    </section>
+
     <section class="card">
       <p id="pieceCount">0 peças</p>
       <p class="total" id="total">Total: R$ 0,00</p>
@@ -150,6 +171,7 @@
     const checkoutButton = document.getElementById('checkout');
     const mercadoPagoBtn = document.getElementById('mercadoPagoBtn');
 const paymentMessage = document.getElementById('paymentMessage');
+const pixWhatsAppButton = document.getElementById('pixWhatsApp');
 const config = window.WJAY_CONFIG;
     const eligibleSection = document.getElementById('eligibleSection');
 const showEligibleButton = document.getElementById('showEligible');
@@ -577,6 +599,33 @@ lines.push(
     });
 
   
+pixWhatsAppButton.addEventListener('click', () => {
+  const entries = Array.from(cart.values());
+  if (!entries.length) {
+    paymentMessage.textContent = 'Seu carrinho está vazio.';
+    return;
+  }
+
+  const lines = [
+    'Olá! Fiz um pagamento via Pix para meu pedido na WJAY STORE.',
+    '',
+    'Itens do pedido:'
+  ];
+
+  for (const item of entries) {
+    const product = item.product || {};
+    const printText = item.selectedPrint ? ' — ' + item.selectedPrint : '';
+    const sizeText = item.size ? ' — Tam.: ' + item.size : '';
+    lines.push((product.name || 'Produto') + printText + sizeText + ' — ' + item.quantity + ' un.');
+  }
+
+  lines.push('');
+  lines.push(totalElement.textContent);
+  lines.push('Vou enviar o comprovante nesta conversa. Por favor, confirme o recebimento do pagamento.');
+  const url = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(lines.join('\\n'));
+  window.open(url, '_blank');
+});
+
 mercadoPagoBtn.addEventListener('click', async () => {
   if (cart.size === 0) {
     paymentMessage.textContent = 'Seu carrinho está vazio.';
