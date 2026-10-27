@@ -635,32 +635,96 @@ showPixQrButton.addEventListener('click', () => {
   showPixQrButton.textContent = opening ? 'Ocultar QR Code' : 'Pagar com QR Code';
 });
 
-pixWhatsAppButton.addEventListener('click', () => {
+
+pixWhatsAppButton.addEventListener('click', async () => {
   const entries = Array.from(cart.values());
+
   if (!entries.length) {
     paymentMessage.textContent = 'Seu carrinho está vazio.';
     return;
   }
 
-  const lines = [
-    'Olá! Fiz um pagamento via Pix para meu pedido na WJAY STORE.',
-    '',
-    'Itens do pedido:'
-  ];
-
-  for (const item of entries) {
-    const product = item.product || {};
-    const printText = item.selectedPrint ? ' — ' + item.selectedPrint : '';
-    const sizeText = item.size ? ' — Tam.: ' + item.size : '';
-    lines.push((product.name || 'Produto') + printText + sizeText + ' — ' + item.quantity + ' un.');
+  if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
+    paymentMessage.textContent = 'Configuração da loja não encontrada. Entre em contato pelo WhatsApp.';
+    return;
   }
 
-  lines.push('');
-  lines.push(totalElement.textContent);
-  lines.push('Vou enviar o comprovante nesta conversa. Por favor, confirme o recebimento do pagamento.');
-  const url = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(lines.join('\\n'));
-  window.open(url, '_blank');
+  pixWhatsAppButton.disabled = true;
+  paymentMessage.textContent = 'Registrando seu pedido Pix...';
+
+  try {
+    const items = entries.map(item => ({
+      id: String((item.product || {}).id || ''),
+      size: item.size || '',
+      quantity: Number(item.quantity),
+      selectedPrint: item.selectedPrint || ''
+    }));
+
+    const response = await fetch(
+      SUPABASE_URL + '/functions/v1/register-pix-order',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+        },
+        body: JSON.stringify({ items })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Não foi possível registrar o pedido.');
+    }
+
+    const lines = [
+      'Olá! Estou entrando em contato sobre meu pedido Pix na WJAY STORE.',
+      '',
+      'Referência do pedido: ' + result.order_reference,
+      '',
+      'Itens do pedido:'
+    ];
+
+    for (const item of result.items || []) {
+      const printText = item.selectedPrint ? ' — ' + item.selectedPrint : '';
+      const sizeText = item.size ? ' — Tam.: ' + item.size : '';
+
+      lines.push(
+        item.name + printText + sizeText +
+        ' — ' + item.quantity + ' un. — ' +
+        Number(item.subtotal).toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        })
+      );
+    }
+
+    lines.push('');
+    lines.push('Total: ' + Number(result.total).toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }));
+    lines.push('');
+    lines.push('O pedido está aguardando confirmação do pagamento. Vou enviar o comprovante nesta conversa.');
+
+    const url = 'https://wa.me/' + WHATSAPP + '?text=' +
+      encodeURIComponent(lines.join('\n'));
+
+    paymentMessage.textContent =
+      'Pedido registrado! Falta confirmar o recebimento do Pix.';
+
+    window.open(url, '_blank');
+  } catch (error) {
+    console.error('Erro ao registrar pedido Pix:', error);
+    paymentMessage.textContent =
+      error.message || 'Erro ao registrar o pedido. Tente novamente.';
+  } finally {
+    pixWhatsAppButton.disabled = false;
+  }
 });
+
 
 mercadoPagoBtn.addEventListener('click', async () => {
   if (cart.size === 0) {
