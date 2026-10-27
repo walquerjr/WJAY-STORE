@@ -661,7 +661,7 @@ pixWhatsAppButton.addEventListener('click', async () => {
     }));
 
     const response = await fetch(
-      SUPABASE_URL + '/functions/v1/register-pix-order',
+    config.supabaseUrl + '/functions/v1/register-pix-order',
       {
         method: 'POST',
         headers: {
