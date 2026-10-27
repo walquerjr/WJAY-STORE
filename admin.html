@@ -8,6 +8,22 @@
 :root{--bg:#07111b;--panel:#0b1722;--line:#203243;--text:#f4f8fc;--muted:#a8b9cb;--green:#00c991;--blue:#3d82ff;--purple:#8b5cf6}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,Arial,sans-serif}button,input,textarea,select{font:inherit}button{border:0;border-radius:8px;padding:10px 13px;background:var(--green);color:#03271d;font-weight:800;cursor:pointer}button:hover{filter:brightness(1.06)}button:disabled{opacity:.6}.secondary{background:#172737;color:#dce8f4;border:1px solid #2b4053}.danger{background:#3b2028;color:#ffc5c5}.hidden{display:none!important}.muted,.notice{color:var(--muted);font-size:13px;line-height:1.55}
 .sidebar{position:fixed;inset:0 auto 0 0;width:245px;background:#06101a;border-right:1px solid var(--line);padding:25px 15px;z-index:5;display:flex;flex-direction:column}.logo{font-size:27px;font-weight:950;letter-spacing:-1px;margin:6px 15px 42px}.logo span{display:block;color:var(--green);font-size:12px;letter-spacing:3px;text-align:right;margin-top:4px}.nav{display:grid;gap:7px}.nav button{background:transparent;color:#dce8f4;text-align:left;padding:14px;border:1px solid transparent;display:flex;gap:12px;align-items:center;font-size:14px}.nav button.active{background:#064a3b;border-color:#075c47;color:white}.ico{width:22px;text-align:center;font-size:18px}.side-bottom{margin-top:auto;padding:10px;color:var(--muted);font-size:12px;line-height:1.8}.main{margin-left:245px;padding:27px 30px;max-width:1800px}.pagehead{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:23px}.pagehead h1{font-size:29px;margin:0 0 7px}.pagehead p{margin:0;color:var(--muted)}.pagehead a{color:white;text-decoration:none}.card,.stat{background:linear-gradient(145deg,#0b1722,#09141e);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:17px;min-width:0}.card h2{font-size:18px;margin:0 0 15px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:17px}.stat{padding:18px;margin:0}.stat-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#064c3c;color:#6df3c5;font-size:19px;margin-bottom:12px}.stat-icon.blue{background:#123c7a;color:#83b7ff}.stat-icon.purple{background:#3b2678;color:#c6b3ff}.stat-label{color:#c4d2e1}.stat-value{font-size:26px;font-weight:850;margin:9px 0;overflow-wrap:anywhere}.stat-note{color:var(--muted);font-size:12px}.filters{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.filters select,.filters input{width:auto;min-width:150px}.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}.full{grid-column:1/-1}label{display:block;color:#dbe7f2;font-weight:700;font-size:13px;margin:12px 0 6px}input,textarea,select{width:100%;padding:11px 12px;border:1px solid #2b4053;border-radius:8px;background:#07131e;color:#f3f7fb;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--green)}input[type=checkbox]{width:auto;accent-color:var(--green)}textarea{min-height:78px}.checkline{display:flex;align-items:center;gap:8px;margin-top:16px}.checkline label{margin:0}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.statusbox{padding:12px 14px;background:#0e2a24;border:1px solid #1d5947;color:#a9f5d6;border-radius:9px;margin:12px 0;font-size:13px}.product{display:grid;grid-template-columns:68px minmax(0,1fr) auto;gap:13px;align-items:center;border-top:1px solid var(--line);padding:14px 0}.product img{width:68px;height:74px;object-fit:cover;border-radius:8px;background:#142331}.product strong{display:block;margin-bottom:5px}.sub{color:var(--muted);font-size:12px;line-height:1.7}.thumbs{display:flex;gap:5px;margin-top:6px}.thumbs img{width:28px;height:28px;object-fit:cover;border-radius:5px}.tablewrap{overflow-x:auto}.table{width:100%;border-collapse:collapse;min-width:650px}.table th{text-align:left;color:#b8c8d8;background:#101e2b;font-size:12px;padding:12px}.table td{padding:13px 12px;border-top:1px solid var(--line);font-size:13px;vertical-align:middle}.pill{display:inline-block;padding:6px 10px;border-radius:20px;font-size:11px;font-weight:800;white-space:nowrap;background:#243447;color:#dbe8f5}.pill.paid{background:#07543e;color:#a5f5d5}.pill.pending{background:#553b12;color:#ffdc92}.pill.cancelled{background:#51232b;color:#ffc0c5}.pill.shipped{background:#153b68;color:#b9d8ff}.detail{background:#0a1722;border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:13px;line-height:1.8}.detailgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.detailitem{padding:12px;background:#0e1d2a;border:1px solid var(--line);border-radius:9px;overflow-wrap:anywhere}.detailitem b{display:block;color:var(--muted);font-size:12px}.login-card{max-width:450px;margin:8vh auto}.empty{padding:22px 0;color:var(--muted)}
+  /* Mensagens fixas na parte inferior da tela */
+#globalStatus {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  width: min(92%, 520px);
+  margin: 0;
+  padding: 15px 18px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.45);
+  z-index: 9999;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+}
 @media(max-width:1050px){.sidebar{width:205px}.main{margin-left:205px;padding:20px 16px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.sidebar{position:sticky;top:0;width:100%;height:auto;padding:10px;background:#06101a}.logo{font-size:19px;margin:0 8px 9px}.logo span{display:inline;font-size:10px;margin-left:6px}.nav{display:flex;overflow-x:auto;gap:4px}.nav button{white-space:nowrap;padding:9px;font-size:12px;gap:6px}.ico{font-size:14px;width:auto}.side-bottom{display:none}.main{margin:0;padding:14px 11px}.pagehead h1{font-size:24px}.stats{gap:8px}.stat{padding:12px}.stat-value{font-size:20px}.card{padding:14px}.field-grid,.detailgrid{grid-template-columns:1fr}.full{grid-column:auto}.product{grid-template-columns:53px minmax(0,1fr)}.product img{width:53px;height:60px}.product .actions{grid-column:1/-1;margin:0}.table{min-width:620px}}
 </style></head><body>
@@ -52,7 +68,62 @@ $('orderFilter').addEventListener('change',renderOrders);$('orderSearch').addEve
 function renderOrders(){let a=filteredOrders();if(!a.length){$('orderList').innerHTML='<p class="empty">Nenhum pedido encontrado.</p>';return;}$('orderList').innerHTML=`<table class="table"><thead><tr><th>Pedido</th><th>Data</th><th>Total</th><th>Pagamento</th><th>Status</th><th>Ações</th></tr></thead><tbody>${a.map(o=>{let s=state(o);return `<tr><td><b>${esc(code(o))}</b></td><td>${new Date(o.created_at).toLocaleString('pt-BR')}</td><td><b>${money(o.total)}</b></td><td><span class="pill ${s[1]}">${esc(s[0])}</span></td><td>${esc(o.order_status||'—')}</td><td><button class="secondary" onclick="showOrder('${esc(o.id)}')">Detalhes</button></td></tr>`}).join('')}</tbody></table>`;}
 window.showOrder=id=>{let o=allOrders.find(x=>String(x.id)===String(id));if(!o)return;let s=state(o);$('orderDetails').innerHTML=`<div class="detail"><h2>Pedido ${esc(code(o))}</h2><div class="detailgrid"><div class="detailitem"><b>Valor</b>${money(o.total)}</div><div class="detailitem"><b>Pagamento</b>${esc(o.payment_status||'—')}</div><div class="detailitem"><b>Código de acompanhamento</b>${esc(o.tracking_code||'Não disponível')}</div></div><h3>Itens</h3>${formatItems(o.items)}<label for="orderStatusEdit">Status do pedido</label><select id="orderStatusEdit"><option value="paid">Pago / preparar</option><option value="processing">Em preparação</option><option value="shipped">Enviado</option><option value="delivered">Entregue</option><option value="cancelled">Cancelado</option></select><div class="actions"><button onclick="saveOrderStatus('${esc(o.id)}')">Salvar status</button><button class="secondary" onclick="document.getElementById('orderDetails').innerHTML=''">Fechar</button></div><p class="notice">Esta alteração não estorna pagamentos; o status financeiro continua sendo controlado pelo Mercado Pago.</p></div>`;$('orderStatusEdit').value=o.order_status|| (isPaid(o)?'paid':'processing');};
 function formatItems(items){if(!Array.isArray(items)||!items.length)return 'Itens não disponíveis no registro.';return items.map(i=>`${esc(i.title||i.name||'Produto')} — ${Number(i.quantity)||1} un. × ${money(i.unit_price)}`).join('<br>');}
-window.saveOrderStatus=async id=>{let o=allOrders.find(x=>String(x.id)===String(id));if(!o)return;let s=$('orderStatusEdit').value;if(s==='cancelled'&&isPaid(o)&&!confirm('O pedido está pago. Isso não estorna o pagamento. Continuar?'))return;let {error}=await db.from('orders').update({order_status:s,updated_at:new Date().toISOString()}).eq('id',id);if(error){notify('Não foi possível atualizar o status: '+error.message);return;}notify('Status atualizado.');await loadOrders();showOrder(id);};
+window.saveOrderStatus = async id => {
+  const o = allOrders.find(x => String(x.id) === String(id));
+  if (!o) {
+    notify('Erro: pedido não encontrado.');
+    return;
+  }
+
+  const select = document.getElementById('orderStatusEdit');
+  if (!select) {
+    notify('Erro: campo de status não encontrado.');
+    return;
+  }
+
+  const novoStatus = select.value;
+
+  if (
+    novoStatus === 'cancelled' &&
+    isPaid(o) &&
+    !confirm('O pedido está marcado como pago. Isso não estorna o pagamento. Deseja continuar?')
+  ) {
+    return;
+  }
+
+  const botoes = document.querySelectorAll('#orderDetails button');
+  botoes.forEach(b => b.disabled = true);
+
+  try {
+    const { data, error } = await db
+      .from('orders')
+      .update({
+        order_status: novoStatus,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select('id, order_status')
+      .maybeSingle();
+
+    if (error) {
+      notify('Erro ao salvar: ' + error.message);
+      return;
+    }
+
+    if (!data) {
+      notify('Nenhuma alteração confirmada. Verifique as permissões do Supabase.');
+      return;
+    }
+
+    notify('Status atualizado e confirmado no banco de dados.');
+    await loadOrders();
+    showOrder(id);
+  } catch (e) {
+    notify('Erro inesperado ao salvar: ' + (e.message || e));
+  } finally {
+    botoes.forEach(b => b.disabled = false);
+  }
+};
 async function loadFinance(){['finSales','finPieces','finCost','finProfit'].forEach(id=>$(id).textContent='...');let p=$('period').value,cut=p==='all'?null:new Date(Date.now()-Number(p)*86400000).toISOString();let q=db.from('orders').select('id,created_at,total,payment_status,order_status,items').order('created_at',{ascending:true});if(cut)q=q.gte('created_at',cut);let {data,error}=await q;if(error){notify('Erro no faturamento: '+error.message);return;}let paid=(data||[]).filter(isPaid),ids=paid.map(o=>o.id),lines=[];if(ids.length){let r=await db.from('order_items').select('id,order_id,product_id,quantity,unit_price,unit_cost,total_cost,title').in('order_id',ids);if(r.error){notify('Erro ao consultar order_items: '+r.error.message);return;}lines=r.data||[];}let by={};lines.forEach(l=>(by[l.order_id]??=[]).push(l));let sales=0,pieces=0,cost=0,unknown=0,knownRevenue=0;paid.forEach(o=>{sales+=Number(o.total)||0;(by[o.id]||[]).forEach(l=>{let qty=Number(l.quantity)||0;pieces+=qty;if(l.unit_cost==null){unknown+=qty;}else{cost+=l.total_cost==null?Number(l.unit_cost)*qty:Number(l.total_cost);knownRevenue+=(Number(l.unit_price)||0)*qty;}});});$('finSales').textContent=money(sales);$('finPieces').textContent=String(pieces);$('finCost').textContent=money(cost);$('finProfit').textContent=money(knownRevenue-cost);$('finOrders').textContent=paid.length+' pedido(s) aprovado(s)';$('finCostNote').textContent=unknown?unknown+' peça(s) sem custo informado':'Custos salvos nos itens';$('finProfitNote').textContent=unknown?'Somente itens com custo conhecido':'Receita dos itens menos custos registrados';financeRows=paid.map(o=>({date:new Date(o.created_at),sales:Number(o.total)||0,cost:(by[o.id]||[]).reduce((s,l)=>s+(l.unit_cost==null?0:Number(l.total_cost??(Number(l.unit_cost)*Number(l.quantity)))),0)}));drawChart(financeRows);renderRecent(paid);}
 function renderRecent(a){a=[...a].sort((x,y)=>new Date(y.created_at)-new Date(x.created_at)).slice(0,5);if(!a.length){$('recentOrders').innerHTML='<p class="empty">Nenhum pedido aprovado neste período.</p>';return;}$('recentOrders').innerHTML=`<table class="table"><thead><tr><th>Pedido</th><th>Data</th><th>Peças</th><th>Total</th><th>Status</th></tr></thead><tbody>${a.map(o=>`<tr><td>${esc(code(o))}</td><td>${new Date(o.created_at).toLocaleDateString('pt-BR')}</td><td>${Array.isArray(o.items)?o.items.reduce((s,i)=>s+(Number(i.quantity)||0),0):'—'}</td><td><b>${money(o.total)}</b></td><td><span class="pill paid">Aprovado</span></td></tr>`).join('')}</tbody></table>`;}
 function drawChart(rows){let days={};rows.forEach(r=>{let k=r.date.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});days[k]??={sales:0,cost:0};days[k].sales+=r.sales;days[k].cost+=r.cost;});let entries=Object.entries(days);if(entries.length>12)entries=entries.slice(-12);if(!entries.length){$('chart').innerHTML='<p class="empty">Ainda não há vendas aprovadas para este período.</p>';return;}let max=Math.max(1,...entries.map(x=>x[1].sales));$('chart').innerHTML=entries.map(([day,v])=>`<div style="display:grid;grid-template-columns:48px 1fr 100px;gap:9px;align-items:center;margin:10px 0"><span class="muted">${day}</span><div style="height:14px;background:#172737;border-radius:9px;overflow:hidden"><div title="Vendas ${money(v.sales)}" style="height:100%;width:${Math.max(v.sales?1:0,v.sales/max*100)}%;background:var(--green);border-radius:9px"></div></div><span style="text-align:right;font-size:12px">${money(v.sales)}</span></div>`).join('');}
