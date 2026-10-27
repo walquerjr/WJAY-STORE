@@ -644,7 +644,7 @@ pixWhatsAppButton.addEventListener('click', async () => {
     return;
   }
 
-  if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
+  if (!config || !config.supabaseUrl || !config.supabaseAnonKey) {
     paymentMessage.textContent = 'Configuração da loja não encontrada. Entre em contato pelo WhatsApp.';
     return;
   }
@@ -666,8 +666,8 @@ pixWhatsAppButton.addEventListener('click', async () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+        'apikey': config.supabaseAnonKey,
+'Authorization': 'Bearer ' + config.supabaseAnonKey
         },
         body: JSON.stringify({ items })
       }
