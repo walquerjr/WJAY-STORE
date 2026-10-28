@@ -167,6 +167,101 @@ window.saveOrderStatus = async id => {
     botoes.forEach(b => b.disabled = false);
   }
 };
+  
+window.registerWhatsAppSale = async () => {
+  const msg = $('waSaleMessage');
+  const button = document.querySelector('#whatsappSaleCard button');
+
+  const customer = $('waCustomer').value.trim();
+  const phone = $('waPhone').value.trim();
+  const product = $('waProduct').value.trim();
+  const quantity = Number($('waQuantity').value);
+  const price = Number($('waPrice').value);
+  const paymentMethod = $('waPayment').value;
+  const paymentStatus = $('waPaid').value;
+
+  if (!customer || !product || !Number.isInteger(quantity) ||
+      quantity < 1 || !Number.isFinite(price) || price <= 0) {
+    msg.textContent = 'Preencha cliente, produto, quantidade e preço corretamente.';
+    return;
+  }
+
+  if (paymentStatus === 'approved' &&
+      !confirm('Confirma que o dinheiro foi realmente recebido?')) {
+    return;
+  }
+
+  button.disabled = true;
+  msg.textContent = 'Registrando venda...';
+
+  const total = Math.round(quantity * price * 100) / 100;
+  const reference = 'WHATSAPP-' +
+    new Date().toISOString().replace(/\D/g, '').slice(0, 14) +
+    '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+
+  const item = {
+    title: product,
+    name: product,
+    quantity,
+    unit_price: price,
+    customer_name: customer,
+    customer_phone: phone,
+    payment_method: paymentMethod,
+    source: 'WhatsApp'
+  };
+
+  try {
+    const { data: order, error: orderError } = await db
+      .from('orders')
+      .insert({
+        external_reference: reference,
+        payment_status: paymentStatus,
+        order_status: paymentStatus === 'approved' ? 'paid' : 'pending',
+        total,
+        currency: 'BRL',
+        items: [item]
+      })
+      .select('id')
+      .single();
+
+    if (orderError) throw orderError;
+
+    const { error: itemError } = await db
+      .from('order_items')
+      .insert({
+        order_id: order.id,
+        quantity,
+        unit_price: price,
+        title: product
+      });
+
+    if (itemError) {
+      msg.textContent =
+        'O pedido foi criado, mas houve erro ao gravar o item: ' +
+        itemError.message +
+        '. Não registre novamente; avise-me para corrigirmos.';
+      return;
+    }
+
+    $('waCustomer').value = '';
+    $('waPhone').value = '';
+    $('waProduct').value = '';
+    $('waQuantity').value = '1';
+    $('waPrice').value = '';
+    $('waPaid').value = 'pending';
+    $('waPayment').value = 'Pix';
+
+    msg.textContent = 'Venda registrada! Pedido: ' + reference;
+
+    await loadOrders();
+    await loadFinance();
+  } catch (error) {
+    msg.textContent = 'Erro ao registrar: ' + error.message;
+  } finally {
+    button.disabled = false;
+  }
+};
+
 async function loadFinance(){
   window.confirmPixPayment = async id => {
   const o = allOrders.find(x => String(x.id) === String(id));
