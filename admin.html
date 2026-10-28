@@ -130,10 +130,120 @@ if(p.promo_end_at){
                         $('costPrice').value=p.cost_price??'';$('stock').value=p.stock??0;$('featured').checked=!!p.featured;$('category').value=p.category||'promocoes';$('sizes').value=Array.isArray(p.sizes)?p.sizes.join(', '):(p.sizes||'');$('description').value=p.description||'';$('active').checked=!!p.active;$('images').value='';editingImages=photos(p);$('existingPhotos').innerHTML=editingImages.map(u=>`<img src="${esc(u)}" alt="">`).join('');$('formTitle').textContent='Editar produto';$('saveBtn').textContent='Salvar alterações';window.scrollTo({top:0,behavior:'smooth'});};
 function resetForm(){$('productForm').reset();$('productId').value='';$('active').checked=true;$('stock').value=0;$('formTitle').textContent='Cadastrar novo produto';$('saveBtn').textContent='Salvar produto';$('existingPhotos').innerHTML='';editingImages=[];}
 $('cancelEdit').addEventListener('click',resetForm);
-$('productForm').addEventListener('submit',async e=>{e.preventDefault();let id=$('productId').value,btn=$('saveBtn');btn.disabled=true;btn.textContent='Salvando...';try{let a=id?[...editingImages]:[];for(const f of [...$('images').files]){if(f.size>5*1024*1024)throw new Error('A foto '+f.name+' ultrapassa 5 MB.');let ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg',path=Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+ext;let {error}=await db.storage.from('product-images').upload(path,f,{upsert:false,contentType:f.type});if(error)throw error;let {data}=db.storage.from('product-images').getPublicUrl(path);a.push(data.publicUrl);}a=[...new Set(a)];let payload={name:$('name').value.trim(),supplier:$('supplier').value.trim(),price:Number($('price').value),wholesale_price:$('wholesalePrice').value===''?null:Number($('wholesalePrice').value),
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   promo_price:$('promoPrice').value===''?null:Number($('promoPrice').value),
-promo_end_at:$('promoEndAt').value?new Date($('promoEndAt').value).toISOString():null,
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   cost_price:$('costPrice').value===''?null:Number($('costPrice').value),stock:Math.max(0,Number($('stock').value)||0),featured:$('featured').checked,category:$('category').value,sizes:$('sizes').value.split(',').map(x=>x.trim()).filter(Boolean),description:$('description').value.trim(),image_url:a[0]||null,image_urls:a,active:$('active').checked};let r=id?await db.from('products').update(payload).eq('id',id):await db.from('products').insert(payload);if(r.error)throw r.error;resetForm();await loadProducts();notify('Produto salvo com sucesso.');}catch(err){notify('Não foi possível salvar: '+(err.message||err));}finally{btn.disabled=false;btn.textContent=$('productId').value?'Salvar alterações':'Salvar produto';}});
+
+$('productForm').addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const id = $('productId').value;
+  const btn = $('saveBtn');
+
+  // Validar os campos da promoção antes de salvar.
+  const promoPriceInput = $('promoPrice').value;
+  const promoEndInput = $('promoEndAt').value;
+
+  let promo_price = null;
+  let promo_end_at = null;
+
+  if (promoPriceInput !== '' || promoEndInput !== '') {
+    if (promoPriceInput === '' || promoEndInput === '') {
+      notify('Preencha o preço promocional e o encerramento, ou deixe os dois vazios.');
+      return;
+    }
+
+    promo_price = Number(promoPriceInput);
+
+    const endDate = new Date(promoEndInput);
+    const normalPrice = Number($('price').value);
+
+    if (
+      !Number.isFinite(promo_price) ||
+      promo_price <= 0 ||
+      promo_price >= normalPrice
+    ) {
+      notify('O preço promocional deve ser maior que zero e menor que o preço normal.');
+      return;
+    }
+
+    if (Number.isNaN(endDate.getTime()) || endDate <= new Date()) {
+      notify('A data de encerramento precisa estar no futuro.');
+      return;
+    }
+
+    promo_end_at = endDate.toISOString();
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Salvando...';
+
+  try {
+    let a = id ? [...editingImages] : [];
+
+    for (const f of [...$('images').files]) {
+      if (f.size > 5 * 1024 * 1024) {
+        throw new Error('A foto ' + f.name + ' ultrapassa 5 MB.');
+      }
+
+      const ext = (f.name.split('.').pop() || 'jpg')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '') || 'jpg';
+
+      const path = Date.now() + '-' +
+        Math.random().toString(36).slice(2) + '.' + ext;
+
+      const { error } = await db.storage
+        .from('product-images')
+        .upload(path, f, { upsert: false, contentType: f.type });
+
+      if (error) throw error;
+
+      const { data } = db.storage
+        .from('product-images')
+        .getPublicUrl(path);
+
+      a.push(data.publicUrl);
+    }
+
+    a = [...new Set(a)];
+
+    const payload = {
+      name: $('name').value.trim(),
+      supplier: $('supplier').value.trim(),
+      price: Number($('price').value),
+      wholesale_price: $('wholesalePrice').value === ''
+        ? null : Number($('wholesalePrice').value),
+      promo_price,
+      promo_end_at,
+      cost_price: $('costPrice').value === ''
+        ? null : Number($('costPrice').value),
+      stock: Math.max(0, Number($('stock').value) || 0),
+      featured: $('featured').checked,
+      category: $('category').value,
+      sizes: $('sizes').value.split(',').map(x => x.trim()).filter(Boolean),
+      description: $('description').value.trim(),
+      image_url: a[0] || null,
+      image_urls: a,
+      active: $('active').checked
+    };
+
+    const r = id
+      ? await db.from('products').update(payload).eq('id', id)
+      : await db.from('products').insert(payload);
+
+    if (r.error) throw r.error;
+
+    resetForm();
+    await loadProducts();
+    notify('Produto salvo com sucesso.');
+
+  } catch (err) {
+    notify('Não foi possível salvar: ' + (err.message || err));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = $('productId').value
+      ? 'Salvar alterações'
+      : 'Salvar produto';
+  }
+});
 window.deleteProduct=async id=>{let p=products.find(x=>String(x.id)===String(id));if(!p||!confirm('Excluir o produto “'+p.name+'”? Os pedidos anteriores devem continuar registrados.'))return;let {error}=await db.from('products').delete().eq('id',id);if(error){notify('Erro ao excluir: '+error.message);return;}await loadProducts();notify('Produto excluído do catálogo.');};
 async function loadOrders(){ $('orderStatus').textContent='Carregando pedidos...';let {data,error}=await db.from('orders').select('id,created_at,total,payment_status,order_status,external_reference,items,tracking_code,mp_payment_id').order('created_at',{ascending:false});if(error){$('orderStatus').textContent='Erro ao carregar pedidos: '+error.message;return;}allOrders=data||[];$('orderStatus').textContent=allOrders.length+' pedido(s) encontrado(s).';renderOrders();}
 function filteredOrders(){let a=[...allOrders],f=$('orderFilter').value,q=$('orderSearch').value.trim().toLowerCase();if(f==='pending')a=a.filter(o=>!isPaid(o)&&state(o)[1]!=='cancelled');if(f==='paid')a=a.filter(isPaid);if(f==='shipped')a=a.filter(o=>state(o)[1]==='shipped');if(f==='cancelled')a=a.filter(o=>state(o)[1]==='cancelled');if(q)a=a.filter(o=>(code(o)+' '+(o.mp_payment_id||'')).toLowerCase().includes(q));return a;}
