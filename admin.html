@@ -56,7 +56,11 @@
   Informe o preço promocional e a data de encerramento. Quando a promoção expirar, o produto voltará automaticamente ao preço normal na loja.
 </div>
 <div><label for="stock">Estoque</label><input id="stock" type="number" min="0" step="1" value="0" required></div>
-<div><label for="category">Categoria *</label><select id="category" required><option value="camisetas">Camisetas</option><option value="bermudas">Bermudas</option><option value="conjuntos">Conjuntos</option><option value="promocoes">Ofertas / Outros</option></select></div>
+<div><label for="category">Categoria *</label><select id="category" required><option value="camisetas">Camisetas</option><option value="bermudas">Bermudas</option><option value="conjuntos">Conjuntos</option><option value="promocoes">Ofertas / Outros</option>
+<option value="tailandesas">Tailandesas</option>
+<option value="feminino">Feminino</option>
+<option value="perfumes">Perfumes</option>
+</select></div>
 <div><label for="sizes">Tamanhos disponíveis</label><input id="sizes" placeholder="P, M, G, GG"></div>
 <div class="full"><label for="description">Descrição</label><textarea id="description"></textarea></div>
 <div class="full"><label for="images">Fotos do produto (selecione várias)</label><input id="images" type="file" accept="image/png,image/jpeg,image/webp" multiple><p class="notice">Até 5 MB por foto. Ao editar, novas fotos serão adicionadas às existentes.</p><div id="existingPhotos" class="thumbs"></div></div></div><div class="checkline"><input id="featured" type="checkbox"><label for="featured">Produto em destaque</label></div><div class="checkline"><input id="active" type="checkbox" checked><label for="active">Produto ativo (visível na loja)</label></div><div class="actions"><button type="submit" id="saveBtn">Salvar produto</button><button type="button" id="cancelEdit" class="secondary">Limpar formulário</button></div></form></section><section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h2 style="margin:0">Produtos cadastrados</h2><span id="productCount" class="muted"></span></div><div id="productList"></div></section></section>
