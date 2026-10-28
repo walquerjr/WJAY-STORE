@@ -37,7 +37,49 @@
 <section class="card"><h2>Evolução do faturamento</h2><div class="sub">Resumo visual por dia: vendas, custos conhecidos e lucro estimado.</div><div id="chart" style="margin-top:16px"></div><p class="notice">Pedidos sem custo conhecido não são tratados como lucro confirmado. O cálculo não inclui despesas extras, taxas de pagamento ou frete.</p></section>
 <section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h2 style="margin:0">Pedidos recentes</h2><button class="secondary" data-go="orders">Ver todos os pedidos →</button></div><div id="recentOrders" class="tablewrap" style="margin-top:14px"></div></section></section>
 <section id="productsSection" class="hidden"><section class="card"><h2 id="formTitle">Cadastrar novo produto</h2><form id="productForm"><input id="productId" type="hidden"><div class="field-grid"><div><label for="name">Nome do produto *</label><input id="name" required></div><div><label for="supplier">Fornecedor *</label><input id="supplier" required placeholder="Nome do fornecedor"></div><div><label for="price">Preço de venda (R$) *</label><input id="price" type="number" min="0.01" step="0.01" required></div><div><label for="wholesalePrice">Preço de atacado (R$)</label><input id="wholesalePrice" type="number" min="0" step="0.01"></div><div><label for="costPrice">Custo de compra por peça (R$)</label><input id="costPrice" type="number" min="0" step="0.01"></div><div><label for="stock">Estoque</label><input id="stock" type="number" min="0" step="1" value="0" required></div><div><label for="category">Categoria *</label><select id="category" required><option value="camisetas">Camisetas</option><option value="bermudas">Bermudas</option><option value="conjuntos">Conjuntos</option><option value="promocoes">Ofertas / Outros</option></select></div><div><label for="sizes">Tamanhos disponíveis</label><input id="sizes" placeholder="P, M, G, GG"></div><div class="full"><label for="description">Descrição</label><textarea id="description"></textarea></div><div class="full"><label for="images">Fotos do produto (selecione várias)</label><input id="images" type="file" accept="image/png,image/jpeg,image/webp" multiple><p class="notice">Até 5 MB por foto. Ao editar, novas fotos serão adicionadas às existentes.</p><div id="existingPhotos" class="thumbs"></div></div></div><div class="checkline"><input id="featured" type="checkbox"><label for="featured">Produto em destaque</label></div><div class="checkline"><input id="active" type="checkbox" checked><label for="active">Produto ativo (visível na loja)</label></div><div class="actions"><button type="submit" id="saveBtn">Salvar produto</button><button type="button" id="cancelEdit" class="secondary">Limpar formulário</button></div></form></section><section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h2 style="margin:0">Produtos cadastrados</h2><span id="productCount" class="muted"></span></div><div id="productList"></div></section></section>
-<section id="ordersSection" class="hidden"><section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin-bottom:5px">Pedidos</h2><p class="muted">Consulte pagamentos e atualize o andamento do pedido.</p></div><button id="refreshOrders" class="secondary">↻ Atualizar</button></div><div class="filters" style="margin:14px 0"><select id="orderFilter"><option value="all">Todos os pedidos</option><option value="pending">Pendentes</option><option value="paid">Pagos</option><option value="shipped">Enviados</option><option value="cancelled">Cancelados</option></select><input id="orderSearch" type="search" placeholder="Buscar pedido..." style="flex:1;min-width:180px"></div><div id="orderStatus" class="muted"></div><div id="orderList" class="tablewrap"></div><div id="orderDetails"></div></section></section>
+<section id="ordersSection" class="hidden"><section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin-bottom:5px">Pedidos</h2><p class="muted">Consulte pagamentos e atualize o andamento do pedido.</p></div><button id="refreshOrders" class="secondary">↻ Atualizar</button></div><div class="filters" style="margin:14px 0"><select id="orderFilter"><option value="all">Todos os pedidos</option><option value="pending">Pendentes</option><option value="paid">Pagos</option><option value="shipped">Enviados</option><option value="cancelled">Cancelados</option></select><input id="orderSearch" type="search" placeholder="Buscar pedido..." style="flex:1;min-width:180px"></div><div id="orderStatus" class="muted"></div><div id="orderList" class="tablewrap"></div><div id="orderDetails"></div>
+
+<div class="card" id="whatsappSaleCard">
+  <h2>Registrar venda pelo WhatsApp</h2>
+  <p>Cadastre uma venda realizada fora do site.</p>
+
+  <label for="waCustomer">Nome do cliente</label>
+  <input id="waCustomer" type="text" placeholder="Nome do cliente" required>
+
+  <label for="waPhone">WhatsApp do cliente</label>
+  <input id="waPhone" type="tel" placeholder="DDD + telefone">
+
+  <label for="waProduct">Produto vendido</label>
+  <input id="waProduct" type="text" placeholder="Nome do produto" required>
+
+  <label for="waQuantity">Quantidade</label>
+  <input id="waQuantity" type="number" min="1" value="1" required>
+
+  <label for="waPrice">Preço unitário (R$)</label>
+  <input id="waPrice" type="number" min="0.01" step="0.01" placeholder="0,00" required>
+
+  <label for="waPayment">Forma de pagamento</label>
+  <select id="waPayment">
+    <option value="Pix">Pix</option>
+    <option value="Dinheiro">Dinheiro</option>
+    <option value="Cartão">Cartão</option>
+    <option value="Transferência">Transferência</option>
+    <option value="Outro">Outro</option>
+  </select>
+
+  <label for="waPaid">Situação do pagamento</label>
+  <select id="waPaid">
+    <option value="pending">Ainda não recebido</option>
+    <option value="approved">Recebido e confirmado</option>
+  </select>
+
+  <button type="button" onclick="registerWhatsAppSale()">
+    Registrar venda
+  </button>
+  <p id="waSaleMessage" role="status"></p>
+</div>
+
+</section></section>
 </main></div>
 <script>
 let db=null,products=[],allOrders=[],financeRows=[],editingImages=[];
@@ -67,6 +109,7 @@ function filteredOrders(){let a=[...allOrders],f=$('orderFilter').value,q=$('ord
 $('orderFilter').addEventListener('change',renderOrders);$('orderSearch').addEventListener('input',renderOrders);
 function renderOrders(){let a=filteredOrders();if(!a.length){$('orderList').innerHTML='<p class="empty">Nenhum pedido encontrado.</p>';return;}$('orderList').innerHTML=`<table class="table"><thead><tr><th>Pedido</th><th>Data</th><th>Total</th><th>Pagamento</th><th>Status</th><th>Ações</th></tr></thead><tbody>${a.map(o=>{let s=state(o);return `<tr><td><b>${esc(code(o))}</b></td><td>${new Date(o.created_at).toLocaleString('pt-BR')}</td><td><b>${money(o.total)}</b></td><td><span class="pill ${s[1]}">${esc(s[0])}</span></td><td>${esc(o.order_status||'—')}</td><td><button class="secondary" onclick="showOrder('${esc(o.id)}')">Detalhes</button></td></tr>`}).join('')}</tbody></table>`;}
 window.showOrder=id=>{let o=allOrders.find(x=>String(x.id)===String(id));if(!o)return;let s=state(o);$('orderDetails').innerHTML=`<div class="detail"><h2>Pedido ${esc(code(o))}</h2><div class="detailgrid"><div class="detailitem"><b>Valor</b>${money(o.total)}</div><div class="detailitem"><b>Pagamento</b>${esc(o.payment_status||'—')}</div><div class="detailitem"><b>Código de acompanhamento</b>${esc(o.tracking_code||'Não disponível')}</div></div><h3>Itens</h3>${formatItems(o.items)}<label for="orderStatusEdit">Status do pedido</label><select id="orderStatusEdit"><option value="paid">Pago / preparar</option><option value="processing">Em preparação</option><option value="shipped">Enviado</option><option value="delivered">Entregue</option><option value="cancelled">Cancelado</option></select><div class="actions"><button onclick="saveOrderStatus('${esc(o.id)}')">Salvar status</button><button class="secondary" onclick="document.getElementById('orderDetails').innerHTML=''">Fechar</button></div><p class="notice">Esta alteração não estorna pagamentos; o status financeiro continua sendo controlado pelo Mercado Pago.</p></div>`;$('orderStatusEdit').value=o.order_status|| (isPaid(o)?'paid':'processing');};
+  document.getElementById('orderDetails').scrollIntoView({ behavior: 'smooth', block: 'start' });
 function formatItems(items){if(!Array.isArray(items)||!items.length)return 'Itens não disponíveis no registro.';return items.map(i=>`${esc(i.title||i.name||'Produto')} — ${Number(i.quantity)||1} un. × ${money(i.unit_price)}`).join('<br>');}
 window.saveOrderStatus = async id => {
   const o = allOrders.find(x => String(x.id) === String(id));
@@ -124,7 +167,60 @@ window.saveOrderStatus = async id => {
     botoes.forEach(b => b.disabled = false);
   }
 };
-async function loadFinance(){['finSales','finPieces','finCost','finProfit'].forEach(id=>$(id).textContent='...');let p=$('period').value,cut=p==='all'?null:new Date(Date.now()-Number(p)*86400000).toISOString();let q=db.from('orders').select('id,created_at,total,payment_status,order_status,items').order('created_at',{ascending:true});if(cut)q=q.gte('created_at',cut);let {data,error}=await q;if(error){notify('Erro no faturamento: '+error.message);return;}let paid=(data||[]).filter(isPaid),ids=paid.map(o=>o.id),lines=[];if(ids.length){let r=await db.from('order_items').select('id,order_id,product_id,quantity,unit_price,unit_cost,total_cost,title').in('order_id',ids);if(r.error){notify('Erro ao consultar order_items: '+r.error.message);return;}lines=r.data||[];}let by={};lines.forEach(l=>(by[l.order_id]??=[]).push(l));let sales=0,pieces=0,cost=0,unknown=0,knownRevenue=0;paid.forEach(o=>{sales+=Number(o.total)||0;(by[o.id]||[]).forEach(l=>{let qty=Number(l.quantity)||0;pieces+=qty;if(l.unit_cost==null){unknown+=qty;}else{cost+=l.total_cost==null?Number(l.unit_cost)*qty:Number(l.total_cost);knownRevenue+=(Number(l.unit_price)||0)*qty;}});});$('finSales').textContent=money(sales);$('finPieces').textContent=String(pieces);$('finCost').textContent=money(cost);$('finProfit').textContent=money(knownRevenue-cost);$('finOrders').textContent=paid.length+' pedido(s) aprovado(s)';$('finCostNote').textContent=unknown?unknown+' peça(s) sem custo informado':'Custos salvos nos itens';$('finProfitNote').textContent=unknown?'Somente itens com custo conhecido':'Receita dos itens menos custos registrados';financeRows=paid.map(o=>({date:new Date(o.created_at),sales:Number(o.total)||0,cost:(by[o.id]||[]).reduce((s,l)=>s+(l.unit_cost==null?0:Number(l.total_cost??(Number(l.unit_cost)*Number(l.quantity)))),0)}));drawChart(financeRows);renderRecent(paid);}
+async function loadFinance(){
+  window.confirmPixPayment = async id => {
+  const o = allOrders.find(x => String(x.id) === String(id));
+  if (!o) {
+    notify('Erro: pedido não encontrado.');
+    return;
+  }
+
+  if (!String(o.external_reference || '').startsWith('PIX-')) {
+    notify('Confirmação manual disponível apenas para pedidos PIX identificados.');
+    return;
+  }
+
+  if (String(o.payment_status || '').toLowerCase() === 'approved') {
+    notify('Este pagamento já está marcado como aprovado.');
+    return;
+  }
+
+  const confirmado = confirm(
+    'Confirme somente após verificar no extrato bancário que o valor deste Pix foi realmente recebido. Deseja continuar?'
+  );
+
+  if (!confirmado) return;
+
+  try {
+    const { data, error } = await db
+      .from('orders')
+      .update({
+        payment_status: 'approved',
+        order_status: 'paid',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select('id, payment_status, order_status')
+      .maybeSingle();
+
+    if (error) {
+      notify('Erro ao confirmar Pix: ' + error.message);
+      return;
+    }
+
+    if (!data) {
+      notify('O Supabase não confirmou a alteração. Verifique as permissões.');
+      return;
+    }
+
+    await loadOrders();
+    showOrder(id);
+    notify('Pix confirmado manualmente. Pedido marcado como pago.');
+  } catch (e) {
+    notify('Erro ao confirmar Pix: ' + (e.message || e));
+  }
+};
+  ['finSales','finPieces','finCost','finProfit'].forEach(id=>$(id).textContent='...');let p=$('period').value,cut=p==='all'?null:new Date(Date.now()-Number(p)*86400000).toISOString();let q=db.from('orders').select('id,created_at,total,payment_status,order_status,items').order('created_at',{ascending:true});if(cut)q=q.gte('created_at',cut);let {data,error}=await q;if(error){notify('Erro no faturamento: '+error.message);return;}let paid=(data||[]).filter(isPaid),ids=paid.map(o=>o.id),lines=[];if(ids.length){let r=await db.from('order_items').select('id,order_id,product_id,quantity,unit_price,unit_cost,total_cost,title').in('order_id',ids);if(r.error){notify('Erro ao consultar order_items: '+r.error.message);return;}lines=r.data||[];}let by={};lines.forEach(l=>(by[l.order_id]??=[]).push(l));let sales=0,pieces=0,cost=0,unknown=0,knownRevenue=0;paid.forEach(o=>{sales+=Number(o.total)||0;(by[o.id]||[]).forEach(l=>{let qty=Number(l.quantity)||0;pieces+=qty;if(l.unit_cost==null){unknown+=qty;}else{cost+=l.total_cost==null?Number(l.unit_cost)*qty:Number(l.total_cost);knownRevenue+=(Number(l.unit_price)||0)*qty;}});});$('finSales').textContent=money(sales);$('finPieces').textContent=String(pieces);$('finCost').textContent=money(cost);$('finProfit').textContent=money(knownRevenue-cost);$('finOrders').textContent=paid.length+' pedido(s) aprovado(s)';$('finCostNote').textContent=unknown?unknown+' peça(s) sem custo informado':'Custos salvos nos itens';$('finProfitNote').textContent=unknown?'Somente itens com custo conhecido':'Receita dos itens menos custos registrados';financeRows=paid.map(o=>({date:new Date(o.created_at),sales:Number(o.total)||0,cost:(by[o.id]||[]).reduce((s,l)=>s+(l.unit_cost==null?0:Number(l.total_cost??(Number(l.unit_cost)*Number(l.quantity)))),0)}));drawChart(financeRows);renderRecent(paid);}
 function renderRecent(a){a=[...a].sort((x,y)=>new Date(y.created_at)-new Date(x.created_at)).slice(0,5);if(!a.length){$('recentOrders').innerHTML='<p class="empty">Nenhum pedido aprovado neste período.</p>';return;}$('recentOrders').innerHTML=`<table class="table"><thead><tr><th>Pedido</th><th>Data</th><th>Peças</th><th>Total</th><th>Status</th></tr></thead><tbody>${a.map(o=>`<tr><td>${esc(code(o))}</td><td>${new Date(o.created_at).toLocaleDateString('pt-BR')}</td><td>${Array.isArray(o.items)?o.items.reduce((s,i)=>s+(Number(i.quantity)||0),0):'—'}</td><td><b>${money(o.total)}</b></td><td><span class="pill paid">Aprovado</span></td></tr>`).join('')}</tbody></table>`;}
 function drawChart(rows){let days={};rows.forEach(r=>{let k=r.date.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});days[k]??={sales:0,cost:0};days[k].sales+=r.sales;days[k].cost+=r.cost;});let entries=Object.entries(days);if(entries.length>12)entries=entries.slice(-12);if(!entries.length){$('chart').innerHTML='<p class="empty">Ainda não há vendas aprovadas para este período.</p>';return;}let max=Math.max(1,...entries.map(x=>x[1].sales));$('chart').innerHTML=entries.map(([day,v])=>`<div style="display:grid;grid-template-columns:48px 1fr 100px;gap:9px;align-items:center;margin:10px 0"><span class="muted">${day}</span><div style="height:14px;background:#172737;border-radius:9px;overflow:hidden"><div title="Vendas ${money(v.sales)}" style="height:100%;width:${Math.max(v.sales?1:0,v.sales/max*100)}%;background:var(--green);border-radius:9px"></div></div><span style="text-align:right;font-size:12px">${money(v.sales)}</span></div>`).join('');}
 init();
