@@ -168,6 +168,7 @@ window.saveOrderStatus = async id => {
   }
 };
   
+
 window.registerWhatsAppSale = async () => {
   const msg = $('waSaleMessage');
   const button = document.querySelector('#whatsappSaleCard button');
@@ -199,16 +200,7 @@ window.registerWhatsAppSale = async () => {
     new Date().toISOString().replace(/\D/g, '').slice(0, 14) +
     '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
 
-  const item = {
-    title: product,
-    name: product,
-    quantity,
-    unit_price: price,
-    customer_name: customer,
-    customer_phone: phone,
-    payment_method: paymentMethod,
-    source: 'WhatsApp'
-  };
+  let orderId = null;
 
   try {
     const { data: order, error: orderError } = await db
@@ -219,27 +211,47 @@ window.registerWhatsAppSale = async () => {
         order_status: paymentStatus === 'approved' ? 'paid' : 'pending',
         total,
         currency: 'BRL',
-        items: [item]
+        items: [{
+          title: product,
+          name: product,
+          quantity,
+          unit_price: price,
+          customer_name: customer,
+          customer_phone: phone,
+          payment_method: paymentMethod,
+          source: 'WhatsApp'
+        }]
       })
       .select('id')
       .single();
 
     if (orderError) throw orderError;
+    orderId = order.id;
 
     const { error: itemError } = await db
       .from('order_items')
       .insert({
-        order_id: order.id,
+        order_id: orderId,
         quantity,
         unit_price: price,
         title: product
       });
 
     if (itemError) {
-      msg.textContent =
-        'O pedido foi criado, mas houve erro ao gravar o item: ' +
-        itemError.message +
-        '. Não registre novamente; avise-me para corrigirmos.';
+      const { error: cleanupError } = await db
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
+
+      if (cleanupError) {
+        msg.textContent =
+          'ERRO ao salvar o item: ' + itemError.message +
+          '. O pedido pode ter ficado incompleto. Não registre novamente.';
+      } else {
+        msg.textContent =
+          'O item não foi salvo e o pedido foi excluído. Erro: ' +
+          itemError.message;
+      }
       return;
     }
 
@@ -255,12 +267,14 @@ window.registerWhatsAppSale = async () => {
 
     await loadOrders();
     await loadFinance();
+
   } catch (error) {
     msg.textContent = 'Erro ao registrar: ' + error.message;
   } finally {
     button.disabled = false;
   }
 };
+
 
 async function loadFinance(){
   window.confirmPixPayment = async id => {
