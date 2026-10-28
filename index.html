@@ -446,8 +446,12 @@ async function loadProducts(){
       label:'WJAY STORE',
       desc:p.description||'', 
       hasPrints:(p.description||'').toUpperCase().includes('ESTAMPAS DIFERENTES'),
-      price:Number(p.price)||0,
-      wholesale_price:p.wholesale_price==null?null:Number(p.wholesale_price),
+      
+price:Number(p.price)||0,
+wholesale_price:p.wholesale_price==null?null:Number(p.wholesale_price),
+promo_price:p.promo_price==null?null:Number(p.promo_price),
+promo_end_at:p.promo_end_at||null,
+
       sizes:p.sizes||'Consulte disponibilidade',
       image:p.image_url||'',
  images:[...new Set([
