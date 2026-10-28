@@ -565,8 +565,25 @@ const supplierQuantity = supplier
   ? (quantityBySupplier.get(supplierKey) || 0)
   : 0;
 
+
+
 const wholesalePrice = Number(p.wholesale_price);
 const regularPrice = Number(p.price) || 0;
+const promoPrice = Number(p.promo_price);
+const promoEnd = p.promo_end_at ? new Date(p.promo_end_at) : null;
+
+const promoActive =
+  p.promo_price !== null &&
+  p.promo_price !== undefined &&
+  p.promo_price !== '' &&
+  Number.isFinite(promoPrice) &&
+  promoPrice > 0 &&
+  promoPrice < regularPrice &&
+  promoEnd &&
+  !Number.isNaN(promoEnd.getTime()) &&
+  promoEnd > new Date();
+
+const retailPrice = promoActive ? promoPrice : regularPrice;
 
 const hasWholesalePrice =
   p.wholesale_price !== null &&
@@ -579,7 +596,9 @@ const hasWholesalePrice =
 const price =
   supplierQuantity >= 5 && hasWholesalePrice
     ? wholesalePrice
-    : regularPrice;
+    : retailPrice;
+
+
         const subtotal = price * item.quantity;
         total += subtotal;
        const printText = item.selectedPrint
