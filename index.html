@@ -197,6 +197,34 @@ body {
 .gallery-thumb.active {
   border: 2px solid #899b20;
 }
+  
+.social-section {
+  background: #fff;
+}
+
+.instagram-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  background: #101114;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  border-radius: 8px;
+}
+
+.instagram-link svg {
+  width: 26px;
+  height: 26px;
+  color: #d8ff36;
+}
+
+.instagram-link:hover {
+  background: #30332b;
+  color: #d8ff36;
+}
+
 
 </style>
 </head>
@@ -243,7 +271,36 @@ body {
 <section class="benefits"><div class="benefit"><div class="benefit-icon">✳</div><div><strong>Atendimento direto</strong><p>Tire dúvidas e confirme seu pedido com a gente pelo WhatsApp.</p></div></div><div class="benefit"><div class="benefit-icon">◈</div><div><strong>Escolha seu tamanho</strong><p>Consulte os tamanhos e as cores disponíveis para cada peça.</p></div></div><div class="benefit"><div class="benefit-icon">↗</div><div><strong>Novidades e ofertas</strong><p>Acompanhe as novidades e fique de olho nas próximas promoções.</p></div></div></section>
 <section class="section about" id="sobre"><div><div class="eyebrow" style="color:#5d650e">Nossa ideia</div><h2>ESTILO QUE<br>COMBINA COM VOCÊ.</h2><p>A WJAY STORE reúne peças para compor seu visual do dia a dia. Navegue pelo catálogo, confira os detalhes e chame a loja para confirmar disponibilidade, pagamento e entrega.</p><a class="primary" href="#catalogo">Ver coleção ↗</a></div><div class="about-card"><span>WJAY STORE / DESDE JÁ, SEU ESTILO</span><strong>VISTA SUA<br>ATITUDE.</strong><span>SPORTSWEAR • CASUAL • STREETWEAR</span></div></section>
 </main>
-<footer class="footer" id="contato"><div><a class="brand" href="#inicio">WJAY<span> STORE</span></a><br><small>Moda esportiva e casual.<br>Seu estilo. Seu jogo.</small></div><div><small>Quer comprar ou tirar dúvidas?<br>Fale com a gente pelo WhatsApp.</small><br><a class="primary" href="#" id="footerWhats">Falar com a loja ↗</a></div><small>© <span id="year"></span> WJAY STORE<br>Todos os direitos reservados.</small></footer>
+
+<section class="section social-section" id="redes-sociais">
+  <div class="section-head">
+    <div>
+      <div class="eyebrow" style="color:#5d650e">Acompanhe a WJAY</div>
+      <h2>SIGA-NOS NAS REDES SOCIAIS</h2>
+    </div>
+    <p>Novidades, lançamentos e promoções da loja.</p>
+  </div>
+
+  <a
+    class="instagram-link"
+    href="https://www.instagram.com/wjay.store/"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Visitar Instagram da WJAY STORE"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5"
+        fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="12" cy="12" r="4"
+        fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/>
+    </svg>
+    <span>@wjay.store</span>
+    <span aria-hidden="true">↗</span>
+  </a>
+</section>
+
+  <footer class="footer" id="contato"><div><a class="brand" href="#inicio">WJAY<span> STORE</span></a><br><small>Moda esportiva e casual.<br>Seu estilo. Seu jogo.</small></div><div><small>Quer comprar ou tirar dúvidas?<br>Fale com a gente pelo WhatsApp.</small><br><a class="primary" href="#" id="footerWhats">Falar com a loja ↗</a></div><small>© <span id="year"></span> WJAY STORE<br>Todos os direitos reservados.</small></footer>
 <a class="wa-float" id="floatWhats" href="#" aria-label="Falar pelo WhatsApp">◉ WhatsApp</a>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
