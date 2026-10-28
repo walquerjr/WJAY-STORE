@@ -587,6 +587,7 @@ const supplierQuantity = supplier
 
 
 
+
 const wholesalePrice = Number(p.wholesale_price);
 const regularPrice = Number(p.price) || 0;
 const promoPrice = Number(p.promo_price);
@@ -617,7 +618,6 @@ const price =
   supplierQuantity >= 5 && hasWholesalePrice
     ? wholesalePrice
     : retailPrice;
-
 
         const subtotal = price * item.quantity;
         total += subtotal;
