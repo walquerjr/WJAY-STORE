@@ -203,57 +203,24 @@ window.registerWhatsAppSale = async () => {
   let orderId = null;
 
   try {
-    const { data: order, error: orderError } = await db
-      .from('orders')
-      .insert({
-        external_reference: reference,
-        payment_status: paymentStatus,
-        order_status: paymentStatus === 'approved' ? 'paid' : 'pending',
-        total,
-        currency: 'BRL',
-        items: [{
-          title: product,
-          name: product,
-          quantity,
-          unit_price: price,
-          customer_name: customer,
-          customer_phone: phone,
-          payment_method: paymentMethod,
-          source: 'WhatsApp'
-        }]
-      })
-      .select('id')
-      .single();
+   
+const { data: orderId, error: saleError } = await db.rpc(
+  'register_whatsapp_sale',
+  {
+    p_customer: customer,
+    p_phone: phone,
+    p_product: product,
+    p_quantity: quantity,
+    p_price: price,
+    p_payment_method: paymentMethod,
+    p_payment_status: paymentStatus
+  }
+);
 
-    if (orderError) throw orderError;
-    orderId = order.id;
+if (saleError) {
+  throw saleError;
+}
 
-    const { error: itemError } = await db
-      .from('order_items')
-      .insert({
-        order_id: orderId,
-        quantity,
-        unit_price: price,
-        title: product
-      });
-
-    if (itemError) {
-      const { error: cleanupError } = await db
-        .from('orders')
-        .delete()
-        .eq('id', orderId);
-
-      if (cleanupError) {
-        msg.textContent =
-          'ERRO ao salvar o item: ' + itemError.message +
-          '. O pedido pode ter ficado incompleto. Não registre novamente.';
-      } else {
-        msg.textContent =
-          'O item não foi salvo e o pedido foi excluído. Erro: ' +
-          itemError.message;
-      }
-      return;
-    }
 
     $('waCustomer').value = '';
     $('waPhone').value = '';
