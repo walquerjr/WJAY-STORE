@@ -198,19 +198,20 @@ let allProducts = [];
 
   try {
     const response = await fetch(
-      config.supabaseUrl +
-      '/rest/v1/products?select=id,name,price,wholesale_price,image_url,image_urls,sizes,supplier,active&active=eq.true&order=name.asc',
-      {
-        headers: {
-          apikey: config.supabaseKey,
-          Authorization: 'Bearer ' + config.supabaseAnonKey
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error('Não foi possível carregar os produtos.');
+   
+config.supabaseUrl +
+  '/rest/v1/products?select=id,name,price,wholesale_price,promo_price,promo_end_at,image_url,image_urls,sizes,supplier,active&active=eq.true&order=name.asc',
+  {
+    headers: {
+      apikey: config.supabaseKey,
+      Authorization: 'Bearer ' + config.supabaseAnonKey
     }
+  }
+);
+
+if (!response.ok) {
+  throw new Error('Não foi possível carregar os produtos.');
+}
 
     allProducts = await response.json();
     eligibleSummary.textContent =
