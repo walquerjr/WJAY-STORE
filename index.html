@@ -346,7 +346,11 @@ function render(filter = currentFilter) {
   if (empty) empty.style.display = filteredProducts.length ? 'none' : 'block';
 }
   function productCard(p){
-  return `<article class="product" data-category="${p.category}">
+ 
+const promoActive = p.promo_price != null && p.promo_price > 0 && p.promo_end_at && new Date(p.promo_end_at) > new Date();
+const displayPrice = promoActive ? p.promo_price : p.price;
+
+    return `<article class="product" data-category="${p.category}">
  
 <div class="product-photo">
   <img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
@@ -366,12 +370,23 @@ ${p.images && new Set(p.images).size > 1 ? `
       <div class="category">${p.category}</div>
       <h3>${p.name}</h3>
       <div class="desc">${p.desc}</div>
-      <div class="price">
-        ${money(p.price)}
-        ${p.wholesale_price != null && p.wholesale_price !== ''
-          ? `<div class="wholesale-price">     <span class="wholesale-label">PREÇO DE ATACADO</span>     <strong>${money(p.wholesale_price)}</strong>     <span class="wholesale-note">por peça · mínimo 5 peças</span>   </div>`
-          : ''}
-      </div>
+    
+<div class="price">
+  ${promoActive
+    ? `<div style="font-size:13px;color:#888;text-decoration:line-through;">${money(p.price)}</div>
+       <span style="color:#c62828;font-weight:bold;">${money(displayPrice)}</span>
+       <span style="display:inline-block;margin-left:6px;padding:3px 7px;border-radius:4px;background:#ffe5e5;color:#b71c1c;font-size:11px;font-weight:bold;">OFERTA</span>`
+    : money(displayPrice)
+  }
+  ${p.wholesale_price != null && p.wholesale_price !== ''
+    ? `<div class="wholesale-price">
+         <span class="wholesale-label">PREÇO DE ATACADO</span>
+         <strong>${money(p.wholesale_price)}</strong>
+         <span class="wholesale-note">por peça · mínimo 5 peças</span>
+       </div>`
+    : ''}
+</div>
+
       ${p.hasPrints && p.images && p.images.length > 1 ? `
   <div class="sizes">
     <label for="print-${p.id}">Escolha a estampa:</label>
