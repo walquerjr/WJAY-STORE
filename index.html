@@ -432,7 +432,7 @@ async function loadProducts(){
    
     const {data,error}=await client
       .from('products')
-      .select('id,name,description,price,wholesale_price,supplier,image_url,image_urls,category,sizes,active')
+      .select('id,name,description,price,wholesale_price,promo_price,promo_end_at,supplier,image_url,image_urls,category,sizes,active')
       .eq('active',true)
       .order('created_at',{ascending:false});
 
