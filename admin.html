@@ -453,12 +453,20 @@ async function loadFinance(){
       for(const line of orderLines){
         const qty=Number(line.quantity)||0;
         pieces+=qty;
-        if(line.unit_cost==null){
+        // O registro manual de venda pelo WhatsApp não grava unit_cost em order_items.
+        // Nesse caso, recuperar o custo cadastrado no produto pelo ID ou pelo nome.
+        const lineProduct=(line.product_id!=null?productById.get(String(line.product_id)):null)
+          ||productByName.get(normalizeName(line.title||line.name||''));
+        const unitCost=line.unit_cost!=null?Number(line.unit_cost)
+          :line.cost_price!=null?Number(line.cost_price)
+          :lineProduct&&lineProduct.cost_price!=null?Number(lineProduct.cost_price)
+          :null;
+        if(unitCost==null||!Number.isFinite(unitCost)){
           unknown+=qty;
         }else{
-          const lineCost=line.total_cost==null
-            ? Number(line.unit_cost)*qty
-            : Number(line.total_cost);
+          const lineCost=line.total_cost!=null && line.unit_cost!=null
+            ? Number(line.total_cost)
+            : unitCost*qty;
           cost+=lineCost;
           orderCost+=lineCost;
           knownRevenue+=(Number(line.unit_price)||0)*qty;
