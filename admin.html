@@ -25,7 +25,22 @@
   font-weight: 700;
 }
 @media(max-width:1050px){.sidebar{width:205px}.main{margin-left:205px;width:calc(100% - 205px);padding:20px 16px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:700px){.sidebar{position:sticky;top:0;width:100%;height:auto;padding:10px;background:#06101a}.logo{font-size:19px;margin:0 8px 9px}.logo span{display:inline;font-size:10px;margin-left:6px}.nav{display:flex;overflow-x:auto;gap:4px}.nav button{white-space:nowrap;padding:9px;font-size:12px;gap:6px}.ico{font-size:14px;width:auto}.side-bottom{display:none}.main{margin:0;padding:14px 11px}.pagehead h1{font-size:24px}.stats{gap:8px}.stat{padding:12px}.stat-value{font-size:20px}.card{padding:14px}.field-grid,.detailgrid{grid-template-columns:1fr}.full{grid-column:auto}.product{grid-template-columns:53px minmax(0,1fr)}.product img{width:53px;height:60px}.product .actions{grid-column:1/-1;margin:0}.table{min-width:620px}}
+@media(max-width:700px){
+.sidebar{position:sticky;top:0;width:100%;height:auto;padding:13px 12px;background:#06101a;border-right:0;border-bottom:1px solid var(--line)}
+.logo{font-size:24px;margin:0 4px 12px;letter-spacing:-.5px}
+.logo span{display:inline;font-size:12px;letter-spacing:2px;margin-left:8px}
+.nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.nav button{white-space:normal;min-height:46px;padding:12px 10px;font-size:14px;gap:9px;border:1px solid #203243;border-radius:9px}
+.nav button.active{background:#064a3b;border-color:#08765b}
+.ico{font-size:18px;width:22px;flex:0 0 22px}
+.side-bottom{display:none}
+.main{margin:0;width:100%;padding:16px 12px}
+.pagehead h1{font-size:24px}
+.stats{gap:8px}.stat{padding:12px}.stat-value{font-size:20px}.card{padding:14px}
+.field-grid,.detailgrid{grid-template-columns:1fr}.full{grid-column:auto}
+.product{grid-template-columns:53px minmax(0,1fr)}.product img{width:53px;height:60px}.product .actions{grid-column:1/-1;margin:0}
+.table{min-width:620px}
+}
 @media(min-width:701px) and (max-width:1250px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:17px}.product{grid-template-columns:60px minmax(0,1fr)}.product .actions{grid-column:2;margin-top:8px}.product img{width:60px;height:65px}}
 @media(max-width:420px){.stats{grid-template-columns:1fr}.nav button{padding:8px 7px;font-size:11px}.filters select,.filters input{min-width:0;max-width:100%}.main{padding:12px 9px}}
 </style></head><body>
@@ -394,59 +409,106 @@ if (saleError) {
 
 
 async function loadFinance(){
-  window.confirmPixPayment = async id => {
-  const o = allOrders.find(x => String(x.id) === String(id));
-  if (!o) {
-    notify('Erro: pedido não encontrado.');
-    return;
+  ['finSales','finPieces','finCost','finProfit'].forEach(id=>$(id).textContent='...');
+  const period=$('period').value;
+  const cut=period==='all'?null:new Date(Date.now()-Number(period)*86400000).toISOString();
+
+  // Pedidos pagos, incluindo vendas registradas pelo WhatsApp.
+  let q=db.from('orders')
+    .select('id,created_at,total,payment_status,order_status,items,external_reference')
+    .order('created_at',{ascending:true});
+  if(cut) q=q.gte('created_at',cut);
+  const {data,error}=await q;
+  if(error){notify('Erro no faturamento: '+error.message);return;}
+
+  const paid=(data||[]).filter(isPaid);
+  const ids=paid.map(o=>o.id);
+  let lines=[];
+  if(ids.length){
+    const r=await db.from('order_items')
+      .select('id,order_id,product_id,quantity,unit_price,unit_cost,total_cost,title')
+      .in('order_id',ids);
+    if(r.error){notify('Erro ao consultar order_items: '+r.error.message);return;}
+    lines=r.data||[];
   }
 
-  if (!String(o.external_reference || '').startsWith('PIX-')) {
-    notify('Confirmação manual disponível apenas para pedidos PIX identificados.');
-    return;
-  }
+  const productResult=await db.from('products').select('id,name,cost_price');
+  if(productResult.error){notify('Erro ao consultar custos dos produtos: '+productResult.error.message);return;}
+  const productRows=productResult.data||[];
+  const normalizeName=v=>String(v||'').trim().toLocaleLowerCase('pt-BR');
+  const productById=new Map(productRows.map(p=>[String(p.id),p]));
+  const productByName=new Map(productRows.map(p=>[normalizeName(p.name),p]));
+  const by={};
+  lines.forEach(line=>(by[String(line.order_id)]??=[]).push(line));
 
-  if (String(o.payment_status || '').toLowerCase() === 'approved') {
-    notify('Este pagamento já está marcado como aprovado.');
-    return;
-  }
+  let sales=0,pieces=0,cost=0,unknown=0,knownRevenue=0;
+  const financeRowsData=[];
 
-  const confirmado = confirm(
-    'Confirme somente após verificar no extrato bancário que o valor deste Pix foi realmente recebido. Deseja continuar?'
-  );
+  for(const order of paid){
+    sales+=Number(order.total)||0;
+    let orderCost=0;
+    const orderLines=by[String(order.id)]||[];
 
-  if (!confirmado) return;
-
-  try {
-    const { data, error } = await db
-      .from('orders')
-      .update({
-        payment_status: 'approved',
-        order_status: 'paid',
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', id)
-      .select('id, payment_status, order_status')
-      .maybeSingle();
-
-    if (error) {
-      notify('Erro ao confirmar Pix: ' + error.message);
-      return;
+    if(orderLines.length){
+      for(const line of orderLines){
+        const qty=Number(line.quantity)||0;
+        pieces+=qty;
+        if(line.unit_cost==null){
+          unknown+=qty;
+        }else{
+          const lineCost=line.total_cost==null
+            ? Number(line.unit_cost)*qty
+            : Number(line.total_cost);
+          cost+=lineCost;
+          orderCost+=lineCost;
+          knownRevenue+=(Number(line.unit_price)||0)*qty;
+        }
+      }
+    }else{
+      // Algumas vendas pelo WhatsApp podem ter os itens apenas no campo JSON "items".
+      let items=order.items;
+      if(typeof items==='string'){
+        try{items=JSON.parse(items);}catch(_){items=[];}
+      }
+      if(!Array.isArray(items)) items=[];
+      for(const item of items){
+        const qty=Math.max(0,Number(item.quantity)||1);
+        pieces+=qty;
+        const itemName=item.title||item.name||item.product||item.product_name||'';
+        const product=(item.product_id!=null?productById.get(String(item.product_id)):null)
+          ||productByName.get(normalizeName(itemName));
+        const unitPrice=Number(item.unit_price??item.price??item.unitPrice)||0;
+        const unitCost=item.unit_cost!=null?Number(item.unit_cost)
+          :item.cost_price!=null?Number(item.cost_price)
+          :product&&product.cost_price!=null?Number(product.cost_price)
+          :null;
+        if(unitCost==null||!Number.isFinite(unitCost)){
+          unknown+=qty;
+        }else{
+          const lineCost=unitCost*qty;
+          cost+=lineCost;
+          orderCost+=lineCost;
+          knownRevenue+=unitPrice*qty;
+        }
+      }
+      // Do not treat a paid order without item details as confirmed profit.
+      if(!items.length) unknown+=1;
     }
 
-    if (!data) {
-      notify('O Supabase não confirmou a alteração. Verifique as permissões.');
-      return;
-    }
-
-    await loadOrders();
-    showOrder(id);
-    notify('Pix confirmado manualmente. Pedido marcado como pago.');
-  } catch (e) {
-    notify('Erro ao confirmar Pix: ' + (e.message || e));
+    financeRowsData.push({date:new Date(order.created_at),sales:Number(order.total)||0,cost:orderCost});
   }
-};
-  ['finSales','finPieces','finCost','finProfit'].forEach(id=>$(id).textContent='...');let p=$('period').value,cut=p==='all'?null:new Date(Date.now()-Number(p)*86400000).toISOString();let q=db.from('orders').select('id,created_at,total,payment_status,order_status,items').order('created_at',{ascending:true});if(cut)q=q.gte('created_at',cut);let {data,error}=await q;if(error){notify('Erro no faturamento: '+error.message);return;}let paid=(data||[]).filter(isPaid),ids=paid.map(o=>o.id),lines=[];if(ids.length){let r=await db.from('order_items').select('id,order_id,product_id,quantity,unit_price,unit_cost,total_cost,title').in('order_id',ids);if(r.error){notify('Erro ao consultar order_items: '+r.error.message);return;}lines=r.data||[];}let by={};lines.forEach(l=>(by[l.order_id]??=[]).push(l));let sales=0,pieces=0,cost=0,unknown=0,knownRevenue=0;paid.forEach(o=>{sales+=Number(o.total)||0;(by[o.id]||[]).forEach(l=>{let qty=Number(l.quantity)||0;pieces+=qty;if(l.unit_cost==null){unknown+=qty;}else{cost+=l.total_cost==null?Number(l.unit_cost)*qty:Number(l.total_cost);knownRevenue+=(Number(l.unit_price)||0)*qty;}});});$('finSales').textContent=money(sales);$('finPieces').textContent=String(pieces);$('finCost').textContent=money(cost);$('finProfit').textContent=money(knownRevenue-cost);$('finOrders').textContent=paid.length+' pedido(s) aprovado(s)';$('finCostNote').textContent=unknown?unknown+' peça(s) sem custo informado':'Custos salvos nos itens';$('finProfitNote').textContent=unknown?'Somente itens com custo conhecido':'Receita dos itens menos custos registrados';financeRows=paid.map(o=>({date:new Date(o.created_at),sales:Number(o.total)||0,cost:(by[o.id]||[]).reduce((s,l)=>s+(l.unit_cost==null?0:Number(l.total_cost??(Number(l.unit_cost)*Number(l.quantity)))),0)}));drawChart(financeRows);renderRecent(paid);}
+
+  $('finSales').textContent=money(sales);
+  $('finPieces').textContent=String(pieces);
+  $('finCost').textContent=money(cost);
+  $('finProfit').textContent=money(knownRevenue-cost);
+  $('finOrders').textContent=paid.length+' pedido(s) aprovado(s)';
+  $('finCostNote').textContent=unknown?unknown+' peça(s) sem custo informado':'Custos salvos nos itens';
+  $('finProfitNote').textContent=unknown?'Estimativa somente dos itens com custo conhecido':'Receita dos itens menos custos registrados';
+  financeRows=financeRowsData;
+  drawChart(financeRows);
+  renderRecent(paid);
+}
 function renderRecent(a){a=[...a].sort((x,y)=>new Date(y.created_at)-new Date(x.created_at)).slice(0,5);if(!a.length){$('recentOrders').innerHTML='<p class="empty">Nenhum pedido aprovado neste período.</p>';return;}$('recentOrders').innerHTML=`<table class="table"><thead><tr><th>Pedido</th><th>Data</th><th>Peças</th><th>Total</th><th>Status</th></tr></thead><tbody>${a.map(o=>`<tr><td>${esc(code(o))}</td><td>${new Date(o.created_at).toLocaleDateString('pt-BR')}</td><td>${Array.isArray(o.items)?o.items.reduce((s,i)=>s+(Number(i.quantity)||0),0):'—'}</td><td><b>${money(o.total)}</b></td><td><span class="pill paid">Aprovado</span></td></tr>`).join('')}</tbody></table>`;}
 function drawChart(rows){let days={};rows.forEach(r=>{let k=r.date.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});days[k]??={sales:0,cost:0};days[k].sales+=r.sales;days[k].cost+=r.cost;});let entries=Object.entries(days);if(entries.length>12)entries=entries.slice(-12);if(!entries.length){$('chart').innerHTML='<p class="empty">Ainda não há vendas aprovadas para este período.</p>';return;}let max=Math.max(1,...entries.map(x=>x[1].sales));$('chart').innerHTML=entries.map(([day,v])=>`<div style="display:grid;grid-template-columns:48px 1fr 100px;gap:9px;align-items:center;margin:10px 0"><span class="muted">${day}</span><div style="height:14px;background:#172737;border-radius:9px;overflow:hidden"><div title="Vendas ${money(v.sales)}" style="height:100%;width:${Math.max(v.sales?1:0,v.sales/max*100)}%;background:var(--green);border-radius:9px"></div></div><span style="text-align:right;font-size:12px">${money(v.sales)}</span></div>`).join('');}
 init();
