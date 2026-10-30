@@ -144,6 +144,15 @@
     <section class="card">
       <p id="pieceCount">0 peças</p>
       <p class="total" id="total">Total: R$ 0,00</p>
+      <label for="customerEmail">E-mail para acompanhar seu pedido:</label>
+<input
+  type="email"
+  id="customerEmail"
+  placeholder="Digite seu e-mail"
+  autocomplete="email"
+  required
+  style="width:100%;padding:12px;margin-top:8px;border:1px solid #ccc;border-radius:8px;"
+>
       <button class="primary whatsapp" id="checkout">Finalizar pedido pelo WhatsApp</button>
       <button class="primary" id="mercadoPagoBtn" type="button">Pagar com Mercado Pago</button>
       <button class="primary pix-button" id="pixToggle" type="button" aria-expanded="false" aria-controls="pixOptions">Pagar com Pix</button>
@@ -708,7 +717,7 @@ pixWhatsAppButton.addEventListener('click', async () => {
         'apikey': config.supabaseAnonKey,
 'Authorization': 'Bearer ' + config.supabaseAnonKey
         },
-        body: JSON.stringify({ items })
+        body: JSON.stringify({   items,   email: document.getElementById('customerEmail').value.trim() })
       }
     );
 
@@ -795,7 +804,7 @@ mercadoPagoBtn.addEventListener('click', async () => {
           'apikey': config.supabaseKey,
           'Authorization': 'Bearer ' + config.supabaseAnonKey
         },
-        body: JSON.stringify({ items })
+        body: JSON.stringify({   items,   email: document.getElementById('customerEmail').value.trim() })
       }
     );
 
