@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101114"><title>Minha conta | WJAY STORE</title>
+<style>
+:root{color-scheme:dark;--bg:#101114;--card:#1b1d22;--line:#30333b;--text:#f5f5f5;--muted:#aeb3bd;--accent:#d7ff36;--danger:#ff7777}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px Arial,sans-serif}
+header{padding:20px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.logo{font-weight:900;letter-spacing:1.5px;font-size:22px}.logo span{color:var(--accent)}a{color:var(--accent);text-decoration:none}
+.wrap{width:min(760px,calc(100% - 28px));margin:32px auto}h1{font-size:26px;margin:0 0 8px}h2{font-size:19px;margin:0 0 16px}
+.muted{color:var(--muted);line-height:1.5}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;margin:18px 0}
+.tabs{display:flex;gap:8px;margin-bottom:18px}.tabs button{flex:1}button,input{font:inherit}
+button{border:0;border-radius:8px;padding:12px 15px;background:var(--accent);color:#111;font-weight:700;cursor:pointer}
+button.secondary{background:#30333b;color:#fff}button:disabled{opacity:.5;cursor:not-allowed}
+label{display:block;margin:14px 0 6px;color:#dfe2e8;font-size:14px}
+input{width:100%;padding:13px;border-radius:8px;border:1px solid var(--line);background:#111318;color:#fff}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.msg{margin-top:14px;line-height:1.5}.error{color:var(--danger)}.ok{color:var(--accent)}
+.hidden{display:none!important}.order{border-top:1px solid var(--line);padding:15px 0}.orderhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pill{display:inline-block;padding:5px 9px;border-radius:20px;background:#30333b;font-size:12px}footer{text-align:center;color:var(--muted);padding:25px}
+@media(max-width:480px){.card{padding:17px}.wrap{margin:22px auto}h1{font-size:23px}}
+</style></head>
+<body>
+<header><div class="logo">WJAY <span>STORE</span></div><a href="index.html">Voltar à loja</a></header>
+<main class="wrap">
+<h1>Minha conta</h1><p class="muted">Entre ou crie sua conta para acompanhar seus pedidos.</p>
+<section class="card" id="authCard">
+<div class="tabs"><button type="button" id="showLogin">Entrar</button><button type="button" class="secondary" id="showSignup">Criar conta</button></div>
+<form id="authForm">
+<label for="email">E-mail</label><input id="email" type="email" autocomplete="email" required maxlength="254" placeholder="seuemail@exemplo.com">
+<label for="password">Senha</label><input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Mínimo de 6 caracteres">
+<div class="actions"><button id="submitAuth" type="submit">Entrar</button><button id="forgot" class="secondary" type="button">Esqueci minha senha</button></div>
+</form><p id="authMessage" class="msg" aria-live="polite"></p>
+</section>
+<section class="card hidden" id="accountCard">
+<div class="orderhead"><div><h2>Olá!</h2><p class="muted" id="accountEmail"></p></div><button class="secondary" id="logout" type="button">Sair</button></div>
+<h2 style="margin-top:24px">Meus pedidos</h2><div id="orders"><p class="muted">Carregando seus pedidos...</p></div><p id="ordersMessage" class="msg" aria-live="polite"></p>
+</section></main><footer>WJAY STORE · Seu estilo. Seu jogo.</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
+<script>
+(() => {
+  const cfg = window.WJAY_CONFIG || {};
+  const url = cfg.supabaseUrl, key = cfg.supabaseKey;
+  const $ = id => document.getElementById(id);
+  let client = null, mode = "login";
+  function msg(el,text,kind=""){el.textContent=text;el.className="msg "+kind;}
+  function setMode(next){mode=next;$("submitAuth").textContent=mode==="login"?"Entrar":"Criar conta";$("showLogin").className=mode==="login"?"":"secondary";$("showSignup").className=mode==="signup"?"":"secondary";$("password").autocomplete=mode==="login"?"current-password":"new-password";msg($("authMessage"),"");}
+  function money(v){return Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});}
+  function date(v){const d=new Date(v);return v&&!Number.isNaN(d.getTime())?d.toLocaleString("pt-BR"):"Data não informada";}
+  function status(v){const m={pending:"Aguardando pagamento",approved:"Pagamento aprovado",paid:"Pago",in_process:"Em processamento",rejected:"Pagamento recusado",cancelled:"Cancelado",refunded:"Reembolsado",shipped:"Enviado",delivered:"Entregue",processing:"Em preparação"};return m[String(v||"").toLowerCase()]||String(v||"Não informado").replaceAll("_"," ");}
+  function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  async function loadOrders(user){
+    $("orders").innerHTML='<p class="muted">Carregando seus pedidos...</p>';
+    const {data,error}=await client.from("orders").select("id, created_at, total, payment_status, order_status, external_reference").eq("user_id",user.id).order("created_at",{ascending:false});
+    if(error){$("orders").textContent="Não foi possível carregar seus pedidos. Tente novamente mais tarde.";console.error(error);return;}
+    if(!data?.length){$("orders").innerHTML='<p class="muted">Ainda não há pedidos vinculados à sua conta. Pedidos feitos antes do login podem não aparecer aqui.</p>';return;}
+    $("orders").innerHTML=data.map(o=>`<article class="order"><div class="orderhead"><strong>Pedido #${esc(String(o.id).slice(0,8))}</strong><span class="muted">${esc(date(o.created_at))}</span></div><p><strong>Total:</strong> ${esc(money(o.total))}</p><p><span class="pill">Pagamento: ${esc(status(o.payment_status))}</span></p><p><span class="pill">Pedido: ${esc(status(o.order_status))}</span></p></article>`).join("");
+  }
+  async function showSession(session){
+    if(!session){$("accountCard").classList.add("hidden");$("authCard").classList.remove("hidden");return;}
+    $("authCard").classList.add("hidden");$("accountCard").classList.remove("hidden");$("accountEmail").textContent=session.user.email||"";await loadOrders(session.user);
+  }
+  $("showLogin").addEventListener("click",()=>setMode("login"));
+  $("showSignup").addEventListener("click",()=>setMode("signup"));
+  $("authForm").addEventListener("submit",async e=>{
+    e.preventDefault();if(!client)return;
+    const email=$("email").value.trim().toLowerCase(),password=$("password").value,btn=$("submitAuth");btn.disabled=true;msg($("authMessage"),mode==="login"?"Entrando...":"Criando sua conta...");
+    try{
+      if(mode==="login"){const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;await showSession(data.session);}
+      else{const {data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:window.location.origin+window.location.pathname}});if(error)throw error;if(data.session)await showSession(data.session);else msg($("authMessage"),"Cadastro iniciado! Confira seu e-mail e confirme o endereço para ativar sua conta.","ok");}
+    }catch(err){msg($("authMessage"),err.message||"Não foi possível concluir. Tente novamente.","error");}finally{btn.disabled=false;}
+  });
+  $("forgot").addEventListener("click",async()=>{
+    if(!client)return;const email=$("email").value.trim().toLowerCase();if(!email){msg($("authMessage"),"Informe seu e-mail primeiro.","error");$("email").focus();return;}
+    const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+    msg($("authMessage"),error?error.message:"Se o e-mail estiver cadastrado, você receberá um link para redefinir a senha.",error?"error":"ok");
+  });
+  $("logout").addEventListener("click",async()=>{await client.auth.signOut();await showSession(null);});
+  if(!window.supabase||!url||!key){msg($("authMessage"),"Configuração do Supabase não encontrada. Confira config.js e os nomes supabaseUrl e supabaseKey.","error");$("submitAuth").disabled=true;$("forgot").disabled=true;return;}
+  client=window.supabase.createClient(url,key);
+  client.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>showSession(session),0);});
+  client.auth.getSession().then(({data})=>showSession(data.session));
+})();
+</script></body></html>
