@@ -735,14 +735,22 @@ pixWhatsAppButton.addEventListener('click', async () => {
       selectedPrint: item.selectedPrint || ''
     }));
 
+       const { data: pixSessionData } = wjayAuthClient
+      ? await wjayAuthClient.auth.getSession()
+      : { data: { session: null } };
+
+    const pixAccessToken = pixSessionData.session
+      ? pixSessionData.session.access_token
+      : null;
     const response = await fetch(
     config.supabaseUrl + '/functions/v1/register-pix-order',
       {
         method: 'POST',
-        headers: {
+              headers: {
           'Content-Type': 'application/json',
-        'apikey': config.supabaseAnonKey,
-'Authorization': 'Bearer ' + config.supabaseAnonKey
+          'apikey': config.supabaseAnonKey,
+          'Authorization': 'Bearer ' + config.supabaseAnonKey,
+          ...(pixAccessToken ? { 'x-user-access-token': pixAccessToken } : {})
         },
         body: JSON.stringify({   items,   email: document.getElementById('customerEmail').value.trim() })
       }
