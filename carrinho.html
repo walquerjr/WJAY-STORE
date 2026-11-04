@@ -387,10 +387,98 @@ showEligibleButton.addEventListener('click', async () => {
     }
 
     const cart = readCart();
+    let pixOrderCache = null;
+let pixOrderCacheSignature = '';
+let pixOrderInFlight = null;
+let pixOrderInFlightSignature = '';
 
-    function saveCart() {
-      localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries())));
+async function registrarPedidoPix() {
+  const entries = Array.from(cart.values());
+
+  if (!entries.length) {
+    throw new Error('Seu carrinho está vazio.');
+  }
+
+  if (!config || !config.supabaseUrl || !config.supabaseAnonKey) {
+    throw new Error('Configuração da loja não encontrada.');
+  }
+
+  const items = entries.map(item => ({
+    id: String((item.product || {}).id || ''),
+    size: item.size || '',
+    quantity: Number(item.quantity),
+    selectedPrint: item.selectedPrint || ''
+  }));
+
+  const signature = JSON.stringify(items);
+
+  if (pixOrderCache && pixOrderCacheSignature === signature) {
+    return pixOrderCache;
+  }
+
+  if (pixOrderInFlight) {
+    if (pixOrderInFlightSignature === signature) {
+      return pixOrderInFlight;
     }
+    throw new Error('Aguarde o registro do pedido atual.');
+  }
+
+  const request = (async () => {
+    const { data: sessionData } = wjayAuthClient
+      ? await wjayAuthClient.auth.getSession()
+      : { data: { session: null } };
+
+    const accessToken = sessionData.session
+      ? sessionData.session.access_token
+      : null;
+
+    const response = await fetch(
+      config.supabaseUrl + '/functions/v1/register-pix-order',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': config.supabaseAnonKey,
+          'Authorization': 'Bearer ' + config.supabaseAnonKey,
+          ...(accessToken
+            ? { 'x-user-access-token': accessToken }
+            : {})
+        },
+        body: JSON.stringify({
+          items,
+          email: document.getElementById('customerEmail').value.trim()
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Não foi possível registrar o pedido.');
+    }
+
+    return result;
+  })();
+
+  pixOrderInFlight = request;
+  pixOrderInFlightSignature = signature;
+
+  try {
+    const result = await request;
+    pixOrderCache = result;
+    pixOrderCacheSignature = signature;
+    return result;
+  } finally {
+    pixOrderInFlight = null;
+    pixOrderInFlightSignature = '';
+  }
+}
+
+  function saveCart() {
+  pixOrderCache = null;
+  pixOrderCacheSignature = '';
+  localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries())));
+}
 
     function renderCart() {
      const entries = Array.from(cart.entries());
@@ -695,11 +783,31 @@ pixToggle.addEventListener('click', () => {
 
 copyPixKeyButton.addEventListener('click', async () => {
   const key = pixKeyText.textContent.trim();
+
   try {
     await navigator.clipboard.writeText(key);
-    pixMessage.textContent = 'Chave Pix copiada. Cole no aplicativo do seu banco e confira o destinatário antes de pagar.';
+    pixMessage.textContent = 'Chave Pix copiada. Registrando seu pedido...';
+
+    copyPixKeyButton.disabled = true;
+    pixWhatsAppButton.disabled = true;
+
+    try {
+      await registrarPedidoPix();
+      pixMessage.textContent =
+        'Chave Pix copiada e pedido registrado! Cole a chave no aplicativo do seu banco e confira o destinatário antes de pagar.';
+      paymentMessage.textContent =
+        'Pedido Pix registrado e aguardando confirmação do pagamento.';
+    } catch (error) {
+      pixMessage.textContent =
+        'A chave foi copiada, mas não foi possível registrar o pedido: ' +
+        (error.message || 'Tente novamente pelo botão de enviar comprovante.');
+    } finally {
+      copyPixKeyButton.disabled = false;
+      pixWhatsAppButton.disabled = false;
+    }
   } catch (error) {
-    pixMessage.textContent = 'Não foi possível copiar automaticamente. Selecione e copie a chave exibida acima.';
+    pixMessage.textContent =
+      'Não foi possível copiar automaticamente. Selecione e copie a chave exibida acima.';
   }
 });
 
@@ -712,55 +820,17 @@ showPixQrButton.addEventListener('click', () => {
 
 
 pixWhatsAppButton.addEventListener('click', async () => {
-  const entries = Array.from(cart.values());
-
-  if (!entries.length) {
+  if (cart.size === 0) {
     paymentMessage.textContent = 'Seu carrinho está vazio.';
     return;
   }
 
-  if (!config || !config.supabaseUrl || !config.supabaseAnonKey) {
-    paymentMessage.textContent = 'Configuração da loja não encontrada. Entre em contato pelo WhatsApp.';
-    return;
-  }
-
   pixWhatsAppButton.disabled = true;
+  copyPixKeyButton.disabled = true;
   paymentMessage.textContent = 'Registrando seu pedido Pix...';
 
   try {
-    const items = entries.map(item => ({
-      id: String((item.product || {}).id || ''),
-      size: item.size || '',
-      quantity: Number(item.quantity),
-      selectedPrint: item.selectedPrint || ''
-    }));
-
-       const { data: pixSessionData } = wjayAuthClient
-      ? await wjayAuthClient.auth.getSession()
-      : { data: { session: null } };
-
-    const pixAccessToken = pixSessionData.session
-      ? pixSessionData.session.access_token
-      : null;
-    const response = await fetch(
-    config.supabaseUrl + '/functions/v1/register-pix-order',
-      {
-        method: 'POST',
-              headers: {
-          'Content-Type': 'application/json',
-          'apikey': config.supabaseAnonKey,
-          'Authorization': 'Bearer ' + config.supabaseAnonKey,
-          ...(pixAccessToken ? { 'x-user-access-token': pixAccessToken } : {})
-        },
-        body: JSON.stringify({   items,   email: document.getElementById('customerEmail').value.trim() })
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || 'Não foi possível registrar o pedido.');
-    }
+    const result = await registrarPedidoPix();
 
     const lines = [
       'Olá! Estou entrando em contato sobre meu pedido Pix na WJAY STORE.',
@@ -805,6 +875,7 @@ pixWhatsAppButton.addEventListener('click', async () => {
       error.message || 'Erro ao registrar o pedido. Tente novamente.';
   } finally {
     pixWhatsAppButton.disabled = false;
+    copyPixKeyButton.disabled = false;
   }
 });
 
