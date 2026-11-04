@@ -173,8 +173,35 @@
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script>
+    let wjayAuthClient = null;
+
+(async function iniciarSessaoWjay() {
+  const cfg = window.WJAY_CONFIG || {};
+
+  if (
+    !window.supabase ||
+    !cfg.supabaseUrl ||
+    !(cfg.supabaseAnonKey || cfg.supabaseKey)
+  ) return;
+
+  wjayAuthClient = window.supabase.createClient(
+    cfg.supabaseUrl,
+    cfg.supabaseAnonKey || cfg.supabaseKey
+  );
+
+  const { data, error } = await wjayAuthClient.auth.getSession();
+
+  if (error || !data.session) return;
+
+  const campoEmail = document.getElementById('customerEmail');
+
+  if (campoEmail && !campoEmail.value.trim()) {
+    campoEmail.value = data.session.user.email || '';
+  }
+})();
     const CART_KEY = 'wjay_cart';
     const WHATSAPP = '5521965424073';
     const itemsElement = document.getElementById('items');
@@ -794,15 +821,23 @@ mercadoPagoBtn.addEventListener('click', async () => {
   size: item.size || '',
   quantity: Number(item.quantity)
 }));
+        const { data: sessionData } = wjayAuthClient
+      ? await wjayAuthClient.auth.getSession()
+      : { data: { session: null } };
+
+    const accessToken = sessionData.session
+      ? sessionData.session.access_token
+      : null;
 
     const response = await fetch(
       config.supabaseUrl + '/functions/v1/mercadopago-checkout',
       {
         method: 'POST',
-        headers: {
+               headers: {
           'Content-Type': 'application/json',
           'apikey': config.supabaseKey,
-          'Authorization': 'Bearer ' + config.supabaseAnonKey
+          'Authorization': 'Bearer ' + config.supabaseAnonKey,
+          ...(accessToken ? { 'x-user-access-token': accessToken } : {})
         },
         body: JSON.stringify({   items,   email: document.getElementById('customerEmail').value.trim() })
       }
