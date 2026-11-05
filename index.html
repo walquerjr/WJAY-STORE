@@ -482,6 +482,7 @@ async function loadProducts(){
       name:p.name,
       supplier:p.supplier||'',
       category:p.category||'promocoes',
+      categories:Array.isArray(p.categories)&&p.categories.length?p.categories:[p.category||'promocoes'],
       label:'WJAY STORE',
       desc:p.description||'', 
       hasPrints:(p.description||'').toUpperCase().includes('ESTAMPAS DIFERENTES'),
