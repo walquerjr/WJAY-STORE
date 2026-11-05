@@ -261,6 +261,8 @@ $('productForm').addEventListener('submit', async e => {
       promo_end_at,
       cost_price: $('costPrice').value === ''
         ? null : Number($('costPrice').value),
+      wholesale_cost_price: $('wholesaleCostPrice').value === ''
+  ? null : Number($('wholesaleCostPrice').value),
       stock: Math.max(0, Number($('stock').value) || 0),
       featured: $('featured').checked,
       category: $('category').value,
