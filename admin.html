@@ -186,11 +186,24 @@ $('existingPhotos').innerHTML=editingImages.map(u=>`<img src="${esc(u)}" alt="">
 editingPrintImages=Array.isArray(p.print_images)?p.print_images:[];
 $('printImages').value='';
 $('existingPrintPhotos').innerHTML=editingPrintImages.map(u=>`<img src="${esc(u)}" alt="">`).join('');$('formTitle').textContent='Editar produto';$('saveBtn').textContent='Salvar alterações';window.scrollTo({top:0,behavior:'smooth'});};
-function resetForm(){$('productForm').reset();
-                     document.querySelectorAll('.product-category').forEach(el => {
-  el.checked = false;
-});
-                     $('productId').value='';$('active').checked=true;$('stock').value=0;$('formTitle').textContent='Cadastrar novo produto';$('saveBtn').textContent='Salvar produto';$('existingPhotos').innerHTML='';editingImages=[];}
+function resetForm(){
+  $('productForm').reset();
+  document.querySelectorAll('.product-category').forEach(el => {
+    el.checked = false;
+  });
+
+  $('productId').value='';
+  $('active').checked=true;
+  $('stock').value=0;
+  $('formTitle').textContent='Cadastrar novo produto';
+  $('saveBtn').textContent='Salvar produto';
+
+  $('existingPhotos').innerHTML='';
+  $('existingPrintPhotos').innerHTML='';
+
+  editingImages=[];
+  editingPrintImages=[];
+}
 $('cancelEdit').addEventListener('click',resetForm);
 
 $('productForm').addEventListener('submit', async e => {
