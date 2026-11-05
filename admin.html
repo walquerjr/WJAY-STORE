@@ -135,7 +135,7 @@
 </section></section>
 </main></div>
 <script>
-let db=null,products=[],allOrders=[],financeRows=[],editingImages=[];
+let db=null,products=[],allOrders=[],financeRows=[],editingImages=[],editingPrintImages=[];
 const $=id=>document.getElementById(id),money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function notify(s){$('globalStatus').textContent=s;$('globalStatus').classList.remove('hidden');}
