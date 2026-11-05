@@ -226,6 +226,162 @@ body {
 }
 
 
+/* Janela de detalhes do produto */
+.product-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,.75);
+  padding: 20px;
+  overflow-y: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-modal.open {
+  display: flex;
+}
+
+.product-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 850px;
+  background: white;
+  border-radius: 14px;
+  padding: 25px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.product-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: 0;
+  background: #eee;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.product-modal-main-image {
+  width: 100%;
+  aspect-ratio: 4/4.7;
+  object-fit: cover;
+  background: #eee;
+  border-radius: 8px;
+}
+
+.product-modal-thumbnails {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.product-modal-thumbnails button {
+  flex: 0 0 65px;
+  height: 70px;
+  padding: 3px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.product-modal-thumbnails button.active {
+  border: 2px solid #899b20;
+}
+
+.product-modal-thumbnails img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-modal-info {
+  padding-top: 25px;
+}
+
+.product-modal-info h2 {
+  font-size: 25px;
+  margin: 8px 0;
+}
+
+.product-modal-description {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.product-modal-option {
+  margin: 20px 0;
+}
+
+.product-modal-option label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.product-modal-option select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  background: white;
+}
+
+.product-modal-price {
+  font-size: 25px;
+  font-weight: 900;
+  margin: 15px 0;
+}
+
+.product-modal-add {
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  background: #101114;
+  color: white;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.product-modal-add:hover {
+  background: #30332b;
+  color: #d8ff36;
+}
+
+@media(max-width:620px) {
+  .product-modal {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .product-modal-content {
+    grid-template-columns: 1fr;
+    padding: 15px;
+    gap: 10px;
+    margin: 10px 0;
+  }
+
+  .product-modal-info {
+    padding-top: 5px;
+  }
+
+  .product-modal-info h2 {
+    font-size: 21px;
+  }
+}
 </style>
 </head>
 <body>
@@ -300,6 +456,42 @@ body {
   </a>
 </section>
 
+ <div class="product-modal" id="productModal">
+  <div class="product-modal-content">
+    <button type="button" class="product-modal-close" id="closeProductModal">×</button>
+
+    <div>
+      <img
+        id="modalMainImage"
+        class="product-modal-main-image"
+        src=""
+        alt="Foto do produto"
+      >
+      <div class="product-modal-thumbnails" id="modalThumbnails"></div>
+    </div>
+
+    <div class="product-modal-info">
+      <div class="category" id="modalCategory"></div>
+      <h2 id="modalName"></h2>
+      <div class="product-modal-price" id="modalPrice"></div>
+      <div class="product-modal-description" id="modalDescription"></div>
+
+      <div class="product-modal-option" id="modalPrintOption">
+        <label for="modalPrint">Escolha a estampa:</label>
+        <select id="modalPrint"></select>
+      </div>
+
+      <div class="product-modal-option">
+        <label for="modalSize">Escolha o tamanho:</label>
+        <select id="modalSize"></select>
+      </div>
+
+      <button type="button" class="product-modal-add" id="modalAddToCart">
+        Adicionar ao carrinho
+      </button>
+    </div>
+  </div>
+</div>
   <footer class="footer" id="contato"><div><a class="brand" href="#inicio">WJAY<span> STORE</span></a><br><small>Moda esportiva e casual.<br>Seu estilo. Seu jogo.</small></div><div><small>Quer comprar ou tirar dúvidas?<br>Fale com a gente pelo WhatsApp.</small><br><a class="primary" href="#" id="footerWhats">Falar com a loja ↗</a></div><small>© <span id="year"></span> WJAY STORE<br>Todos os direitos reservados.</small></footer>
 <a class="wa-float" id="floatWhats" href="#" aria-label="Falar pelo WhatsApp">◉ WhatsApp</a>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -352,79 +544,97 @@ function render(filter = currentFilter) {
   const empty = document.getElementById('empty');
   if (empty) empty.style.display = filteredProducts.length ? 'none' : 'block';
 }
-  function productCard(p){
-    const categoryNames = {
-  camisetas: 'Camisetas',
-  bermudas: 'Bermudas',
-  conjuntos: 'Conjuntos',
-  promocoes: 'Ofertas',
-  tailandesas: 'Tailandesas',
-  feminino: 'Feminino',
-  perfumes: 'Perfumes'
-};
+function productCard(p) {
+  const categoryNames = {
+    camisetas: 'Camisetas',
+    bermudas: 'Bermudas',
+    conjuntos: 'Conjuntos',
+    promocoes: 'Ofertas',
+    tailandesas: 'Tailandesas',
+    feminino: 'Feminino',
+    perfumes: 'Perfumes'
+  };
 
-const productCategories = Array.isArray(p.categories) && p.categories.length
-  ? p.categories
-  : [p.category];
+  const productCategories = Array.isArray(p.categories) && p.categories.length
+    ? p.categories
+    : [p.category];
 
-const categoryLabel = productCategories
-  .map(category => categoryNames[category] || category)
-  .join(' · ');
- 
-const promoActive = p.promo_price != null && p.promo_price > 0 && p.promo_end_at && new Date(p.promo_end_at) > new Date();
-const displayPrice = promoActive ? p.promo_price : p.price;
+  const categoryLabel = productCategories
+    .map(category => categoryNames[category] || category)
+    .join(' · ');
 
-    return `<article class="product" data-category="${p.category}">
- 
-<div class="product-photo">
-  <img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
-  <span class="tag">${p.label}</span>
-</div>
-${p.images && new Set(p.images).size > 1 ? `
-  <div class="product-gallery">
-    ${p.images.map((image, index) => `
-      <button type="button" class="gallery-thumb ${index === 0 ? 'active' : ''}" data-image="${image}" aria-label="Ver foto ${index + 1} de ${p.name}">
-        <img src="${image}" alt="${p.name} - foto ${index + 1}" loading="lazy">
-      </button>
-    `).join('')}
-  </div>
-` : ''}
+  const promoActive =
+    p.promo_price != null &&
+    p.promo_price > 0 &&
+    p.promo_end_at &&
+    new Date(p.promo_end_at) > new Date();
 
-    <div class="product-info">
-      <div class="category">${categoryLabel}</div>
-      <h3>${p.name}</h3>
-      <div class="desc">${p.desc}</div>
-    
-<div class="price">
-  ${promoActive
-    ? `<div style="font-size:13px;color:#888;text-decoration:line-through;">${money(p.price)}</div>
-       <span style="color:#c62828;font-weight:bold;">${money(displayPrice)}</span>
-       <span style="display:inline-block;margin-left:6px;padding:3px 7px;border-radius:4px;background:#ffe5e5;color:#b71c1c;font-size:11px;font-weight:bold;">OFERTA</span>`
-    : money(displayPrice)
-  }
-  ${p.wholesale_price != null && p.wholesale_price !== ''
-    ? `<div class="wholesale-price">
-         <span class="wholesale-label">PREÇO DE ATACADO</span>
-         <strong>${money(p.wholesale_price)}</strong>
-         <span class="wholesale-note">por peça · mínimo 5 peças</span>
-       </div>`
-    : ''}
-</div>
+  const displayPrice = promoActive ? p.promo_price : p.price;
 
-      ${p.hasPrints && p.images && p.images.length > 1 ? `
-  <div class="sizes">
-    <label for="print-${p.id}">Escolha a estampa:</label>
-    <select class="product-print" id="print-${p.id}">
-      ${p.images.map((image, index) => `
-        <option value="Estampa ${index + 1}">Estampa ${index + 1}</option>
-      `).join('')}
-    </select>
-  </div>
-` : ''}
-      <div class="sizes">   <label for="size-${p.id}">Escolha o tamanho:</label>   <select class="product-size" id="size-${p.id}">     ${String(p.sizes || '').split(',').map(size => size.trim()).filter(Boolean).map(size =>       `<option value="${size}">${size}</option>`     ).join('')}   </select> </div>
-      <button type="button" class="buy add-to-cart" data-product-id="${p.id}">Adicionar ao carrinho</button>
-    </div>
-  </article>`;
+  return `
+    <article class="product" data-category="${p.category}">
+      <div class="product-photo">
+        <img
+          loading="lazy"
+          src="${p.image || ''}"
+          alt="${p.name}"
+          onerror="this.style.display='none'"
+        >
+        <span class="tag">${p.label || 'WJAY STORE'}</span>
+      </div>
+
+      ${p.images && new Set(p.images).size > 1 ? `
+        <div class="product-gallery">
+          ${p.images.map((image, index) => `
+            <button
+              type="button"
+              class="gallery-thumb ${index === 0 ? 'active' : ''}"
+              data-image="${image}"
+              aria-label="Ver foto ${index + 1} de ${p.name}"
+            >
+              <img src="${image}" alt="${p.name} - foto ${index + 1}" loading="lazy">
+            </button>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <div class="product-info">
+        <div class="category">${categoryLabel}</div>
+        <h3>${p.name}</h3>
+        <div class="desc">${p.desc || ''}</div>
+
+        <div class="price">
+          ${promoActive ? `
+            <div style="font-size:13px;color:#888;text-decoration:line-through;">
+              ${money(p.price)}
+            </div>
+            <span style="color:#c62828;font-weight:bold;">
+              ${money(displayPrice)}
+            </span>
+            <span style="display:inline-block;margin-left:6px;padding:3px 7px;border-radius:4px;background:#ffe5e5;color:#b71c1c;font-size:11px;font-weight:bold;">
+              OFERTA
+            </span>
+          ` : money(displayPrice)}
+
+          ${p.wholesale_price != null && p.wholesale_price > 0 ? `
+            <div class="wholesale-price">
+              <span class="wholesale-label">PREÇO DE ATACADO</span>
+              <strong>${money(p.wholesale_price)}</strong>
+              <span class="wholesale-note">por peça · mínimo 5 peças do fornecedor</span>
+            </div>
+          ` : ''}
+        </div>
+
+        <button
+          type="button"
+          class="buy add-to-cart"
+          data-product-id="${p.id}"
+        >
+          Ver detalhes e comprar
+        </button>
+      </div>
+    </article>
+  `;
 }
 
 
@@ -471,47 +681,74 @@ async function loadProducts(){
    
     const {data,error}=await client
       .from('products')
-      .select('id,name,description,price,wholesale_price,promo_price,promo_end_at,supplier,image_url,image_urls,category,categories,sizes,active')
+      .select('id,name,description,price,wholesale_price,promo_price,promo_end_at,supplier,image_url,image_urls,print_images,category,categories,sizes,active,quantity_promo_min,quantity_promo_total')
       .eq('active',true)
       .order('created_at',{ascending:false});
 
     if(error) throw error;
 
-    products=(data||[]).map(p=>({
-      id:p.id,
-      name:p.name,
-      supplier:p.supplier||'',
-      category:p.category||'promocoes',
-      categories:Array.isArray(p.categories)&&p.categories.length?p.categories:[p.category||'promocoes'],
-      label:'WJAY STORE',
-      desc:p.description||'', 
-      hasPrints:(p.description||'').toUpperCase().includes('ESTAMPAS DIFERENTES'),
-      
-price:Number(p.price)||0,
-wholesale_price:p.wholesale_price==null?null:Number(p.wholesale_price),
-promo_price:p.promo_price==null?null:Number(p.promo_price),
-promo_end_at:p.promo_end_at||null,
+   const parseImageList = value => {
+  if (Array.isArray(value)) {
+    return value.filter(Boolean);
+  }
 
-      sizes:p.sizes||'Consulte disponibilidade',
-      image:p.image_url||'',
- images:[...new Set([
-  p.image_url,
-  ...(Array.isArray(p.image_urls)
-    ? p.image_urls
-    : typeof p.image_urls === 'string'
-      ? (() => {
-          try {
-            const parsed = JSON.parse(p.image_urls);
-            return Array.isArray(parsed)
-              ? parsed
-              : [p.image_urls];
-          } catch {
-            return p.image_urls.split(/\n|,/).map(s => s.trim());
-          }
-        })()
-      : [])
-].filter(Boolean))]
-    }));
+  if (typeof value === 'string' && value.trim()) {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed.filter(Boolean) : [value];
+    } catch {
+      return value.split(/\n|,/).map(s => s.trim()).filter(Boolean);
+    }
+  }
+
+  return [];
+};
+
+products = (data || []).map(p => {
+  const additionalImages = parseImageList(p.image_urls);
+  const printImages = parseImageList(p.print_images);
+
+  return {
+    id: p.id,
+    name: p.name,
+    supplier: p.supplier || '',
+    category: p.category || 'promocoes',
+    categories: Array.isArray(p.categories) && p.categories.length
+      ? p.categories
+      : [p.category || 'promocoes'],
+    label: 'WJAY STORE',
+    desc: p.description || '',
+    hasPrints: printImages.length > 0,
+
+    price: Number(p.price) || 0,
+    wholesale_price: p.wholesale_price == null
+      ? null
+      : Number(p.wholesale_price),
+
+    promo_price: p.promo_price == null
+      ? null
+      : Number(p.promo_price),
+
+    promo_end_at: p.promo_end_at || null,
+
+    quantity_promo_min: p.quantity_promo_min == null
+      ? null
+      : Number(p.quantity_promo_min),
+
+    quantity_promo_total: p.quantity_promo_total == null
+      ? null
+      : Number(p.quantity_promo_total),
+
+    sizes: p.sizes || 'Consulte disponibilidade',
+    image: p.image_url || '',
+    images: [...new Set([
+      p.image_url,
+      ...additionalImages
+    ].filter(Boolean))],
+
+    print_images: printImages
+  };
+});
 
 
     render();
@@ -522,31 +759,59 @@ const cart = new Map(   JSON.parse(localStorage.getItem('wjay_cart') || '[]') );
 
 function renderCart() {
   const items = Array.from(cart.values());
-  const count = items.reduce((sum, item) => sum + item.quantity, 0);
-  const wholesaleActive = count >= 5;
-  
+
+  const count = items.reduce(
+    (sum, item) => sum + Number(item.quantity || 0),
+    0
+  );
+
+  const supplierCounts = {};
+
+  items.forEach(item => {
+    const supplier = String(item.product?.supplier || '').trim();
+
+    if (!supplier) return;
+
+    supplierCounts[supplier] =
+      (supplierCounts[supplier] || 0) + Number(item.quantity || 0);
+  });
+
+  const maxSupplierCount = Math.max(
+    0,
+    ...Object.values(supplierCounts)
+  );
+
+  const wholesaleActive = maxSupplierCount >= 5;
+
   const progressBar = document.getElementById('wholesaleProgressBar');
   const progressCount = document.getElementById('wholesaleProgressCount');
   const progressTitle = document.getElementById('wholesaleProgressTitle');
   const progressMessage = document.getElementById('wholesaleProgressMessage');
   const progressBox = document.querySelector('.wholesale-progress');
 
-  const progress = Math.min((count / 5) * 100, 100);
+  const progress = Math.min((maxSupplierCount / 5) * 100, 100);
 
   if (progressBar) progressBar.style.width = `${progress}%`;
-  if (progressCount) progressCount.textContent = `${Math.min(count, 5)} de 5 peças`;
+
+  if (progressCount) {
+    progressCount.textContent = `${Math.min(maxSupplierCount, 5)} de 5 peças`;
+  }
+
   if (progressTitle) {
     progressTitle.textContent = wholesaleActive
       ? 'Atacado desbloqueado!'
       : 'Desbloqueie o atacado';
   }
+
   if (progressMessage) {
     progressMessage.textContent = wholesaleActive
-      ? 'Parabéns! Você atingiu o mínimo para liberar o atacado nos produtos elegíveis.'
-      : `Faltam ${5 - count} ${5 - count === 1 ? 'peça' : 'peças'} para liberar o atacado!`;
+      ? 'Você atingiu 5 peças do mesmo fornecedor! Confira os preços elegíveis no carrinho.'
+      : `Faltam ${5 - maxSupplierCount} peças do mesmo fornecedor para liberar o atacado.`;
   }
-  if (progressBox) progressBox.classList.toggle('is-complete', wholesaleActive);
 
+  if (progressBox) {
+    progressBox.classList.toggle('is-complete', wholesaleActive);
+  }
 
   const cartItems = document.getElementById('cartItems');
   const cartCount = document.getElementById('cartCount');
@@ -554,66 +819,33 @@ function renderCart() {
   const cartNotice = document.getElementById('cartNotice');
   const checkoutBtn = document.getElementById('checkoutBtn');
 
-  let total = 0;
+  if (cartItems) cartItems.innerHTML = '';
 
-  cartItems.innerHTML = items.map(item => {
-    const unitPrice = wholesaleActive && item.product.wholesale_price != null
-      ? item.product.wholesale_price
-      : item.product.price;
+  if (cartCount) {
+    cartCount.textContent =
+      `${count} ${count === 1 ? 'peça selecionada' : 'peças selecionadas'}.`;
+  }
 
-    total += unitPrice * item.quantity;
+  if (cartTotal) cartTotal.textContent = 'Consulte o total no carrinho.';
 
-    return `<div class="cart-item">
-      <strong>${item.product.name}</strong>
-      <p>${money(unitPrice)} cada</p>
-      <button type="button" data-cart-action="dec" data-product-id="${item.product.id}">−</button>
-      <span>${item.quantity}</span>
-      <button type="button" data-cart-action="inc" data-product-id="${item.product.id}">+</button>
-      <button type="button" data-cart-action="remove" data-product-id="${item.product.id}">Remover</button>
-    </div>`;
-  }).join('');
+  if (cartNotice) {
+    cartNotice.textContent = wholesaleActive
+      ? 'Atacado liberado para os fornecedores elegíveis.'
+      : 'O atacado é liberado a partir de 5 peças do mesmo fornecedor.';
+  }
 
-  cartCount.textContent = `${count} ${count === 1 ? 'peça selecionada' : 'peças selecionadas'}.`;
-  cartTotal.textContent = `Total: ${money(total)}`;
-  cartNotice.textContent = wholesaleActive
-    ? 'Atacado liberado! Preços de atacado aplicados aos produtos elegíveis.'
-    : `Adicione mais ${5 - count} ${5 - count === 1 ? 'peça' : 'peças'} para liberar o atacado.`;
-
-  checkoutBtn.disabled = count === 0;
+  if (checkoutBtn) checkoutBtn.disabled = count === 0;
 }
 
 document.getElementById('products').addEventListener('click', event => {
   const button = event.target.closest('.add-to-cart');
   if (!button) return;
 
-  const product = products.find(p => String(p.id) === button.dataset.productId);
-  if (!product) return;
+  const product = products.find(
+    p => String(p.id) === button.dataset.productId
+  );
 
-const sizeSelect = document.getElementById(`size-${product.id}`);
-
-if (!sizeSelect || !sizeSelect.value) {
-  alert('Escolha um tamanho antes de adicionar ao carrinho.');
-  return;
-}
-
-const size = sizeSelect.value;
-const card = button.closest('.product');
-const printSelect = card?.querySelector('.product-print');
-const selectedPrint = printSelect ? printSelect.value : '';
-  alert('Estampa selecionada: ' + selectedPrint);
-const id = `${product.id}-${size}-${selectedPrint}`;
-const existing = cart.get(id);
-
-cart.set(id, {
-  product,
-  size,
-  selectedPrint,
-  quantity: existing ? existing.quantity + 1 : 1
-});
-
-localStorage.setItem('wjay_cart', JSON.stringify(Array.from(cart.entries())));
-
-renderCart();
+  if (product) openProductModal(product);
 });
 document.getElementById('cartItems').addEventListener('click', event => {
   const button = event.target.closest('button[data-cart-action]');
