@@ -436,17 +436,18 @@ async function loadFinance(){
   const period=$('period').value;
   const cut=period==='all'?null:new Date(Date.now()-Number(period)*86400000).toISOString();
 
-  // Pedidos pagos, incluindo vendas registradas pelo WhatsApp.
   let q=db.from('orders')
     .select('id,created_at,total,payment_status,order_status,items,external_reference')
     .order('created_at',{ascending:true});
   if(cut) q=q.gte('created_at',cut);
+
   const {data,error}=await q;
   if(error){notify('Erro no faturamento: '+error.message);return;}
 
   const paid=(data||[]).filter(isPaid);
   const ids=paid.map(o=>o.id);
   let lines=[];
+
   if(ids.length){
     const r=await db.from('order_items')
       .select('id,order_id,product_id,quantity,unit_price,unit_cost,total_cost,title')
@@ -455,12 +456,6 @@ async function loadFinance(){
     lines=r.data||[];
   }
 
-  const productResult=await db.from('products').select('id,name,cost_price');
-  if(productResult.error){notify('Erro ao consultar custos dos produtos: '+productResult.error.message);return;}
-  const productRows=productResult.data||[];
-  const normalizeName=v=>String(v||'').trim().toLocaleLowerCase('pt-BR');
-  const productById=new Map(productRows.map(p=>[String(p.id),p]));
-  const productByName=new Map(productRows.map(p=>[normalizeName(p.name),p]));
   const by={};
   lines.forEach(line=>(by[String(line.order_id)]??=[]).push(line));
 
@@ -470,63 +465,63 @@ async function loadFinance(){
   for(const order of paid){
     sales+=Number(order.total)||0;
     let orderCost=0;
+
+    let items=order.items;
+    if(typeof items==='string'){
+      try{items=JSON.parse(items);}catch(_){items=[];}
+    }
+    if(!Array.isArray(items)) items=[];
+
     const orderLines=by[String(order.id)]||[];
 
-    if(orderLines.length){
-      for(const line of orderLines){
-        const qty=Number(line.quantity)||0;
+    // Prioriza os custos salvos no JSON do próprio pedido.
+    const hasSnapshots=items.some(item=>
+      item && (
+        Object.prototype.hasOwnProperty.call(item,'unit_cost') ||
+        Object.prototype.hasOwnProperty.call(item,'total_cost')
+      )
+    );
+
+    // Se não houver snapshots no JSON, utiliza order_items.
+    const source=hasSnapshots?items:(orderLines.length?orderLines:items);
+
+    if(source.length){
+      for(const line of source){
+        const qty=Math.max(0,Number(line.quantity)||0);
+        if(!qty) continue;
+
         pieces+=qty;
-        // O registro manual de venda pelo WhatsApp não grava unit_cost em order_items.
-        // Nesse caso, recuperar o custo cadastrado no produto pelo ID ou pelo nome.
-        const lineProduct=(line.product_id!=null?productById.get(String(line.product_id)):null)
-          ||productByName.get(normalizeName(line.title||line.name||''));
-        const unitCost=line.unit_cost!=null?Number(line.unit_cost)
-          :line.cost_price!=null?Number(line.cost_price)
-          :lineProduct&&lineProduct.cost_price!=null?Number(lineProduct.cost_price)
-          :null;
-        if(unitCost==null||!Number.isFinite(unitCost)){
+
+        const unitPrice=Number(line.unit_price??line.price??line.unitPrice)||0;
+
+        const unitCost=line.unit_cost==null
+          ?null:Number(line.unit_cost);
+
+        const savedTotal=line.total_cost==null
+          ?null:Number(line.total_cost);
+
+        const lineCost=savedTotal!==null
+          ?savedTotal
+          :unitCost!==null?unitCost*qty:null;
+
+        if(lineCost===null||!Number.isFinite(lineCost)||lineCost<0){
           unknown+=qty;
         }else{
-          const lineCost=line.total_cost!=null && line.unit_cost!=null
-            ? Number(line.total_cost)
-            : unitCost*qty;
-          cost+=lineCost;
-          orderCost+=lineCost;
-          knownRevenue+=(Number(line.unit_price)||0)*qty;
-        }
-      }
-    }else{
-      // Algumas vendas pelo WhatsApp podem ter os itens apenas no campo JSON "items".
-      let items=order.items;
-      if(typeof items==='string'){
-        try{items=JSON.parse(items);}catch(_){items=[];}
-      }
-      if(!Array.isArray(items)) items=[];
-      for(const item of items){
-        const qty=Math.max(0,Number(item.quantity)||1);
-        pieces+=qty;
-        const itemName=item.title||item.name||item.product||item.product_name||'';
-        const product=(item.product_id!=null?productById.get(String(item.product_id)):null)
-          ||productByName.get(normalizeName(itemName));
-        const unitPrice=Number(item.unit_price??item.price??item.unitPrice)||0;
-        const unitCost=item.unit_cost!=null?Number(item.unit_cost)
-          :item.cost_price!=null?Number(item.cost_price)
-          :product&&product.cost_price!=null?Number(product.cost_price)
-          :null;
-        if(unitCost==null||!Number.isFinite(unitCost)){
-          unknown+=qty;
-        }else{
-          const lineCost=unitCost*qty;
           cost+=lineCost;
           orderCost+=lineCost;
           knownRevenue+=unitPrice*qty;
         }
       }
-      // Do not treat a paid order without item details as confirmed profit.
-      if(!items.length) unknown+=1;
+    }else{
+      // Pedido aprovado sem detalhes dos itens.
+      unknown+=1;
     }
 
-    financeRowsData.push({date:new Date(order.created_at),sales:Number(order.total)||0,cost:orderCost});
+    financeRowsData.push({
+      date:new Date(order.created_at),
+      sales:Number(order.total)||0,
+      cost:orderCost
+    });
   }
 
   $('finSales').textContent=money(sales);
@@ -534,8 +529,13 @@ async function loadFinance(){
   $('finCost').textContent=money(cost);
   $('finProfit').textContent=money(knownRevenue-cost);
   $('finOrders').textContent=paid.length+' pedido(s) aprovado(s)';
-  $('finCostNote').textContent=unknown?unknown+' peça(s) sem custo informado':'Custos salvos nos itens';
-  $('finProfitNote').textContent=unknown?'Estimativa somente dos itens com custo conhecido':'Receita dos itens menos custos registrados';
+  $('finCostNote').textContent=unknown
+    ?unknown+' peça(s) sem custo informado'
+    :'Custos salvos nos itens';
+  $('finProfitNote').textContent=unknown
+    ?'Estimativa somente dos itens com custo conhecido'
+    :'Receita dos itens menos custos registrados';
+
   financeRows=financeRowsData;
   drawChart(financeRows);
   renderRecent(paid);
