@@ -279,6 +279,34 @@ $('productForm').addEventListener('submit', async e => {
     }
 
     a = [...new Set(a)];
+    let printImages = id ? [...editingPrintImages] : [];
+
+for (const f of [...$('printImages').files]) {
+  if (f.size > 5 * 1024 * 1024) {
+    throw new Error('A foto da estampa ' + f.name + ' ultrapassa 5 MB.');
+  }
+
+  const ext = (f.name.split('.').pop() || 'jpg')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '') || 'jpg';
+
+  const path = 'estampa-' + Date.now() + '-' +
+    Math.random().toString(36).slice(2) + '.' + ext;
+
+  const { error } = await db.storage
+    .from('product-images')
+    .upload(path, f, { upsert: false, contentType: f.type });
+
+  if (error) throw error;
+
+  const { data } = db.storage
+    .from('product-images')
+    .getPublicUrl(path);
+
+  printImages.push(data.publicUrl);
+}
+
+printImages = [...new Set(printImages)];
 
    const selectedCategories = [...document.querySelectorAll('.product-category:checked')]
   .map(el => el.value);
