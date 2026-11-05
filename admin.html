@@ -230,6 +230,8 @@ $('productForm').addEventListener('submit', async e => {
 
   // Validar os campos da promoção antes de salvar.
   const promoPriceInput = $('promoPrice').value;
+  $('quantityPromoMin').value='';
+$('quantityPromoTotal').value='';
   const promoEndInput = $('promoEndAt').value;
 
   let promo_price = null;
