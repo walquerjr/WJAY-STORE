@@ -258,6 +258,12 @@ $('productForm').addEventListener('submit', async e => {
 
     a = [...new Set(a)];
 
+   const selectedCategories = [...document.querySelectorAll('.product-category:checked')]
+  .map(el => el.value);
+
+if (!selectedCategories.length) {
+  throw new Error('Selecione pelo menos uma categoria.');
+}
     const payload = {
       name: $('name').value.trim(),
       supplier: $('supplier').value.trim(),
@@ -272,7 +278,7 @@ $('productForm').addEventListener('submit', async e => {
   ? null : Number($('wholesaleCostPrice').value),
       stock: Math.max(0, Number($('stock').value) || 0),
       featured: $('featured').checked,
-      category: $('category').value,
+      categories: selectedCategories, category: selectedCategories[0],
       sizes: $('sizes').value.split(',').map(x => x.trim()).filter(Boolean),
       description: $('description').value.trim(),
       image_url: a[0] || null,
