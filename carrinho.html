@@ -895,9 +895,10 @@ mercadoPagoBtn.addEventListener('click', async () => {
   paymentMessage.textContent = 'Preparando seu pagamento...';
 
   try {
-   const items = Array.from(cart.values()).map(item => ({
+  const items = Array.from(cart.values()).map(item => ({
   id: String(item.product.id),
   size: item.size || '',
+  selectedPrint: item.selectedPrint || '',
   quantity: Number(item.quantity)
 }));
         const { data: sessionData } = wjayAuthClient
