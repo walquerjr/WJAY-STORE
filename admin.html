@@ -56,6 +56,10 @@
 <section id="productsSection" class="hidden"><section class="card"><h2 id="formTitle">Cadastrar novo produto</h2><form id="productForm"><input id="productId" type="hidden"><div class="field-grid"><div><label for="name">Nome do produto *</label><input id="name" required></div><div><label for="supplier">Fornecedor *</label><input id="supplier" required placeholder="Nome do fornecedor"></div><div><label for="price">Preço de venda (R$) *</label><input id="price" type="number" min="0.01" step="0.01" required></div>
 <div><label for="wholesalePrice">Preço de atacado (R$)</label><input id="wholesalePrice" type="number" min="0" step="0.01"></div>
 <div><label for="costPrice">Custo de compra por peça (R$)</label><input id="costPrice" type="number" min="0" step="0.01"></div>
+  <div>
+  <label for="wholesaleCostPrice">Custo de compra no atacado por peça (R$)</label>
+  <input id="wholesaleCostPrice" type="number" min="0" step="0.01">
+</div>
 
 <div>
   <label for="promoPrice">Preço promocional (R$)</label>
