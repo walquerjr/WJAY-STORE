@@ -67,9 +67,15 @@
       text-decoration: none;
       text-align: center;
     }
+    button:disabled { cursor: not-allowed; opacity: .5; }
     .quantity button { background: #eee; padding: 8px 12px; }
     .remove { background: #ffe8e8; color: #a00; }
-    .primary { background: #111; color: white; width: 100%; margin-top: 12px; }
+    .primary {
+      background: #111;
+      color: white;
+      width: 100%;
+      margin-top: 12px;
+    }
     .whatsapp { background: #168b45; color: white; }
     .muted { color: #666; font-size: 14px; }
     .total { font-size: 22px; font-weight: bold; }
@@ -89,18 +95,25 @@
     .pix-box { text-align: center; }
     .pix-options { margin-top: 14px; }
     .pix-options button { width: 100%; margin-top: 10px; }
-    .pix-key { overflow-wrap: anywhere; font-size: 13px; background: #f5f5f5; padding: 12px; border-radius: 8px; }
-    .pix-qr {
-      display: block;
-      width: min(100%, 280px);
-      height: auto;
-      margin: 16px auto;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      background: #fff;
+    .pix-key {
+      overflow-wrap: anywhere;
+      font-size: 13px;
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: 8px;
     }
-    .pix-button { background: #168b45; color: #fff; width: 100%; margin-top: 10px; }
-    .pix-note { background: #fff8e1; border-radius: 8px; padding: 12px; font-size: 14px; }
+    .pix-button {
+      background: #168b45;
+      color: #fff;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .pix-note {
+      background: #fff8e1;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+    }
     #empty { text-align: center; padding: 30px 10px; }
     @media (max-width: 520px) {
       .item { align-items: flex-start; flex-wrap: wrap; }
@@ -123,18 +136,24 @@
       <div class="progress-track">
         <div id="progressBar" class="progress-bar"></div>
       </div>
-      <p class="muted">O preço de atacado é aplicado aos produtos que possuem esse preço cadastrado, a partir de 5 peças no carrinho.</p>
+      <p class="muted">
+        O preço de atacado é aplicado aos produtos que possuem esse preço
+        cadastrado, a partir de 5 peças do mesmo grupo de fornecedor.
+      </p>
+
       <div id="items"></div>
+
       <div class="card" id="eligibleSection">
-  <h3>Complete seu atacado</h3>
-  <p class="muted" id="eligibleSummary">
-    Veja outras peças que ajudam a liberar o preço de atacado.
-  </p>
-  <button class="primary" id="showEligible" type="button">
-    Ver peças elegíveis
-  </button>
-  <div id="eligibleProducts" hidden></div>
-</div>
+        <h3>Complete seu atacado</h3>
+        <p class="muted" id="eligibleSummary">
+          Veja outras peças que ajudam a liberar o preço de atacado.
+        </p>
+        <button class="primary" id="showEligible" type="button">
+          Ver peças elegíveis
+        </button>
+        <div id="eligibleProducts" hidden></div>
+      </div>
+
       <div id="empty" hidden>
         <p>Seu carrinho está vazio.</p>
         <a class="button" href="index.html">Ver produtos</a>
@@ -144,66 +163,121 @@
     <section class="card">
       <p id="pieceCount">0 peças</p>
       <p class="total" id="total">Total: R$ 0,00</p>
-      <label for="customerEmail">E-mail para acompanhar seu pedido:</label>
-<input
-  type="email"
-  id="customerEmail"
-  placeholder="Digite seu e-mail"
-  autocomplete="email"
-  required
-  style="width:100%;padding:12px;margin-top:8px;border:1px solid #ccc;border-radius:8px;"
->
-      <button class="primary whatsapp" id="checkout">Finalizar pedido pelo WhatsApp</button>
-      <button class="primary" id="mercadoPagoBtn" type="button">Pagar com Mercado Pago</button>
-      <button class="primary pix-button" id="pixToggle" type="button" aria-expanded="false" aria-controls="pixOptions">Pagar com Pix</button>
+
+      <label for="customerEmail">
+        E-mail para acompanhar seu pedido:
+      </label>
+      <input
+        type="email"
+        id="customerEmail"
+        placeholder="Digite seu e-mail"
+        autocomplete="email"
+        required
+        style="width:100%;padding:12px;margin-top:8px;border:1px solid #ccc;border-radius:8px;"
+      >
+
+      <button class="primary whatsapp" id="checkout">
+        Finalizar pedido pelo WhatsApp
+      </button>
+
+      <button class="primary" id="mercadoPagoBtn" type="button">
+        Pagar com Mercado Pago
+      </button>
+
+      <button
+        class="primary pix-button"
+        id="pixToggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="pixOptions"
+      >
+        Pagar com Pix
+      </button>
+
       <div id="pixOptions" class="pix-options" hidden>
         <p>Escolha como deseja pagar:</p>
-        <button class="primary" id="copyPixKey" type="button">Copiar chave Pix</button>
-        <p class="pix-key" id="pixKeyText">20e5e60d-3bf8-4732-82f4-665af9c3d500</p>
-        <button class="primary" id="showPixQr" type="button" aria-expanded="false" aria-controls="pixQrPanel">Pagar com QR Code</button>
+
+        <button class="primary" id="copyPixKey" type="button">
+          Copiar chave Pix
+        </button>
+
+        <p class="pix-key" id="pixKeyText">
+          20e5e60d-3bf8-4732-82f4-665af9c3d500
+        </p>
+
+        <button
+          class="primary"
+          id="showPixQr"
+          type="button"
+          aria-expanded="false"
+          aria-controls="pixQrPanel"
+        >
+          Pagar com QR Code
+        </button>
+
         <div id="pixQrPanel" hidden>
-          <p>Abra o aplicativo do seu banco e escaneie o código. Confira o destinatário e informe o total do pedido antes de confirmar.</p>
-          <img class="pix-qr" src="wjay-pix-qr.png" alt="QR Code Pix da WJAY STORE">
-          <p class="pix-note">Após pagar, envie o comprovante pelo WhatsApp. O pedido só será considerado pago após a confirmação do recebimento.</p>
-          <button class="pix-button" id="pixWhatsApp" type="button">Já paguei via Pix — enviar comprovante</button>
+          <p>
+            Abra o aplicativo do seu banco e escaneie o código.
+            Confira o destinatário e informe o total do pedido antes de confirmar.
+          </p>
+
+          <img
+            class="pix-qr"
+            src="wjay-pix-qr.png"
+            alt="QR Code Pix da WJAY STORE"
+          >
+
+          <p class="pix-note">
+            Após pagar, envie o comprovante pelo WhatsApp.
+            O pedido só será considerado pago após a confirmação do recebimento.
+          </p>
+
+          <button class="pix-button" id="pixWhatsApp" type="button">
+            Já paguei via Pix — enviar comprovante
+          </button>
         </div>
+
         <p id="pixMessage" class="muted" role="status" aria-live="polite"></p>
       </div>
+
       <p id="paymentMessage" role="status"></p>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
+
   <script>
     let wjayAuthClient = null;
 
-(async function iniciarSessaoWjay() {
-  const cfg = window.WJAY_CONFIG || {};
+    (async function iniciarSessaoWjay() {
+      const cfg = window.WJAY_CONFIG || {};
 
-  if (
-    !window.supabase ||
-    !cfg.supabaseUrl ||
-    !(cfg.supabaseAnonKey || cfg.supabaseKey)
-  ) return;
+      if (
+        !window.supabase ||
+        !cfg.supabaseUrl ||
+        !(cfg.supabaseAnonKey || cfg.supabaseKey)
+      ) return;
 
-  wjayAuthClient = window.supabase.createClient(
-    cfg.supabaseUrl,
-    cfg.supabaseAnonKey || cfg.supabaseKey
-  );
+      wjayAuthClient = window.supabase.createClient(
+        cfg.supabaseUrl,
+        cfg.supabaseAnonKey || cfg.supabaseKey
+      );
 
-  const { data, error } = await wjayAuthClient.auth.getSession();
+      const { data, error } = await wjayAuthClient.auth.getSession();
 
-  if (error || !data.session) return;
+      if (error || !data.session) return;
 
-  const campoEmail = document.getElementById('customerEmail');
+      const campoEmail = document.getElementById('customerEmail');
 
-  if (campoEmail && !campoEmail.value.trim()) {
-    campoEmail.value = data.session.user.email || '';
-  }
-})();
+      if (campoEmail && !campoEmail.value.trim()) {
+        campoEmail.value = data.session.user.email || '';
+      }
+    })();
+
     const CART_KEY = 'wjay_cart';
     const WHATSAPP = '5521965424073';
+
     const itemsElement = document.getElementById('items');
     const emptyElement = document.getElementById('empty');
     const totalElement = document.getElementById('total');
@@ -212,168 +286,37 @@
     const progressBar = document.getElementById('progressBar');
     const checkoutButton = document.getElementById('checkout');
     const mercadoPagoBtn = document.getElementById('mercadoPagoBtn');
-const paymentMessage = document.getElementById('paymentMessage');
-const pixWhatsAppButton = document.getElementById('pixWhatsApp');
-const pixToggle = document.getElementById('pixToggle');
-const pixOptions = document.getElementById('pixOptions');
-const copyPixKeyButton = document.getElementById('copyPixKey');
-const pixKeyText = document.getElementById('pixKeyText');
-const pixMessage = document.getElementById('pixMessage');
-const showPixQrButton = document.getElementById('showPixQr');
-const pixQrPanel = document.getElementById('pixQrPanel');
-const config = window.WJAY_CONFIG;
-    const eligibleSection = document.getElementById('eligibleSection');
-const showEligibleButton = document.getElementById('showEligible');
-const eligibleProducts = document.getElementById('eligibleProducts');
-const eligibleSummary = document.getElementById('eligibleSummary');
+    const paymentMessage = document.getElementById('paymentMessage');
+    const pixWhatsAppButton = document.getElementById('pixWhatsApp');
+    const pixToggle = document.getElementById('pixToggle');
+    const pixOptions = document.getElementById('pixOptions');
+    const copyPixKeyButton = document.getElementById('copyPixKey');
+    const pixKeyText = document.getElementById('pixKeyText');
+    const pixMessage = document.getElementById('pixMessage');
+    const showPixQrButton = document.getElementById('showPixQr');
+    const pixQrPanel = document.getElementById('pixQrPanel');
 
-let allProducts = [];
-    async function loadEligibleProducts() {
-  eligibleSummary.textContent = 'Carregando peças disponíveis...';
-  showEligibleButton.disabled = true;
+    const config = window.WJAY_CONFIG;
 
-  try {
-    const response = await fetch(
-   
-config.supabaseUrl +
-  '/rest/v1/products?select=id,name,price,wholesale_price,promo_price,promo_end_at,image_url,image_urls,sizes,supplier,active&active=eq.true&order=name.asc',
-  {
-    headers: {
-      apikey: config.supabaseKey,
-      Authorization: 'Bearer ' + config.supabaseAnonKey
-    }
-  }
-);
+    const showEligibleButton = document.getElementById('showEligible');
+    const eligibleProducts = document.getElementById('eligibleProducts');
+    const eligibleSummary = document.getElementById('eligibleSummary');
 
-if (!response.ok) {
-  throw new Error('Não foi possível carregar os produtos.');
-}
+    let allProducts = [];
 
-    allProducts = await response.json();
-    eligibleSummary.textContent =
-      'Produtos disponíveis carregados. Vamos identificar os grupos elegíveis.';
-  } catch (error) {
-    eligibleSummary.textContent =
-      'Não foi possível carregar as peças. Tente novamente.';
-  } finally {
-    showEligibleButton.disabled = false;
-  }
-}
-
-showEligibleButton.addEventListener('click', async () => {
-  if (allProducts.length === 0) {
-    await loadEligibleProducts();
-  }
-
-  if (allProducts.length === 0) return;
-
-  const cartEntries = Array.from(cart.values());
-  const supplierGroups = new Map();
-
-  for (const item of cartEntries) {
-    const product = item.product || {};
-    const supplier = String(product.supplier || '').trim();
-
-    if (!supplier) continue;
-
-    const key = supplier.toLocaleLowerCase('pt-BR');
-    supplierGroups.set(
-      key,
-      (supplierGroups.get(key) || 0) + Number(item.quantity || 0)
-    );
-  }
-
-  eligibleProducts.innerHTML = '';
-
-  if (supplierGroups.size === 0) {
-    eligibleProducts.textContent =
-      'Para encontrar peças elegíveis, adicione primeiro um produto com grupo de atacado cadastrado.';
-    eligibleProducts.hidden = false;
-    return;
-  }
-
-  let found = 0;
-
-  for (const [supplierKey, quantity] of supplierGroups) {
-    if (quantity >= 5) continue;
-
-    const groupProducts = allProducts.filter(product =>
-      String(product.supplier || '').trim().toLocaleLowerCase('pt-BR')
-        === supplierKey
-    );
-
-    const heading = document.createElement('h4');
-    heading.textContent = quantity + '/5 peças neste grupo';
-    eligibleProducts.appendChild(heading);
-
-    for (const product of groupProducts) {
-      const alreadyInCart = cartEntries.some(item =>
-        String(item.product?.id) === String(product.id)
-      );
-
-      if (alreadyInCart) continue;
-
-      const row = document.createElement('div');
-      row.className = 'item';
-
-      const name = document.createElement('strong');
-      name.textContent = product.name;
-
-      const price = document.createElement('span');
-      price.textContent = money(product.price);
-
-      const add = document.createElement('button');
-      add.type = 'button';
-      add.textContent = 'Adicionar';
-      add.addEventListener('click', () => {
-        const sizeValue = product.sizes;
-        const sizes = Array.isArray(sizeValue)
-          ? sizeValue
-          : String(sizeValue || '').split(',').map(s => s.trim()).filter(Boolean);
-
-        const size = sizes[0] || '';
-        const key = String(product.id) + '-' + size;
-        const existing = cart.get(key);
-
-        const mappedProduct = {
-          ...product,
-          image: product.image_url || product.image || '',
-          supplier: product.supplier || ''
-        };
-
-        if (existing) {
-          existing.quantity = Number(existing.quantity || 0) + 1;
-        } else {
-          cart.set(key, {
-            product: mappedProduct,
-            size,
-            quantity: 1
-          });
-        }
-
-        saveCart();
-        renderCart();
-        showEligibleButton.click();
-      });
-
-      row.append(name, price, add);
-      eligibleProducts.appendChild(row);
-      found++;
-    }
-  }
-
-  if (found === 0) {
-    eligibleProducts.textContent =
-      'Não encontramos outras peças disponíveis nesses grupos.';
-  }
-
-  eligibleProducts.hidden = false;
-});
     function money(value) {
       return Number(value || 0).toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL'
       });
+    }
+
+    function toCents(value) {
+      return Math.round(Number(value) * 100);
+    }
+
+    function fromCents(value) {
+      return Number((value / 100).toFixed(2));
     }
 
     function readCart() {
@@ -387,213 +330,575 @@ showEligibleButton.addEventListener('click', async () => {
     }
 
     const cart = readCart();
+
     let pixOrderCache = null;
-let pixOrderCacheSignature = '';
-let pixOrderInFlight = null;
-let pixOrderInFlightSignature = '';
+    let pixOrderCacheSignature = '';
+    let pixOrderInFlight = null;
+    let pixOrderInFlightSignature = '';
 
-async function registrarPedidoPix() {
-  const entries = Array.from(cart.values());
-
-  if (!entries.length) {
-    throw new Error('Seu carrinho está vazio.');
-  }
-
-  if (!config || !config.supabaseUrl || !config.supabaseAnonKey) {
-    throw new Error('Configuração da loja não encontrada.');
-  }
-
-  const items = entries.map(item => ({
-    id: String((item.product || {}).id || ''),
-    size: item.size || '',
-    quantity: Number(item.quantity),
-    selectedPrint: item.selectedPrint || ''
-  }));
-
-  const signature = JSON.stringify(items);
-
-  if (pixOrderCache && pixOrderCacheSignature === signature) {
-    return pixOrderCache;
-  }
-
-  if (pixOrderInFlight) {
-    if (pixOrderInFlightSignature === signature) {
-      return pixOrderInFlight;
+    function saveCart() {
+      pixOrderCache = null;
+      pixOrderCacheSignature = '';
+      localStorage.setItem(
+        CART_KEY,
+        JSON.stringify(Array.from(cart.entries()))
+      );
     }
-    throw new Error('Aguarde o registro do pedido atual.');
-  }
 
-  const request = (async () => {
-    const { data: sessionData } = wjayAuthClient
-      ? await wjayAuthClient.auth.getSession()
-      : { data: { session: null } };
+    // Atualiza os produtos disponíveis para completar o atacado.
+    async function loadEligibleProducts() {
+      eligibleSummary.textContent = 'Carregando peças disponíveis...';
+      showEligibleButton.disabled = true;
 
-    const accessToken = sessionData.session
-      ? sessionData.session.access_token
-      : null;
+      try {
+        const response = await fetch(
+          config.supabaseUrl +
+          '/rest/v1/products?select=id,name,price,wholesale_price,promo_price,promo_end_at,image_url,image_urls,print_images,sizes,supplier,active,quantity_promo_min,quantity_promo_total&active=eq.true&order=name.asc',
+          {
+            headers: {
+              apikey: config.supabaseKey,
+              Authorization: 'Bearer ' + config.supabaseAnonKey
+            }
+          }
+        );
 
-    const response = await fetch(
-      config.supabaseUrl + '/functions/v1/register-pix-order',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': config.supabaseAnonKey,
-          'Authorization': 'Bearer ' + config.supabaseAnonKey,
-          ...(accessToken
-            ? { 'x-user-access-token': accessToken }
-            : {})
-        },
-        body: JSON.stringify({
-          items,
-          email: document.getElementById('customerEmail').value.trim()
-        })
+        if (!response.ok) {
+          throw new Error('Não foi possível carregar os produtos.');
+        }
+
+        allProducts = await response.json();
+
+        eligibleSummary.textContent =
+          'Produtos disponíveis carregados.';
+      } catch (error) {
+        eligibleSummary.textContent =
+          'Não foi possível carregar as peças. Tente novamente.';
+      } finally {
+        showEligibleButton.disabled = false;
       }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || 'Não foi possível registrar o pedido.');
     }
 
-    return result;
-  })();
+    showEligibleButton.addEventListener('click', async () => {
+      if (allProducts.length === 0) {
+        await loadEligibleProducts();
+      }
 
-  pixOrderInFlight = request;
-  pixOrderInFlightSignature = signature;
+      if (allProducts.length === 0) return;
 
-  try {
-    const result = await request;
-    pixOrderCache = result;
-    pixOrderCacheSignature = signature;
-    return result;
-  } finally {
-    pixOrderInFlight = null;
-    pixOrderInFlightSignature = '';
-  }
-}
+      const cartEntries = Array.from(cart.values());
+      const supplierGroups = new Map();
 
-  function saveCart() {
-  pixOrderCache = null;
-  pixOrderCacheSignature = '';
-  localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries())));
-}
+      for (const item of cartEntries) {
+        const supplier = String(item.product?.supplier || '').trim();
+        if (!supplier) continue;
+
+        const key = supplier.toLocaleLowerCase('pt-BR');
+
+        supplierGroups.set(
+          key,
+          (supplierGroups.get(key) || 0) + Number(item.quantity || 0)
+        );
+      }
+
+      eligibleProducts.innerHTML = '';
+
+      if (supplierGroups.size === 0) {
+        eligibleProducts.textContent =
+          'Adicione primeiro um produto com grupo de fornecedor cadastrado.';
+        eligibleProducts.hidden = false;
+        return;
+      }
+
+      let found = 0;
+
+      for (const [supplierKey, quantity] of supplierGroups) {
+        if (quantity >= 5) continue;
+
+        const groupProducts = allProducts.filter(product =>
+          String(product.supplier || '')
+            .trim()
+            .toLocaleLowerCase('pt-BR') === supplierKey
+        );
+
+        const heading = document.createElement('h4');
+        heading.textContent = quantity + '/5 peças neste grupo';
+        eligibleProducts.appendChild(heading);
+
+        for (const product of groupProducts) {
+          const alreadyInCart = cartEntries.some(item =>
+            String(item.product?.id) === String(product.id)
+          );
+
+          if (alreadyInCart) continue;
+
+          const row = document.createElement('div');
+          row.className = 'item';
+
+          const name = document.createElement('strong');
+          name.textContent = product.name;
+
+          const price = document.createElement('span');
+          price.textContent = money(product.price);
+
+          const add = document.createElement('button');
+          add.type = 'button';
+          add.textContent = 'Adicionar';
+
+          add.addEventListener('click', () => {
+            const sizeValue = product.sizes;
+
+            const sizes = Array.isArray(sizeValue)
+              ? sizeValue
+              : String(sizeValue || '')
+                  .split(',')
+                  .map(s => s.trim())
+                  .filter(Boolean);
+
+            const size = sizes[0] || '';
+
+            const key = String(product.id) + '-' + size + '-';
+            const existing = cart.get(key);
+
+            const mappedProduct = {
+              ...product,
+              image: product.image_url || product.image || '',
+              images: Array.isArray(product.image_urls)
+                ? product.image_urls
+                : [],
+              print_images: Array.isArray(product.print_images)
+                ? product.print_images
+                : [],
+              supplier: product.supplier || ''
+            };
+
+            if (existing) {
+              existing.quantity = Number(existing.quantity || 0) + 1;
+            } else {
+              cart.set(key, {
+                product: mappedProduct,
+                size,
+                selectedPrint: '',
+                quantity: 1
+              });
+            }
+
+            saveCart();
+            renderCart();
+            showEligibleButton.click();
+          });
+
+          row.append(name, price, add);
+          eligibleProducts.appendChild(row);
+          found++;
+        }
+      }
+
+      if (found === 0) {
+        eligibleProducts.textContent =
+          'Não encontramos outras peças disponíveis nesses grupos.';
+      }
+
+      eligibleProducts.hidden = false;
+    });
+
+    /*
+      Calcula os preços de todo o carrinho.
+
+      Prioridade:
+      1. Atacado válido, quando o fornecedor alcança 5 peças.
+      2. Promoção por quantidade.
+      3. Promoção temporária.
+      4. Preço normal.
+
+      A promoção por quantidade soma tamanhos e estampas do mesmo produto.
+    */
+    function calculateCartPricing(entries) {
+      const quantityBySupplier = new Map();
+      const quantityByProduct = new Map();
+      const productGroups = new Map();
+
+      for (const [key, item] of entries) {
+        const product = item.product || {};
+        const quantity = Number(item.quantity) || 0;
+
+        const supplier = String(product.supplier || '')
+          .trim()
+          .toLocaleLowerCase('pt-BR');
+
+        if (supplier) {
+          quantityBySupplier.set(
+            supplier,
+            (quantityBySupplier.get(supplier) || 0) + quantity
+          );
+        }
+
+        const productId = String(product.id || '');
+
+        quantityByProduct.set(
+          productId,
+          (quantityByProduct.get(productId) || 0) + quantity
+        );
+
+        if (!productGroups.has(productId)) {
+          productGroups.set(productId, []);
+        }
+
+        productGroups.get(productId).push({
+          key,
+          item,
+          quantity
+        });
+      }
+
+      const pricingByKey = new Map();
+
+      for (const [productId, group] of productGroups) {
+        const product = group[0].item.product || {};
+        const productQuantity = quantityByProduct.get(productId) || 0;
+
+        const supplier = String(product.supplier || '')
+          .trim()
+          .toLocaleLowerCase('pt-BR');
+
+        const supplierQuantity = supplier
+          ? quantityBySupplier.get(supplier) || 0
+          : 0;
+
+        const regularPrice = Number(product.price) || 0;
+        const wholesalePrice = Number(product.wholesale_price);
+        const promoPrice = Number(product.promo_price);
+
+        const promoEnd = product.promo_end_at
+          ? new Date(product.promo_end_at)
+          : null;
+
+        const promoActive =
+          product.promo_price !== null &&
+          product.promo_price !== undefined &&
+          product.promo_price !== '' &&
+          Number.isFinite(promoPrice) &&
+          promoPrice > 0 &&
+          promoPrice < regularPrice &&
+          promoEnd !== null &&
+          !Number.isNaN(promoEnd.getTime()) &&
+          promoEnd > new Date();
+
+        const retailPrice = promoActive ? promoPrice : regularPrice;
+        const retailCents = toCents(retailPrice);
+
+        const hasWholesalePrice =
+          product.wholesale_price !== null &&
+          product.wholesale_price !== undefined &&
+          product.wholesale_price !== '' &&
+          Number.isFinite(wholesalePrice) &&
+          wholesalePrice > 0 &&
+          wholesalePrice <= regularPrice;
+
+        const useWholesale =
+          supplierQuantity >= 5 && hasWholesalePrice;
+
+        const quantityPromoMin = Number(product.quantity_promo_min);
+        const quantityPromoTotal = Number(product.quantity_promo_total);
+
+        const quantityPromoCents =
+          Number.isFinite(quantityPromoTotal)
+            ? toCents(quantityPromoTotal)
+            : 0;
+
+        const hasQuantityPromo =
+          Number.isInteger(quantityPromoMin) &&
+          quantityPromoMin >= 2 &&
+          quantityPromoCents > 0 &&
+          quantityPromoCents < retailCents * quantityPromoMin;
+
+        let productTotalCents;
+        let quantityPromoApplied = false;
+
+        if (useWholesale) {
+          productTotalCents =
+            toCents(wholesalePrice) * productQuantity;
+        } else if (hasQuantityPromo) {
+          const completeBundles = Math.floor(
+            productQuantity / quantityPromoMin
+          );
+
+          const remainingPieces =
+            productQuantity % quantityPromoMin;
+
+          productTotalCents =
+            completeBundles * quantityPromoCents +
+            remainingPieces * retailCents;
+
+          quantityPromoApplied = completeBundles > 0;
+        } else {
+          productTotalCents = retailCents * productQuantity;
+        }
+
+        // Distribui os centavos entre as linhas de tamanhos e estampas.
+        const allocations = group.map(entry => {
+          const exactShare =
+            productTotalCents * entry.quantity / productQuantity;
+
+          const baseCents = Math.floor(exactShare);
+
+          return {
+            key: entry.key,
+            baseCents,
+            remainder: exactShare - baseCents
+          };
+        });
+
+        let allocatedCents = allocations.reduce(
+          (sum, entry) => sum + entry.baseCents,
+          0
+        );
+
+        let remainingCents = productTotalCents - allocatedCents;
+
+        allocations.sort((a, b) => b.remainder - a.remainder);
+
+        for (const allocation of allocations) {
+          const extraCent = remainingCents > 0 ? 1 : 0;
+
+          pricingByKey.set(allocation.key, {
+            subtotalCents: allocation.baseCents + extraCent,
+            useWholesale,
+            promoActive: promoActive && !useWholesale,
+            quantityPromoApplied
+          });
+
+          remainingCents -= extraCent;
+        }
+      }
+
+      return {
+        pricingByKey,
+        quantityBySupplier,
+        quantityByProduct
+      };
+    }
+
+    async function registrarPedidoPix() {
+      const entries = Array.from(cart.values());
+
+      if (!entries.length) {
+        throw new Error('Seu carrinho está vazio.');
+      }
+
+      if (
+        !config ||
+        !config.supabaseUrl ||
+        !config.supabaseAnonKey
+      ) {
+        throw new Error('Configuração da loja não encontrada.');
+      }
+
+      const items = entries.map(item => ({
+        id: String((item.product || {}).id || ''),
+        size: item.size || '',
+        quantity: Number(item.quantity),
+        selectedPrint: item.selectedPrint || ''
+      }));
+
+      const signature = JSON.stringify(items);
+
+      if (
+        pixOrderCache &&
+        pixOrderCacheSignature === signature
+      ) {
+        return pixOrderCache;
+      }
+
+      if (pixOrderInFlight) {
+        if (pixOrderInFlightSignature === signature) {
+          return pixOrderInFlight;
+        }
+
+        throw new Error('Aguarde o registro do pedido atual.');
+      }
+
+      const request = (async () => {
+        const { data: sessionData } = wjayAuthClient
+          ? await wjayAuthClient.auth.getSession()
+          : { data: { session: null } };
+
+        const accessToken = sessionData.session
+          ? sessionData.session.access_token
+          : null;
+
+        const response = await fetch(
+          config.supabaseUrl + '/functions/v1/register-pix-order',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': config.supabaseAnonKey,
+              'Authorization': 'Bearer ' + config.supabaseAnonKey,
+              ...(accessToken
+                ? { 'x-user-access-token': accessToken }
+                : {})
+            },
+            body: JSON.stringify({
+              items,
+              email: document
+                .getElementById('customerEmail')
+                .value.trim()
+            })
+          }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.error || 'Não foi possível registrar o pedido.'
+          );
+        }
+
+        return result;
+      })();
+
+      pixOrderInFlight = request;
+      pixOrderInFlightSignature = signature;
+
+      try {
+        const result = await request;
+        pixOrderCache = result;
+        pixOrderCacheSignature = signature;
+        return result;
+      } finally {
+        pixOrderInFlight = null;
+        pixOrderInFlightSignature = '';
+      }
+    }
 
     function renderCart() {
-     const entries = Array.from(cart.entries());
-const count = entries.reduce(
-  (sum, entry) => sum + (Number(entry[1].quantity) || 0), 0
-);
-let total = 0;
+      const entries = Array.from(cart.entries());
 
-// Conta as peças separadamente por fornecedor.
-const quantityBySupplier = new Map();
+      const count = entries.reduce(
+        (sum, entry) => sum + (Number(entry[1].quantity) || 0),
+        0
+      );
 
-for (const [, item] of entries) {
-  const supplier = String(item.product?.supplier || '').trim();
-  if (!supplier) continue;
-
-  const key = supplier.toLocaleLowerCase('pt-BR');
-  quantityBySupplier.set(
-    key,
-    (quantityBySupplier.get(key) || 0) + (Number(item.quantity) || 0)
-  );
-}
+      const pricing = calculateCartPricing(entries);
+      let totalCents = 0;
 
       itemsElement.innerHTML = '';
       emptyElement.hidden = count !== 0;
+
       checkoutButton.disabled = count === 0;
-      checkoutButton.style.opacity = count === 0 ? '.5' : '1';
+      mercadoPagoBtn.disabled = count === 0;
 
       for (const [id, item] of entries) {
         const product = item.product || {};
         const quantity = Number(item.quantity) || 0;
-      const supplier = String(product.supplier || '').trim();
-const supplierKey = supplier.toLocaleLowerCase('pt-BR');
-const supplierQuantity = supplier
-  ? (quantityBySupplier.get(supplierKey) || 0)
-  : 0;
 
+        const linePricing = pricing.pricingByKey.get(id) || {
+          subtotalCents: 0,
+          useWholesale: false,
+          promoActive: false,
+          quantityPromoApplied: false
+        };
 
-const wholesalePrice = Number(product.wholesale_price);
-const regularPrice = Number(product.price) || 0;
-const promoPrice = Number(product.promo_price);
-const promoEnd = product.promo_end_at
-  ? new Date(product.promo_end_at)
-  : null;
+        const subtotal = fromCents(linePricing.subtotalCents);
+        const averagePrice = quantity > 0
+          ? subtotal / quantity
+          : 0;
 
-const promoActive =
-  product.promo_price !== null &&
-  product.promo_price !== undefined &&
-  product.promo_price !== '' &&
-  Number.isFinite(promoPrice) &&
-  promoPrice > 0 &&
-  promoPrice < regularPrice &&
-  promoEnd &&
-  !Number.isNaN(promoEnd.getTime()) &&
-  promoEnd > new Date();
-
-const retailPrice = promoActive ? promoPrice : regularPrice;
-
-const hasWholesalePrice =
-  product.wholesale_price !== null &&
-  product.wholesale_price !== undefined &&
-  product.wholesale_price !== '' &&
-  Number.isFinite(wholesalePrice) &&
-  wholesalePrice > 0 &&
-  wholesalePrice <= regularPrice;
-
-const unitPrice =
-  supplierQuantity >= 5 && hasWholesalePrice
-    ? wholesalePrice
-    : retailPrice;
-
-
-        total += unitPrice * quantity;
+        totalCents += linePricing.subtotalCents;
 
         const article = document.createElement('article');
         article.className = 'item';
 
-     const img = document.createElement('img');
+        const img = document.createElement('img');
 
-const printIndex = item.selectedPrint
-  ? Number(item.selectedPrint.replace('Estampa ', '')) - 1
-  : 0;
+        // Fotos das estampas ficam separadas das fotos adicionais.
+        const printImages = Array.isArray(product.print_images)
+          ? product.print_images
+          : [];
 
-const images = Array.isArray(product.images)
-  ? product.images
-  : [];
+        let printImage = '';
 
-img.src = images[printIndex] || product.image || '';
-img.alt = product.name
-  ? product.name + (item.selectedPrint ? ' - ' + item.selectedPrint : '')
-  : 'Produto';
+        if (item.selectedPrint) {
+          if (/^https?:\/\//i.test(item.selectedPrint)) {
+            printImage = item.selectedPrint;
+          } else {
+            const match = String(item.selectedPrint).match(/(\d+)/);
+            const printIndex = match ? Number(match[1]) - 1 : -1;
 
-img.onerror = () => {
-  img.style.display = 'none';
-};
+            if (printIndex >= 0) {
+              printImage = printImages[printIndex] || '';
+            }
+          }
+        }
+
+        const additionalImages = Array.isArray(product.images)
+          ? product.images
+          : [];
+
+        img.src =
+          printImage ||
+          product.image ||
+          product.image_url ||
+          additionalImages[0] ||
+          '';
+
+        img.alt = product.name
+          ? product.name +
+            (item.selectedPrint ? ' - ' + item.selectedPrint : '')
+          : 'Produto';
+
+        img.onerror = () => {
+          img.style.display = 'none';
+        };
+
         const details = document.createElement('div');
         details.className = 'details';
 
         const title = document.createElement('h3');
         title.textContent = product.name || 'Produto';
+
         const sizeInfo = document.createElement('p');
-sizeInfo.className = 'muted';
-sizeInfo.textContent = 'Tamanho: ' + (item.size || 'Não informado');
+        sizeInfo.className = 'muted';
+        sizeInfo.textContent =
+          'Tamanho: ' + (item.size || 'Não informado');
+
+        details.append(title, sizeInfo);
+
         if (item.selectedPrint) {
-  const printInfo = document.createElement('p');
-  printInfo.className = 'muted';
-  printInfo.textContent = 'Estampa: ' + item.selectedPrint;
-  details.appendChild(printInfo);
-}
+          const printInfo = document.createElement('p');
+          printInfo.className = 'muted';
+          printInfo.textContent = 'Estampa: ' + item.selectedPrint;
+          details.appendChild(printInfo);
+        }
 
         const price = document.createElement('p');
-        price.textContent = money(unitPrice) + ' cada';
+        price.textContent = money(averagePrice) + ' em média por peça';
 
-        const subtotal = document.createElement('p');
-        subtotal.className = 'muted';
-        subtotal.textContent = 'Subtotal: ' + money(unitPrice * quantity);
+        const subtotalElement = document.createElement('p');
+        subtotalElement.className = 'muted';
+        subtotalElement.textContent =
+          'Subtotal: ' + money(subtotal);
+
+        details.append(price, subtotalElement);
+
+        if (linePricing.useWholesale) {
+          const wholesaleInfo = document.createElement('p');
+          wholesaleInfo.className = 'muted';
+          wholesaleInfo.textContent = 'Preço de atacado aplicado';
+          details.appendChild(wholesaleInfo);
+        } else if (linePricing.quantityPromoApplied) {
+          const promoInfo = document.createElement('p');
+          promoInfo.className = 'muted';
+          promoInfo.textContent =
+            'Promoção por quantidade aplicada';
+          details.appendChild(promoInfo);
+        } else if (linePricing.promoActive) {
+          const promoInfo = document.createElement('p');
+          promoInfo.className = 'muted';
+          promoInfo.textContent = 'Promoção aplicada';
+          details.appendChild(promoInfo);
+        }
 
         const quantityControls = document.createElement('div');
         quantityControls.className = 'quantity';
@@ -614,7 +919,7 @@ sizeInfo.textContent = 'Tamanho: ' + (item.size || 'Não informado');
         increase.dataset.id = id;
 
         quantityControls.append(decrease, qty, increase);
-       details.append(title, sizeInfo, price, subtotal, quantityControls);
+        details.appendChild(quantityControls);
 
         const remove = document.createElement('button');
         remove.className = 'remove';
@@ -626,33 +931,38 @@ sizeInfo.textContent = 'Tamanho: ' + (item.size || 'Não informado');
         itemsElement.appendChild(article);
       }
 
-     pieceCountElement.textContent =
-  count + (count === 1 ? ' peça' : ' peças');
+      pieceCountElement.textContent =
+        count + (count === 1 ? ' peça' : ' peças');
 
-totalElement.textContent = 'Total: ' + money(total);
+      totalElement.textContent =
+        'Total: ' + money(fromCents(totalCents));
 
-const groupQuantities = Array.from(quantityBySupplier.values());
+      const groupQuantities = Array.from(
+        pricing.quantityBySupplier.values()
+      );
 
-if (groupQuantities.length === 0) {
-  progressBar.style.width = '0%';
-  progressText.textContent =
-    'Adicione peças do mesmo grupo de fornecedor para liberar o atacado.';
-} else {
-  const bestProgress = Math.max(...groupQuantities);
-  progressBar.style.width =
-    Math.min(bestProgress / 5 * 100, 100) + '%';
+      if (groupQuantities.length === 0) {
+        progressBar.style.width = '0%';
+        progressText.textContent =
+          'Adicione peças do mesmo grupo de fornecedor para liberar o atacado.';
+      } else {
+        const bestProgress = Math.max(...groupQuantities);
 
-  if (groupQuantities.some(quantity => quantity >= 5)) {
-    progressText.textContent =
-      'Atacado liberado para os produtos elegíveis de cada grupo.';
-  } else {
-    const missing = 5 - bestProgress;
-    progressText.textContent =
-      'No grupo mais próximo, faltam ' + missing +
-      (missing === 1 ? ' peça' : ' peças') +
-      ' para liberar o atacado.';
-  }
-}
+        progressBar.style.width =
+          Math.min(bestProgress / 5 * 100, 100) + '%';
+
+        if (groupQuantities.some(quantity => quantity >= 5)) {
+          progressText.textContent =
+            'Atacado liberado para os produtos elegíveis de cada grupo.';
+        } else {
+          const missing = 5 - bestProgress;
+
+          progressText.textContent =
+            'No grupo mais próximo, faltam ' + missing +
+            (missing === 1 ? ' peça' : ' peças') +
+            ' para liberar o atacado.';
+        }
+      }
     }
 
     itemsElement.addEventListener('click', event => {
@@ -661,13 +971,17 @@ if (groupQuantities.length === 0) {
 
       const id = button.dataset.id;
       const item = cart.get(id);
+
       if (!item) return;
 
       if (button.dataset.action === 'inc') {
         item.quantity++;
       } else if (button.dataset.action === 'dec') {
         item.quantity--;
-        if (item.quantity <= 0) cart.delete(id);
+
+        if (item.quantity <= 0) {
+          cart.delete(id);
+        }
       } else if (button.dataset.action === 'remove') {
         cart.delete(id);
       }
@@ -676,267 +990,272 @@ if (groupQuantities.length === 0) {
       renderCart();
     });
 
+    // Finalização pelo WhatsApp com o mesmo cálculo de preços.
     checkoutButton.addEventListener('click', () => {
-      const entries = Array.from(cart.values());
+      const entries = Array.from(cart.entries());
+
       if (!entries.length) return;
 
-     let total = 0;
+      const pricing = calculateCartPricing(entries);
+      const lines = [
+        'Olá! Quero fazer um pedido na WJAY STORE:',
+        ''
+      ];
 
-const quantityBySupplier = new Map();
+      let totalCents = 0;
+      let count = 0;
 
-for (const item of entries) {
-  const supplier = String(item.product?.supplier || '').trim();
-  if (!supplier) continue;
+      for (const [id, item] of entries) {
+        const product = item.product || {};
+        const quantity = Number(item.quantity) || 0;
 
-  const key = supplier.toLocaleLowerCase('pt-BR');
-  quantityBySupplier.set(
-    key,
-    (quantityBySupplier.get(key) || 0) + (Number(item.quantity) || 0)
-  );
-}
+        const linePricing = pricing.pricingByKey.get(id);
 
-const count = entries.reduce(
-  (sum, item) => sum + (Number(item.quantity) || 0),
-  0
-);
-      const lines = ['Olá! Quero fazer um pedido na WJAY STORE:', ''];
+        if (!linePricing) continue;
 
-      for (const item of entries) {
-        const p = item.product || {};
-      const supplier = String(p.supplier || '').trim();
-const supplierKey = supplier.toLocaleLowerCase('pt-BR');
-const supplierQuantity = supplier
-  ? (quantityBySupplier.get(supplierKey) || 0)
-  : 0;
+        const subtotalCents = linePricing.subtotalCents;
+        const subtotal = fromCents(subtotalCents);
+        const averagePrice = quantity > 0
+          ? subtotal / quantity
+          : 0;
 
+        totalCents += subtotalCents;
+        count += quantity;
 
+        const printText = item.selectedPrint
+          ? ' — ' + item.selectedPrint
+          : '';
 
+        const sizeText = item.size
+          ? ' — Tam.: ' + item.size
+          : '';
 
-const wholesalePrice = Number(p.wholesale_price);
-const regularPrice = Number(p.price) || 0;
-const promoPrice = Number(p.promo_price);
-const promoEnd = p.promo_end_at ? new Date(p.promo_end_at) : null;
+        let promotionText = '';
 
-const promoActive =
-  p.promo_price !== null &&
-  p.promo_price !== undefined &&
-  p.promo_price !== '' &&
-  Number.isFinite(promoPrice) &&
-  promoPrice > 0 &&
-  promoPrice < regularPrice &&
-  promoEnd &&
-  !Number.isNaN(promoEnd.getTime()) &&
-  promoEnd > new Date();
+        if (linePricing.useWholesale) {
+          promotionText = ' — ATACADO';
+        } else if (linePricing.quantityPromoApplied) {
+          promotionText = ' — PROMOÇÃO POR QUANTIDADE';
+        } else if (linePricing.promoActive) {
+          promotionText = ' — PROMOÇÃO';
+        }
 
-const retailPrice = promoActive ? promoPrice : regularPrice;
-
-const hasWholesalePrice =
-  p.wholesale_price !== null &&
-  p.wholesale_price !== undefined &&
-  p.wholesale_price !== '' &&
-  Number.isFinite(wholesalePrice) &&
-  wholesalePrice > 0 &&
-  wholesalePrice <= regularPrice;
-
-const price =
-  supplierQuantity >= 5 && hasWholesalePrice
-    ? wholesalePrice
-    : retailPrice;
-
-        const subtotal = price * item.quantity;
-        total += subtotal;
-       const printText = item.selectedPrint
-  ? ' — ' + item.selectedPrint
-  : '';
-
-const sizeText = item.size
-  ? ' — Tam.: ' + item.size
-  : '';
-
-lines.push(
-  (p.name || 'Produto') +
-  printText +
-  sizeText +
-  ' — ' + item.quantity +
-  ' un. × ' + money(price) +
-  ' = ' + money(subtotal)
-);
+        lines.push(
+          (product.name || 'Produto') +
+          printText +
+          sizeText +
+          ' — ' + quantity +
+          ' un. × ' + money(averagePrice) +
+          ' em média = ' + money(subtotal) +
+          promotionText
+        );
       }
 
       lines.push('');
       lines.push('Quantidade total: ' + count + ' peças');
-      lines.push('Total estimado: ' + money(total));
+      lines.push('Total estimado: ' + money(fromCents(totalCents)));
       lines.push('');
-      lines.push('Por favor, confirme a disponibilidade e as opções de entrega.');
+      lines.push(
+        'Por favor, confirme a disponibilidade e as opções de entrega.'
+      );
 
-      const url = 'https://wa.me/' + WHATSAPP + '?text=' +
-        encodeURIComponent(lines.join('\n'));
+      const url =
+        'https://wa.me/' + WHATSAPP +
+        '?text=' + encodeURIComponent(lines.join('\n'));
+
       window.open(url, '_blank');
     });
 
-  
-pixToggle.addEventListener('click', () => {
-  const opening = pixOptions.hidden;
-  pixOptions.hidden = !opening;
-  pixToggle.setAttribute('aria-expanded', String(opening));
-});
+    pixToggle.addEventListener('click', () => {
+      const opening = pixOptions.hidden;
+      pixOptions.hidden = !opening;
+      pixToggle.setAttribute('aria-expanded', String(opening));
+    });
 
-copyPixKeyButton.addEventListener('click', async () => {
-  const key = pixKeyText.textContent.trim();
+    copyPixKeyButton.addEventListener('click', async () => {
+      const key = pixKeyText.textContent.trim();
 
-  try {
-    await navigator.clipboard.writeText(key);
-    pixMessage.textContent = 'Chave Pix copiada. Registrando seu pedido...';
+      try {
+        await navigator.clipboard.writeText(key);
 
-    copyPixKeyButton.disabled = true;
-    pixWhatsAppButton.disabled = true;
+        pixMessage.textContent =
+          'Chave Pix copiada. Registrando seu pedido...';
 
-    try {
-      await registrarPedidoPix();
-      pixMessage.textContent =
-        'Chave Pix copiada e pedido registrado! Cole a chave no aplicativo do seu banco e confira o destinatário antes de pagar.';
-      paymentMessage.textContent =
-        'Pedido Pix registrado e aguardando confirmação do pagamento.';
-    } catch (error) {
-      pixMessage.textContent =
-        'A chave foi copiada, mas não foi possível registrar o pedido: ' +
-        (error.message || 'Tente novamente pelo botão de enviar comprovante.');
-    } finally {
-      copyPixKeyButton.disabled = false;
-      pixWhatsAppButton.disabled = false;
-    }
-  } catch (error) {
-    pixMessage.textContent =
-      'Não foi possível copiar automaticamente. Selecione e copie a chave exibida acima.';
-  }
-});
+        copyPixKeyButton.disabled = true;
+        pixWhatsAppButton.disabled = true;
 
-showPixQrButton.addEventListener('click', () => {
-  const opening = pixQrPanel.hidden;
-  pixQrPanel.hidden = !opening;
-  showPixQrButton.setAttribute('aria-expanded', String(opening));
-  showPixQrButton.textContent = opening ? 'Ocultar QR Code' : 'Pagar com QR Code';
-});
+        try {
+          await registrarPedidoPix();
 
+          pixMessage.textContent =
+            'Chave Pix copiada e pedido registrado! Cole a chave no aplicativo do seu banco e confira o destinatário antes de pagar.';
 
-pixWhatsAppButton.addEventListener('click', async () => {
-  if (cart.size === 0) {
-    paymentMessage.textContent = 'Seu carrinho está vazio.';
-    return;
-  }
-
-  pixWhatsAppButton.disabled = true;
-  copyPixKeyButton.disabled = true;
-  paymentMessage.textContent = 'Registrando seu pedido Pix...';
-
-  try {
-    const result = await registrarPedidoPix();
-
-    const lines = [
-      'Olá! Estou entrando em contato sobre meu pedido Pix na WJAY STORE.',
-      '',
-      'Referência do pedido: ' + result.order_reference,
-      '',
-      'Itens do pedido:'
-    ];
-
-    for (const item of result.items || []) {
-      const printText = item.selectedPrint ? ' — ' + item.selectedPrint : '';
-      const sizeText = item.size ? ' — Tam.: ' + item.size : '';
-
-      lines.push(
-        item.name + printText + sizeText +
-        ' — ' + item.quantity + ' un. — ' +
-        Number(item.subtotal).toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL'
-        })
-      );
-    }
-
-    lines.push('');
-    lines.push('Total: ' + Number(result.total).toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }));
-    lines.push('');
-    lines.push('O pedido está aguardando confirmação do pagamento. Vou enviar o comprovante nesta conversa.');
-
-    const url = 'https://wa.me/' + WHATSAPP + '?text=' +
-      encodeURIComponent(lines.join('\n'));
-
-    paymentMessage.textContent =
-      'Pedido registrado! Falta confirmar o recebimento do Pix.';
-
-    window.open(url, '_blank');
-  } catch (error) {
-    console.error('Erro ao registrar pedido Pix:', error);
-    paymentMessage.textContent =
-      error.message || 'Erro ao registrar o pedido. Tente novamente.';
-  } finally {
-    pixWhatsAppButton.disabled = false;
-    copyPixKeyButton.disabled = false;
-  }
-});
-
-
-mercadoPagoBtn.addEventListener('click', async () => {
-  if (cart.size === 0) {
-    paymentMessage.textContent = 'Seu carrinho está vazio.';
-    return;
-  }
-
-  if (!config || !config.supabaseUrl || !config.supabaseKey) {
-    paymentMessage.textContent = 'Configuração de pagamento não encontrada.';
-    return;
-  }
-
-  mercadoPagoBtn.disabled = true;
-  paymentMessage.textContent = 'Preparando seu pagamento...';
-
-  try {
-  const items = Array.from(cart.values()).map(item => ({
-  id: String(item.product.id),
-  size: item.size || '',
-  selectedPrint: item.selectedPrint || '',
-  quantity: Number(item.quantity)
-}));
-        const { data: sessionData } = wjayAuthClient
-      ? await wjayAuthClient.auth.getSession()
-      : { data: { session: null } };
-
-    const accessToken = sessionData.session
-      ? sessionData.session.access_token
-      : null;
-
-    const response = await fetch(
-      config.supabaseUrl + '/functions/v1/mercadopago-checkout',
-      {
-        method: 'POST',
-               headers: {
-          'Content-Type': 'application/json',
-          'apikey': config.supabaseKey,
-          'Authorization': 'Bearer ' + config.supabaseAnonKey,
-          ...(accessToken ? { 'x-user-access-token': accessToken } : {})
-        },
-        body: JSON.stringify({   items,   email: document.getElementById('customerEmail').value.trim() })
+          paymentMessage.textContent =
+            'Pedido Pix registrado e aguardando confirmação do pagamento.';
+        } catch (error) {
+          pixMessage.textContent =
+            'A chave foi copiada, mas não foi possível registrar o pedido: ' +
+            (error.message || 'Tente novamente pelo botão de enviar comprovante.');
+        } finally {
+          copyPixKeyButton.disabled = false;
+          pixWhatsAppButton.disabled = false;
+        }
+      } catch (error) {
+        pixMessage.textContent =
+          'Não foi possível copiar automaticamente. Selecione e copie a chave exibida acima.';
       }
-    );
+    });
 
-    const data = await response.json();
+    showPixQrButton.addEventListener('click', () => {
+      const opening = pixQrPanel.hidden;
 
-    if (!response.ok || !data.checkout_url) {
-      throw new Error(data.error || 'Não foi possível iniciar o pagamento.');
-    }
+      pixQrPanel.hidden = !opening;
+      showPixQrButton.setAttribute('aria-expanded', String(opening));
 
-    window.location.href = data.checkout_url;
-  } catch (error) {
-    paymentMessage.textContent =
-      error.message || 'Erro ao preparar o pagamento. Tente novamente.';
-    mercadoPagoBtn.disabled = false;
-  }
-});
- 
+      showPixQrButton.textContent = opening
+        ? 'Ocultar QR Code'
+        : 'Pagar com QR Code';
+    });
+
+    pixWhatsAppButton.addEventListener('click', async () => {
+      if (cart.size === 0) {
+        paymentMessage.textContent = 'Seu carrinho está vazio.';
+        return;
+      }
+
+      pixWhatsAppButton.disabled = true;
+      copyPixKeyButton.disabled = true;
+
+      paymentMessage.textContent = 'Registrando seu pedido Pix...';
+
+      try {
+        const result = await registrarPedidoPix();
+
+        const lines = [
+          'Olá! Estou entrando em contato sobre meu pedido Pix na WJAY STORE.',
+          '',
+          'Referência do pedido: ' + result.order_reference,
+          '',
+          'Itens do pedido:'
+        ];
+
+        for (const item of result.items || []) {
+          const printText = item.selectedPrint
+            ? ' — ' + item.selectedPrint
+            : '';
+
+          const sizeText = item.size
+            ? ' — Tam.: ' + item.size
+            : '';
+
+          lines.push(
+            item.name + printText + sizeText +
+            ' — ' + item.quantity + ' un. — ' +
+            money(item.subtotal)
+          );
+        }
+
+        lines.push('');
+        lines.push('Total: ' + money(result.total));
+        lines.push('');
+        lines.push(
+          'O pedido está aguardando confirmação do pagamento. Vou enviar o comprovante nesta conversa.'
+        );
+
+        const url =
+          'https://wa.me/' + WHATSAPP +
+          '?text=' + encodeURIComponent(lines.join('\n'));
+
+        paymentMessage.textContent =
+          'Pedido registrado! Falta confirmar o recebimento do Pix.';
+
+        window.open(url, '_blank');
+      } catch (error) {
+        console.error('Erro ao registrar pedido Pix:', error);
+
+        paymentMessage.textContent =
+          error.message || 'Erro ao registrar o pedido. Tente novamente.';
+      } finally {
+        pixWhatsAppButton.disabled = false;
+        copyPixKeyButton.disabled = false;
+      }
+    });
+
+    // Mercado Pago: envia produto, tamanho, estampa e quantidade.
+    mercadoPagoBtn.addEventListener('click', async () => {
+      if (cart.size === 0) {
+        paymentMessage.textContent = 'Seu carrinho está vazio.';
+        return;
+      }
+
+      if (
+        !config ||
+        !config.supabaseUrl ||
+        !config.supabaseKey
+      ) {
+        paymentMessage.textContent =
+          'Configuração de pagamento não encontrada.';
+        return;
+      }
+
+      mercadoPagoBtn.disabled = true;
+      paymentMessage.textContent = 'Preparando seu pagamento...';
+
+      try {
+        const items = Array.from(cart.values()).map(item => ({
+          id: String(item.product.id),
+          size: item.size || '',
+          selectedPrint: item.selectedPrint || '',
+          quantity: Number(item.quantity)
+        }));
+
+        const { data: sessionData } = wjayAuthClient
+          ? await wjayAuthClient.auth.getSession()
+          : { data: { session: null } };
+
+        const accessToken = sessionData.session
+          ? sessionData.session.access_token
+          : null;
+
+        const response = await fetch(
+          config.supabaseUrl + '/functions/v1/mercadopago-checkout',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': config.supabaseKey,
+              'Authorization': 'Bearer ' + config.supabaseAnonKey,
+              ...(accessToken
+                ? { 'x-user-access-token': accessToken }
+                : {})
+            },
+            body: JSON.stringify({
+              items,
+              email: document
+                .getElementById('customerEmail')
+                .value.trim()
+            })
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.checkout_url) {
+          throw new Error(
+            data.error || 'Não foi possível iniciar o pagamento.'
+          );
+        }
+
+        window.location.href = data.checkout_url;
+      } catch (error) {
+        paymentMessage.textContent =
+          error.message ||
+          'Erro ao preparar o pagamento. Tente novamente.';
+
+        mercadoPagoBtn.disabled = false;
+      }
+    });
+
     renderCart();
   </script>
 </body>
