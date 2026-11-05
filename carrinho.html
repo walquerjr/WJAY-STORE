@@ -330,6 +330,79 @@
     }
 
     const cart = readCart();
+    // Atualiza os dados dos produtos diretamente no Supabase.
+async function refreshCartProducts() {
+  if (!cart.size || !config || !config.supabaseUrl) return;
+
+  const apiKey = config.supabaseAnonKey || config.supabaseKey;
+  if (!apiKey) return;
+
+  const ids = [
+    ...new Set(
+      Array.from(cart.values())
+        .map(item => String(item.product?.id || ''))
+        .filter(Boolean)
+    )
+  ];
+
+  if (!ids.length) return;
+
+  try {
+    const params = new URLSearchParams();
+    params.set('select', '*');
+    params.set('id', 'in.(' + ids.join(',') + ')');
+
+    const response = await fetch(
+      config.supabaseUrl +
+      '/rest/v1/products?' + params.toString(),
+      {
+        headers: {
+          apikey: apiKey,
+          Authorization: 'Bearer ' + apiKey
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Não foi possível atualizar os produtos.');
+    }
+
+    const products = await response.json();
+
+    const latestProducts = new Map(
+      products.map(product => [String(product.id), product])
+    );
+
+    for (const item of cart.values()) {
+      const oldProduct = item.product || {};
+      const updatedProduct = latestProducts.get(
+        String(oldProduct.id)
+      );
+
+      if (!updatedProduct) continue;
+
+      item.product = {
+        ...oldProduct,
+        ...updatedProduct,
+        image: updatedProduct.image_url || oldProduct.image || '',
+        images: Array.isArray(updatedProduct.image_urls)
+          ? updatedProduct.image_urls
+          : [],
+        print_images: Array.isArray(updatedProduct.print_images)
+          ? updatedProduct.print_images
+          : []
+      };
+    }
+
+    localStorage.setItem(
+      CART_KEY,
+      JSON.stringify(Array.from(cart.entries()))
+    );
+
+  } catch (error) {
+    console.warn('Atualização dos produtos:', error);
+  }
+}
 
     let pixOrderCache = null;
     let pixOrderCacheSignature = '';
@@ -1256,7 +1329,7 @@
       }
     });
 
-    renderCart();
+    refreshCartProducts().finally(renderCart);
   </script>
 </body>
 </html>
