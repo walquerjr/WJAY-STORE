@@ -353,6 +353,23 @@ function render(filter = currentFilter) {
   if (empty) empty.style.display = filteredProducts.length ? 'none' : 'block';
 }
   function productCard(p){
+    const categoryNames = {
+  camisetas: 'Camisetas',
+  bermudas: 'Bermudas',
+  conjuntos: 'Conjuntos',
+  promocoes: 'Ofertas',
+  tailandesas: 'Tailandesas',
+  feminino: 'Feminino',
+  perfumes: 'Perfumes'
+};
+
+const productCategories = Array.isArray(p.categories) && p.categories.length
+  ? p.categories
+  : [p.category];
+
+const categoryLabel = productCategories
+  .map(category => categoryNames[category] || category)
+  .join(' · ');
  
 const promoActive = p.promo_price != null && p.promo_price > 0 && p.promo_end_at && new Date(p.promo_end_at) > new Date();
 const displayPrice = promoActive ? p.promo_price : p.price;
@@ -374,7 +391,7 @@ ${p.images && new Set(p.images).size > 1 ? `
 ` : ''}
 
     <div class="product-info">
-      <div class="category">${p.category}</div>
+      <div class="category">${categoryLabel}</div>
       <h3>${p.name}</h3>
       <div class="desc">${p.desc}</div>
     
