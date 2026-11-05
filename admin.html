@@ -331,9 +331,10 @@ if (!selectedCategories.length) {
       categories: selectedCategories, category: selectedCategories[0],
       sizes: $('sizes').value.split(',').map(x => x.trim()).filter(Boolean),
       description: $('description').value.trim(),
-      image_url: a[0] || null,
-      image_urls: a,
-      active: $('active').checked
+     image_url: a[0] || null,
+image_urls: a,
+print_images: printImages,
+active: $('active').checked
     };
 
     const r = id
