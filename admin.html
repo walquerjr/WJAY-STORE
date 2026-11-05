@@ -332,6 +332,25 @@ printImages = [...new Set(printImages)];
 if (!selectedCategories.length) {
   throw new Error('Selecione pelo menos uma categoria.');
 }
+    const quantityPromoMin = $('quantityPromoMin').value === ''
+  ? null : Number($('quantityPromoMin').value);
+
+const quantityPromoTotal = $('quantityPromoTotal').value === ''
+  ? null : Number($('quantityPromoTotal').value);
+
+if ((quantityPromoMin === null) !== (quantityPromoTotal === null)) {
+  throw new Error('Preencha os dois campos da promoção por quantidade.');
+}
+
+if (quantityPromoMin !== null) {
+  if (!Number.isInteger(quantityPromoMin) || quantityPromoMin < 2) {
+    throw new Error('A quantidade mínima deve ser um número inteiro de pelo menos 2.');
+  }
+
+  if (quantityPromoTotal <= 0 || quantityPromoTotal >= Number($('price').value) * quantityPromoMin) {
+    throw new Error('O preço promocional total deve ser positivo e menor que o preço normal das peças.');
+  }
+}
     const payload = {
       name: $('name').value.trim(),
       supplier: $('supplier').value.trim(),
@@ -340,6 +359,8 @@ if (!selectedCategories.length) {
         ? null : Number($('wholesalePrice').value),
       promo_price,
       promo_end_at,
+      quantity_promo_min: quantityPromoMin,
+quantity_promo_total: quantityPromoTotal,
       cost_price: $('costPrice').value === ''
         ? null : Number($('costPrice').value),
       wholesale_cost_price: $('wholesaleCostPrice').value === ''
