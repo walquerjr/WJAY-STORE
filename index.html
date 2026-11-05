@@ -338,8 +338,15 @@ function render(filter = currentFilter) {
 
   const filteredProducts = filter === 'todos'
     ? products
-    : products.filter(p => normalizeCategory(p.category) === normalizeCategory(filter));
+    : products.filter(p => {
+        const categories = Array.isArray(p.categories) && p.categories.length
+          ? p.categories
+          : [p.category];
 
+        return categories.some(category =>
+          normalizeCategory(category) === normalizeCategory(filter)
+        );
+      });
   grid.innerHTML = filteredProducts.map(productCard).join('');
 
   const empty = document.getElementById('empty');
