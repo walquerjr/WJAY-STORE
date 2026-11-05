@@ -180,7 +180,12 @@ if(p.promo_end_at){
     $('promoEndAt').value=d.toISOString().slice(0,16);
   }
 }
-                        $('costPrice').value=p.cost_price??''; $('wholesaleCostPrice').value=p.wholesale_cost_price??''; $('stock').value=p.stock??0;$('featured').checked=!!p.featured;const selectedCategories = Array.isArray(p.categories) && p.categories.length   ? p.categories   : [p.category || 'promocoes'];  document.querySelectorAll('.product-category').forEach(el => {   el.checked = selectedCategories.includes(el.value); });$('sizes').value=Array.isArray(p.sizes)?p.sizes.join(', '):(p.sizes||'');$('description').value=p.description||'';$('active').checked=!!p.active;$('images').value='';editingImages=photos(p);$('existingPhotos').innerHTML=editingImages.map(u=>`<img src="${esc(u)}" alt="">`).join('');$('formTitle').textContent='Editar produto';$('saveBtn').textContent='Salvar alterações';window.scrollTo({top:0,behavior:'smooth'});};
+                        $('costPrice').value=p.cost_price??''; $('wholesaleCostPrice').value=p.wholesale_cost_price??''; $('stock').value=p.stock??0;$('featured').checked=!!p.featured;const selectedCategories = Array.isArray(p.categories) && p.categories.length   ? p.categories   : [p.category || 'promocoes'];  document.querySelectorAll('.product-category').forEach(el => {   el.checked = selectedCategories.includes(el.value); });$('sizes').value=Array.isArray(p.sizes)?p.sizes.join(', '):(p.sizes||'');$('description').value=p.description||'';$('active').checked=!!p.active;$('images').value='';editingImages=photos(p);
+$('existingPhotos').innerHTML=editingImages.map(u=>`<img src="${esc(u)}" alt="">`).join('');
+
+editingPrintImages=Array.isArray(p.print_images)?p.print_images:[];
+$('printImages').value='';
+$('existingPrintPhotos').innerHTML=editingPrintImages.map(u=>`<img src="${esc(u)}" alt="">`).join('');$('formTitle').textContent='Editar produto';$('saveBtn').textContent='Salvar alterações';window.scrollTo({top:0,behavior:'smooth'});};
 function resetForm(){$('productForm').reset();
                      document.querySelectorAll('.product-category').forEach(el => {
   el.checked = false;
