@@ -908,60 +908,76 @@ document.addEventListener('keydown', event => {
     closeProductModal();
   }
 });
-function syncModalThumbnail(image) {
-  const buttons = [...document.querySelectorAll('#modalThumbnails button')];
-  const index = modalImages.indexOf(image);
-  buttons.forEach((button, buttonIndex) => {
-    button.classList.toggle('active', buttonIndex === index);
-  });
-}
-
 document.getElementById('modalThumbnails').addEventListener('click', event => {
   const button = event.target.closest('button[data-modal-image-index]');
   if (!button) return;
+
+  const buttons = [...document.querySelectorAll('#modalThumbnails button')];
   const index = Number(button.dataset.modalImageIndex);
   const image = modalImages[index];
-  if (!image) return;
 
-  document.getElementById('modalMainImage').src = image;
+  if (image) document.getElementById('modalMainImage').src = image;
+  buttons.forEach(item => item.classList.toggle('active', item === button));
 
-  // Se a miniatura clicada for uma estampa, atualiza também a opção
-  // que será enviada ao carrinho. Fotos extras não alteram a estampa.
+  // Ao clicar na miniatura de uma estampa, sincroniza também o seletor.
   const printImages = Array.isArray(modalProduct?.print_images)
-    ? modalProduct.print_images : [];
+    ? modalProduct.print_images
+    : [];
   const printIndex = printImages.indexOf(image);
-  const printSelect = document.getElementById('modalPrint');
-  if (printIndex >= 0) printSelect.selectedIndex = printIndex;
-
-  syncModalThumbnail(image);
+  if (printIndex >= 0) {
+    const printSelect = document.getElementById('modalPrint');
+    printSelect.selectedIndex = printIndex;
+    printSelect.dispatchEvent(new Event('change', { bubbles: true }));
+  }
 });
+
 document.getElementById('modalPrint').addEventListener('change', event => {
   const image = modalProduct?.print_images?.[event.target.selectedIndex];
-  if (!image) return;
-  document.getElementById('modalMainImage').src = image;
-  syncModalThumbnail(image);
+  if (image) {
+    document.getElementById('modalMainImage').src = image;
+
+    const imageIndex = modalImages.indexOf(image);
+    const buttons = [...document.querySelectorAll('#modalThumbnails button')];
+    buttons.forEach((button, index) => {
+      button.classList.toggle('active', index === imageIndex);
+    });
+  }
 });
+
 document.getElementById('modalAddToCart').addEventListener('click', () => {
   if (!modalProduct) return;
+
   const size = document.getElementById('modalSize').value;
   if (!size) {
     alert('Este produto não tem tamanho selecionável. Consulte a disponibilidade pelo WhatsApp.');
     return;
   }
+
   const printSelect = document.getElementById('modalPrint');
-  const selectedPrint = printSelect.value || '';
-  const selectedPrintImage = selectedPrint
-    ? (modalProduct.print_images || [])[printSelect.selectedIndex] || ''
+  const printImages = Array.isArray(modalProduct.print_images)
+    ? modalProduct.print_images
+    : [];
+  const selectedPrintIndex = printSelect.value ? printSelect.selectedIndex : -1;
+  const selectedPrint = selectedPrintIndex >= 0
+    ? printSelect.value
     : '';
-  const id = `${modalProduct.id}-${size}-${selectedPrint}`;
+  const selectedPrintImage = selectedPrintIndex >= 0
+    ? (printImages[selectedPrintIndex] || '')
+    : '';
+
+  // O índice da estampa faz parte da chave para nunca misturar variações.
+  const id = `${modalProduct.id}-${size}-print-${selectedPrintIndex}`;
   const existing = cart.get(id);
+
   cart.set(id, {
     product: modalProduct,
     size,
     selectedPrint,
+    selectedPrintIndex,
     selectedPrintImage,
     quantity: existing ? Number(existing.quantity || 0) + 1 : 1
   });
+
   localStorage.setItem('wjay_cart', JSON.stringify(Array.from(cart.entries())));
   renderCart();
   closeProductModal();
