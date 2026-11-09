@@ -890,9 +890,9 @@ async function refreshCartProducts() {
           ? product.print_images
           : [];
 
-        let printImage = '';
+        let printImage = item.selectedPrintImage || '';
 
-        if (item.selectedPrint) {
+        if (!printImage && item.selectedPrint) {
           if (/^https?:\/\//i.test(item.selectedPrint)) {
             printImage = item.selectedPrint;
           } else {
