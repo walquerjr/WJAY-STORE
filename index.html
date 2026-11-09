@@ -573,7 +573,7 @@ function productCard(p) {
 
   return `
     <article class="product" data-category="${p.category}">
-      <div class="product-photo">
+      <div class="product-photo" data-open-product="${p.id}" role="button" tabindex="0" aria-label="Ver detalhes de ${p.name}" style="cursor:pointer">
         <img
           loading="lazy"
           src="${p.image || ''}"
@@ -600,7 +600,7 @@ function productCard(p) {
 
       <div class="product-info">
         <div class="category">${categoryLabel}</div>
-        <h3>${p.name}</h3>
+        <h3 data-open-product="${p.id}" style="cursor:pointer">${p.name}</h3>
         <div class="desc">${p.desc || ''}</div>
 
         <div class="price">
@@ -837,14 +837,124 @@ function renderCart() {
   if (checkoutBtn) checkoutBtn.disabled = count === 0;
 }
 
-document.getElementById('products').addEventListener('click', event => {
-  const button = event.target.closest('.add-to-cart');
-  if (!button) return;
+let modalProduct = null;
+let modalImages = [];
 
-  const product = products.find(
-    p => String(p.id) === button.dataset.productId
+function openProductModal(product) {
+  if (!product) return;
+  modalProduct = product;
+
+  const modal = document.getElementById('productModal');
+  const mainImage = document.getElementById('modalMainImage');
+  const thumbnails = document.getElementById('modalThumbnails');
+  const printOption = document.getElementById('modalPrintOption');
+  const printSelect = document.getElementById('modalPrint');
+  const sizeSelect = document.getElementById('modalSize');
+
+  const categories = Array.isArray(product.categories) && product.categories.length
+    ? product.categories
+    : [product.category || 'Produto'];
+  document.getElementById('modalCategory').textContent = categories.join(' · ');
+  document.getElementById('modalName').textContent = product.name || 'Produto';
+  document.getElementById('modalDescription').textContent =
+    product.desc || product.description || 'Consulte mais informações com a WJAY STORE.';
+
+  const promoActive = Number(product.promo_price) > 0 && product.promo_end_at &&
+    new Date(product.promo_end_at) > new Date();
+  document.getElementById('modalPrice').textContent = money(
+    promoActive ? Number(product.promo_price) : Number(product.price || 0)
   );
 
+  const regularImages = Array.isArray(product.images) ? product.images : [];
+  const printImages = Array.isArray(product.print_images) ? product.print_images : [];
+  modalImages = [...new Set([product.image, ...regularImages, ...printImages].filter(Boolean))];
+  mainImage.src = modalImages[0] || '';
+  mainImage.alt = product.name || 'Foto do produto';
+  thumbnails.innerHTML = modalImages.map((image, index) => `
+    <button type="button" class="${index === 0 ? 'active' : ''}" data-modal-image-index="${index}" aria-label="Ver foto ${index + 1}">
+      <img src="${image}" alt="Foto ${index + 1}">
+    </button>
+  `).join('');
+
+  printOption.style.display = printImages.length ? 'block' : 'none';
+  printSelect.innerHTML = printImages.map((image, index) =>
+    `<option value="Estampa ${index + 1}" data-image-index="${modalImages.indexOf(image)}">Estampa ${index + 1}</option>`
+  ).join('');
+
+  const rawSizes = String(product.sizes || '');
+  const sizes = rawSizes.split(/[,;•|\n]+/).map(value => value.trim()).filter(Boolean);
+  sizeSelect.innerHTML = sizes.map(size => `<option value="${size}">${size}</option>`).join('');
+  if (!sizes.length || (sizes.length === 1 && /consulte/i.test(sizes[0]))) {
+    sizeSelect.innerHTML = '<option value="">Consulte disponibilidade</option>';
+  }
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProductModal() {
+  document.getElementById('productModal').classList.remove('open');
+  document.body.style.overflow = '';
+  modalProduct = null;
+  modalImages = [];
+}
+
+document.getElementById('closeProductModal').addEventListener('click', closeProductModal);
+document.getElementById('productModal').addEventListener('click', event => {
+  if (event.target.id === 'productModal') closeProductModal();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && document.getElementById('productModal').classList.contains('open')) {
+    closeProductModal();
+  }
+});
+document.getElementById('modalThumbnails').addEventListener('click', event => {
+  const button = event.target.closest('button[data-modal-image-index]');
+  if (!button) return;
+  const buttons = [...document.querySelectorAll('#modalThumbnails button')];
+  const index = Number(button.dataset.modalImageIndex);
+  const image = modalImages[index];
+  if (image) document.getElementById('modalMainImage').src = image;
+  buttons.forEach(item => item.classList.toggle('active', item === button));
+});
+document.getElementById('modalPrint').addEventListener('change', event => {
+  const option = event.target.selectedOptions[0];
+  const image = modalProduct?.print_images?.[event.target.selectedIndex];
+  if (image) document.getElementById('modalMainImage').src = image;
+});
+document.getElementById('modalAddToCart').addEventListener('click', () => {
+  if (!modalProduct) return;
+  const size = document.getElementById('modalSize').value;
+  if (!size) {
+    alert('Este produto não tem tamanho selecionável. Consulte a disponibilidade pelo WhatsApp.');
+    return;
+  }
+  const selectedPrint = document.getElementById('modalPrint').value || '';
+  const id = `${modalProduct.id}-${size}-${selectedPrint}`;
+  const existing = cart.get(id);
+  cart.set(id, {
+    product: modalProduct,
+    size,
+    selectedPrint,
+    quantity: existing ? Number(existing.quantity || 0) + 1 : 1
+  });
+  localStorage.setItem('wjay_cart', JSON.stringify(Array.from(cart.entries())));
+  renderCart();
+  closeProductModal();
+  alert('Produto adicionado ao carrinho!');
+});
+
+document.getElementById('products').addEventListener('click', event => {
+  const trigger = event.target.closest('.add-to-cart, [data-open-product]');
+  if (!trigger) return;
+  const productId = trigger.dataset.productId || trigger.dataset.openProduct;
+  const product = products.find(p => String(p.id) === String(productId));
+  if (product) openProductModal(product);
+});
+document.getElementById('products').addEventListener('keydown', event => {
+  if ((event.key !== 'Enter' && event.key !== ' ') || !event.target.matches('[data-open-product]')) return;
+  event.preventDefault();
+  const product = products.find(p => String(p.id) === String(event.target.dataset.openProduct));
   if (product) openProductModal(product);
 });
 document.getElementById('cartItems').addEventListener('click', event => {
