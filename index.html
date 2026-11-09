@@ -908,19 +908,38 @@ document.addEventListener('keydown', event => {
     closeProductModal();
   }
 });
+function syncModalThumbnail(image) {
+  const buttons = [...document.querySelectorAll('#modalThumbnails button')];
+  const index = modalImages.indexOf(image);
+  buttons.forEach((button, buttonIndex) => {
+    button.classList.toggle('active', buttonIndex === index);
+  });
+}
+
 document.getElementById('modalThumbnails').addEventListener('click', event => {
   const button = event.target.closest('button[data-modal-image-index]');
   if (!button) return;
-  const buttons = [...document.querySelectorAll('#modalThumbnails button')];
   const index = Number(button.dataset.modalImageIndex);
   const image = modalImages[index];
-  if (image) document.getElementById('modalMainImage').src = image;
-  buttons.forEach(item => item.classList.toggle('active', item === button));
+  if (!image) return;
+
+  document.getElementById('modalMainImage').src = image;
+
+  // Se a miniatura clicada for uma estampa, atualiza também a opção
+  // que será enviada ao carrinho. Fotos extras não alteram a estampa.
+  const printImages = Array.isArray(modalProduct?.print_images)
+    ? modalProduct.print_images : [];
+  const printIndex = printImages.indexOf(image);
+  const printSelect = document.getElementById('modalPrint');
+  if (printIndex >= 0) printSelect.selectedIndex = printIndex;
+
+  syncModalThumbnail(image);
 });
 document.getElementById('modalPrint').addEventListener('change', event => {
-  const option = event.target.selectedOptions[0];
   const image = modalProduct?.print_images?.[event.target.selectedIndex];
-  if (image) document.getElementById('modalMainImage').src = image;
+  if (!image) return;
+  document.getElementById('modalMainImage').src = image;
+  syncModalThumbnail(image);
 });
 document.getElementById('modalAddToCart').addEventListener('click', () => {
   if (!modalProduct) return;
@@ -929,13 +948,18 @@ document.getElementById('modalAddToCart').addEventListener('click', () => {
     alert('Este produto não tem tamanho selecionável. Consulte a disponibilidade pelo WhatsApp.');
     return;
   }
-  const selectedPrint = document.getElementById('modalPrint').value || '';
+  const printSelect = document.getElementById('modalPrint');
+  const selectedPrint = printSelect.value || '';
+  const selectedPrintImage = selectedPrint
+    ? (modalProduct.print_images || [])[printSelect.selectedIndex] || ''
+    : '';
   const id = `${modalProduct.id}-${size}-${selectedPrint}`;
   const existing = cart.get(id);
   cart.set(id, {
     product: modalProduct,
     size,
     selectedPrint,
+    selectedPrintImage,
     quantity: existing ? Number(existing.quantity || 0) + 1 : 1
   });
   localStorage.setItem('wjay_cart', JSON.stringify(Array.from(cart.entries())));
