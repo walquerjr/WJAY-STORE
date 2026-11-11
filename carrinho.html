@@ -132,13 +132,13 @@
   <main>
     <section class="card">
       <h2>Seu pedido</h2>
-      <p id="progressText">Faltam 5 peças para liberar o atacado.</p>
+      <p id="progressText">Faltam 4 peças para liberar o atacado.</p>
       <div class="progress-track">
         <div id="progressBar" class="progress-bar"></div>
       </div>
       <p class="muted">
         O preço de atacado é aplicado aos produtos que possuem esse preço
-        cadastrado, a partir de 5 peças do mesmo grupo de fornecedor.
+        cadastrado, a partir de 4 peças do mesmo grupo de fornecedor.
       </p>
 
       <div id="items"></div>
@@ -485,7 +485,7 @@ async function refreshCartProducts() {
       let found = 0;
 
       for (const [supplierKey, quantity] of supplierGroups) {
-        if (quantity >= 5) continue;
+        if (quantity >= 4) continue;
 
         const groupProducts = allProducts.filter(product =>
           String(product.supplier || '')
@@ -494,7 +494,7 @@ async function refreshCartProducts() {
         );
 
         const heading = document.createElement('h4');
-        heading.textContent = quantity + '/5 peças neste grupo';
+        heading.textContent = quantity + '/4 peças neste grupo';
         eligibleProducts.appendChild(heading);
 
         for (const product of groupProducts) {
@@ -578,7 +578,7 @@ async function refreshCartProducts() {
       Calcula os preços de todo o carrinho.
 
       Prioridade:
-      1. Atacado válido, quando o fornecedor alcança 5 peças.
+      1. Atacado válido, quando o fornecedor alcança 4 peças.
       2. Promoção por quantidade.
       3. Promoção temporária.
       4. Preço normal.
@@ -668,7 +668,7 @@ async function refreshCartProducts() {
           wholesalePrice <= regularPrice;
 
         const useWholesale =
-          supplierQuantity >= 5 && hasWholesalePrice;
+          supplierQuantity >= 4 && hasWholesalePrice;
 
         const quantityPromoMin = Number(product.quantity_promo_min);
         const quantityPromoTotal = Number(product.quantity_promo_total);
@@ -1022,13 +1022,13 @@ async function refreshCartProducts() {
         const bestProgress = Math.max(...groupQuantities);
 
         progressBar.style.width =
-          Math.min(bestProgress / 5 * 100, 100) + '%';
+          Math.min(bestProgress / 4 * 100, 100) + '%';
 
-        if (groupQuantities.some(quantity => quantity >= 5)) {
+        if (groupQuantities.some(quantity => quantity >= 4)) {
           progressText.textContent =
             'Atacado liberado para os produtos elegíveis de cada grupo.';
         } else {
-          const missing = 5 - bestProgress;
+          const missing = 4 - bestProgress;
 
           progressText.textContent =
             'No grupo mais próximo, faltam ' + missing +
